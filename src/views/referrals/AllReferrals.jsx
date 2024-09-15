@@ -157,10 +157,12 @@ const AllReferrals = () => {
       <th scope="col">#</th>
       <th scope="col">User</th>
       <th scope="col">Joined On</th>
-      <th scope="col">Total XP</th>
+      <th scope="col">Total XP Earned</th>
+      
       <th scope="col">Contact</th>
       <th scope="col">Last Scanned Product</th>
-      <th scope="col">Last XP Earned</th>
+      <th scope="col">Referee's Earned XP</th>
+      <th scope="col">Referral's Total XP (20%)</th>
     </tr>
   </thead>
   <tbody>
@@ -168,30 +170,33 @@ const AllReferrals = () => {
       <th scope="row">1</th>
       <td>Mark</td>
       <td>12th Sept 2024</td>
-      <td>250</td>
+      <td>2000XP</td>
       <td>+91878587445</td>
       <td>Mass Polymar 250gm (21DSD5488754)</td>
-      <td>20</td>
+      <td>100XP</td>
+      <td>20XP</td>
     </tr>
     
     <tr>
       <th scope="row">2</th>
-      <td>Mark</td>
+      <td>Shyam</td>
       <td>12th Sept 2024</td>
-      <td>250</td>
+      <td>2000XP</td>
       <td>+91878587445</td>
       <td>Mass Polymar 250gm (21DSD5488754)</td>
-      <td>20</td>
+      <td>100XP</td>
+      <td>20XP</td>
     </tr>
 
     <tr>
       <th scope="row">3</th>
-      <td>Mark</td>
+      <td>Ram</td>
       <td>12th Sept 2024</td>
-      <td>250</td>
+      <td>2000XP</td>
       <td>+91878587445</td>
       <td>Mass Polymar 250gm (21DSD5488754)</td>
-      <td>20</td>
+      <td>100XP</td>
+      <td>20XP</td>
     </tr>
   </tbody>
 </table>

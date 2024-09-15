@@ -282,8 +282,17 @@ const EditUser = () => {
                         </CCol>
                     </CForm>                   
                   
+                    <div>
+                       Add new card bellow this card with all XP transactions and product details
+                    </div>
+
+                    <div>
+                       Add new card bellow this card with all redeemed items details
+                    </div>
+
                 </CCardBody>
             </CCard>
+            
     );
 };
 

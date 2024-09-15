@@ -164,11 +164,16 @@ const AllUser = () => {
                                         <th><CFormCheck  id="flexCheckDefault" />
                                         </th>
                                         <th>ID</th>
+                                        <th>User Image</th>
                                         <th>Full Name</th>
                                         <th>Phone Number</th>
                                         <th>City</th>
+                                        <th>State</th>
                                         <th>Joined date</th>
                                         <th>Device Info</th>
+                                        <th>Total Product Scanned</th>
+                                        <th>XP Balance</th>
+                                        <th>Total Redeemed</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -185,12 +190,18 @@ const AllUser = () => {
                                                             id="flexCheckDefault" 
                                                         />
                                                     </td>
+                                                    
                                                     <td>{user.id}</td>
+                                                    <img src="https://greendroprecycling.com/wp-content/uploads/2017/04/GreenDrop_Station_Aluminum_Can_Pepsi.jpg" className="img-thumbnail" alt="Description of image" width={80} />
                                                     <td>{user.name}</td>
                                                     <td>{user.phone}</td>
                                                     <td>{user.city}</td>
+                                                    <td>{user.state}</td>
                                                     <td>{user.created_at}</td>
                                                     <td>{user.device_info ? user.device_info: 'N/A'}</td>
+                                                    <td>17 Products</td>
+                                                    <td>2500 XP</td>
+                                                    <td>12 Items</td>
                                                     <td>
                                                         {statusBadge(user.status)}
                                                     </td>
@@ -225,6 +236,8 @@ const AllUser = () => {
                             />  
                         }                        
                     </div>
+
+                   
 
                     {users.length > 0 &&
                         <div className='d-flex  align-items-start justify-content-end'>
