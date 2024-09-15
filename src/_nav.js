@@ -55,7 +55,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Referrals',
-    to: '/theme/typography',
+    to: '/referrals/all-referrals',
     icon: <CIcon icon={cilLan} customClassName="nav-icon" />,
   },
   {

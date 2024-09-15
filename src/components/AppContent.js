@@ -21,178 +21,196 @@ import AllOffers from '../views/offers/AllOffers';
 import EditOffer from '../views/offers/EditOffer';
 import AllPages from '../views/pages/AllPages';
 import EditPage from '../views/pages/EditPage';
+import AllReferrals from '../views/referrals/AllReferrals';
+import NewReferrals from '../views/referrals/NewReferrals';
 
 const AppContent = () => {
-  return (
-    <CContainer className="px-4" lg>
-      <Suspense fallback={<CSpinner color="primary" />}>
-        <Routes>
-          <Route path="/" element={<Navigate to="login" replace />} />
+    return (
+        <CContainer className="px-4" lg>
+            <Suspense fallback={<CSpinner color="primary" />}>
+                <Routes>
+                    <Route path="/" element={<Navigate to="login" replace />} />
 
-          <Route 
-            path='/dashboard'
-            element={
-              <RequireAuth>
-                <Dashboard />
-              </RequireAuth>
-            }
-          />
+                    <Route
+                        path='/dashboard'
+                        element={
+                            <RequireAuth>
+                                <Dashboard />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/users/all-users'
-            element={
-              <RequireAuth>
-               <AllUser />
-              </RequireAuth>
-            }
-        />
-        <Route 
-            path='/users/add-user'
-            element={
-                <RequireAuth>
-                <NewUser />
-                </RequireAuth>
-            }
-        />
-        <Route 
-            path='/products/all-products'
-            element={
-                <RequireAuth>
-                    <AllProduct />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/users/all-users'
+                        element={
+                            <RequireAuth>
+                                <AllUser />
+                            </RequireAuth>
+                        }
+                    />
+                    <Route
+                        path='/users/add-user'
+                        element={
+                            <RequireAuth>
+                                <NewUser />
+                            </RequireAuth>
+                        }
+                    />
+                    <Route
+                        path='/products/all-products'
+                        element={
+                            <RequireAuth>
+                                <AllProduct />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/products/add-product'
-            element={
-                <RequireAuth>
-                    <NewProduct />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/products/add-product'
+                        element={
+                            <RequireAuth>
+                                <NewProduct />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/products/edit-product/:id'
-            element={
-                <RequireAuth>
-                    <EditProduct />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/products/edit-product/:id'
+                        element={
+                            <RequireAuth>
+                                <EditProduct />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/users/edit-user/:id'
-            element={
-                <RequireAuth>
-                    <EditUser />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/users/edit-user/:id'
+                        element={
+                            <RequireAuth>
+                                <EditUser />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/rewards/all-rewards'
-            element={
-                <RequireAuth>
-                    <AllReward />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/rewards/all-rewards'
+                        element={
+                            <RequireAuth>
+                                <AllReward />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/rewards/new-reward'
-            element={
-                <RequireAuth>
-                    <NewReward />
-                </RequireAuth>
-            }
-        />
-        <Route 
-            path='/rewards/edit-reward/:id'
-            element={
-                <RequireAuth>
-                    <EditReward />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/rewards/new-reward'
+                        element={
+                            <RequireAuth>
+                                <NewReward />
+                            </RequireAuth>
+                        }
+                    />
+                    <Route
+                        path='/rewards/edit-reward/:id'
+                        element={
+                            <RequireAuth>
+                                <EditReward />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/offers/all-offers'
-            element={
-                <RequireAuth>
-                    <AllOffers />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/offers/all-offers'
+                        element={
+                            <RequireAuth>
+                                <AllOffers />
+                            </RequireAuth>
+                        }
+                    />
+                    <Route
+                        path='/referrals/all-referrals'
+                        element={
+                            <RequireAuth>
+                                <AllReferrals />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/offers/edit-offer/:id'
-            element={
-                <RequireAuth>
-                    <EditOffer />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/referrals/new-referrals'
+                        element={
+                            <RequireAuth>
+                                <NewReferrals />
+                            </RequireAuth>
+                        }
+                    />
+                    <Route
+                        path='/offers/edit-offer/:id'
+                        element={
+                            <RequireAuth>
+                                <EditOffer />
+                            </RequireAuth>
+                        }
+                    />
 
 
-        <Route 
-            path='/offers/new-offer'
-            element={
-                <RequireAuth>
-                    <NewOffer />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/offers/new-offer'
+                        element={
+                            <RequireAuth>
+                                <NewOffer />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/qr-manager/all-qr'
-            element={
-                <RequireAuth>
-                    <AllQrs />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/qr-manager/all-qr'
+                        element={
+                            <RequireAuth>
+                                <AllQrs />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/qr-manager/generate-qr'
-            element={
-                <RequireAuth>
-                    <NewQrs />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/qr-manager/generate-qr'
+                        element={
+                            <RequireAuth>
+                                <NewQrs />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/qr-manager/qr-details/:productId/:batchNumber'
-            element={
-                <RequireAuth>
-                    <QrsDetail />
-                </RequireAuth>
-            }
-        />
+                    <Route
+                        path='/qr-manager/qr-details/:productId/:batchNumber'
+                        element={
+                            <RequireAuth>
+                                <QrsDetail />
+                            </RequireAuth>
+                        }
+                    />
 
-        <Route 
-            path='/pages/all-pages'
-            element={
-                <RequireAuth>
-                    <AllPages />
-                </RequireAuth>
-            }
-        />
-        <Route 
-            path='/pages/edit-page/:id'
-            element={
-                <RequireAuth>
-                    <EditPage />
-                </RequireAuth>
-            }
-        />
-         
+                    <Route
+                        path='/pages/all-pages'
+                        element={
+                            <RequireAuth>
+                                <AllPages />
+                            </RequireAuth>
+                        }
+                    />
+                    <Route
+                        path='/pages/edit-page/:id'
+                        element={
+                            <RequireAuth>
+                                <EditPage />
+                            </RequireAuth>
+                        }
+                    />
 
-        </Routes>
-      </Suspense>
-    </CContainer>
-  )
+
+                </Routes>
+            </Suspense>
+        </CContainer>
+    )
 }
 
 export default React.memo(AppContent)

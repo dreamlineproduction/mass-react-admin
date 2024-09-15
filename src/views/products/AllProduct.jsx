@@ -142,6 +142,7 @@ const AllProduct = () => {
                             <thead>
                                 <tr>
                                     <th><CFormCheck  id="flexCheckDefault" /></th>
+                                    <th>Image</th>
                                     <th>Product ID</th>
                                     <th>Product Name</th>
                                     <th>Created At</th>
@@ -153,7 +154,7 @@ const AllProduct = () => {
                                 {
                                     products.map(product => {
                                         return(
-                                            <tr key={product.id}>
+                                            <tr key={product.id} className="align-middle">
                                                 <td>
                                                     <CFormCheck 
                                                         checked={selectedItems.includes(product.id)}
@@ -161,6 +162,7 @@ const AllProduct = () => {
                                                         id="flexCheckDefault" 
                                                     />
                                                 </td>
+                                                <td><img src="https://greendroprecycling.com/wp-content/uploads/2017/04/GreenDrop_Station_Aluminum_Can_Pepsi.jpg" className="img-thumbnail" alt="Description of image" width={80} /></td>
                                                 <td>{product.unique_id}</td>
                                                 <td>{product.name}</td>       
                                                 <td>{product.created_at}</td>

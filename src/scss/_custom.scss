@@ -44,7 +44,8 @@
         border: none;
     }
 }
-.cover-body{
+
+.cover-body {
     position: absolute;
     top: 0;
     left: 0;
@@ -54,4 +55,12 @@
     background: #fff;
     z-index: 10;
     cursor: progress;
+}
+
+
+.referraluserbody {
+
+    p {
+        margin-bottom: .5rem;
+    }
 }
