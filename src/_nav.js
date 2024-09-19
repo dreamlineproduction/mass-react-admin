@@ -58,12 +58,12 @@ const _nav = [
     to: '/referrals/all-referrals',
     icon: <CIcon icon={cilLan} customClassName="nav-icon" />,
   },
-  {
-    component: CNavItem,
-    name: 'Report',
-    to: '/theme/typography',
-    icon: <CIcon icon={cilBarChart} customClassName="nav-icon" />,
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'Report',
+  //   to: '/theme/typography',
+  //   icon: <CIcon icon={cilBarChart} customClassName="nav-icon" />,
+  // },
 
   {
     component: CNavTitle,

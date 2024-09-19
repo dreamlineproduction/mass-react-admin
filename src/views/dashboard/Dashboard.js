@@ -1,9 +1,25 @@
-
-import { CCol, CRow, CCard, CCardHeader, CCardBody, CContainer, CPagination, CPaginationItem, CCardTitle, CCardText, CButton, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CFormSelect, } from '@coreui/react';
+import React, { useState } from 'react';
+import { CCol, CRow, CCard, CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CCardHeader, CCardBody, CContainer, CPagination, CPaginationItem, CCardTitle, CCardText, CButton, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CFormSelect, } from '@coreui/react';
 import CIcon from "@coreui/icons-react";
+import { Link } from "react-router-dom";
 import { cilCloudDownload } from "@coreui/icons";
 const Dashboard = () => {
 
+  const [visible, setVisible] = useState(false); // Modal visibility state
+  const [visible2, setVisible2] = useState(false)
+  const [selectedState, setSelectedState] = useState(null); // Selected state data
+
+  // Function to open modal and set selected state
+  const handleShowDetails = (stateName, totalUsers) => {
+    setSelectedState({ stateName, totalUsers });
+    setVisible(true); // Show modal
+  };
+
+  // Function to close modal
+  const handleCloseModal = () => {
+    setVisible(false); // Close modal
+    setSelectedState(null); // Reset selected state
+  };
 
   return (
     <>
@@ -111,7 +127,7 @@ const Dashboard = () => {
 
 
 
-              <CTable bordered className='mt-3'>
+              <CTable responsive bordered className='mt-3' >
                 <CTableHead>
                   <CTableRow>
                     <CTableHeaderCell scope="col">#</CTableHeaderCell>
@@ -260,7 +276,17 @@ const Dashboard = () => {
         <CCol md="12">
           <CCard>
             <CCardHeader>
-              Recent QR Details
+              <div className='d-flex justify-content-between'>
+                <div>
+                  Recent QR Details
+                </div>
+                <div>
+                  <Link to={'/qr-manager/all-qr'}>
+                    View All
+                  </Link>
+                </div>
+              </div>
+
             </CCardHeader>
             <div className='p-3'>
 
@@ -382,7 +408,7 @@ const Dashboard = () => {
       </CRow>
 
 
-      <CRow className='mt-3'>
+      <CRow className='mt-3 mb-5'>
         <CCol md="12">
           <CCard>
             <CCardHeader>
@@ -394,60 +420,195 @@ const Dashboard = () => {
                   India Interactive map will be added here
                 </CCol>
                 <CCol md="6">
-
                   <CTable bordered className='mt-3'>
                     <CTableHead>
                       <CTableRow>
                         <CTableHeaderCell scope="col">State</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Total Users</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Action</CTableHeaderCell>
-
-
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
                       <CTableRow>
                         <CTableHeaderCell scope="row">West Bengal</CTableHeaderCell>
                         <CTableDataCell>15752</CTableDataCell>
-                        <CTableDataCell><CButton color="primary" href="#">View Details</CButton></CTableDataCell>
+                        <CTableDataCell>
+                          <CButton color="primary" onClick={() => setVisible(!visible)}>View Details</CButton>
+                        </CTableDataCell>
                       </CTableRow>
-
                       <CTableRow>
                         <CTableHeaderCell scope="row">Bihar</CTableHeaderCell>
-                        <CTableDataCell>15752</CTableDataCell>
-                        <CTableDataCell><CButton color="primary" href="#">View Details</CButton></CTableDataCell>
+                        <CTableDataCell>14500</CTableDataCell>
+                        <CTableDataCell>
+                          <CButton color="primary" onClick={() => setVisible(!visible)}>View Details</CButton>
+                        </CTableDataCell>
                       </CTableRow>
                       <CTableRow>
-                        <CTableHeaderCell scope="row">Utter Pradesh</CTableHeaderCell>
-                        <CTableDataCell>15752</CTableDataCell>
-                        <CTableDataCell><CButton color="primary" href="#">View Details</CButton></CTableDataCell>
+                        <CTableHeaderCell scope="row">Uttar Pradesh</CTableHeaderCell>
+                        <CTableDataCell>20000</CTableDataCell>
+                        <CTableDataCell>
+                          <CButton color="primary" onClick={() => setVisible(!visible)}>View Details</CButton>
+                        </CTableDataCell>
                       </CTableRow>
-
                       <CTableRow>
                         <CTableHeaderCell scope="row">Jharkhand</CTableHeaderCell>
-                        <CTableDataCell>15752</CTableDataCell>
-                        <CTableDataCell><CButton color="primary" href="#">View Details</CButton></CTableDataCell>
+                        <CTableDataCell>10500</CTableDataCell>
+                        <CTableDataCell>
+                          <CButton color="primary" onClick={() => setVisible(!visible)}>View Details</CButton>
+                        </CTableDataCell>
                       </CTableRow>
-
-
-                      asd
-
-
-
-
-
-
-
-
                     </CTableBody>
                   </CTable>
                 </CCol>
               </CRow>
-
             </div>
-
           </CCard>
         </CCol>
+
+        {/* CModal from CoreUI */}
+        <CModal
+          visible={visible}
+          onClose={() => setVisible(false)}
+          aria-labelledby="DistrictModal"
+          size="xl"
+        >
+          <CModalHeader>
+            <CModalTitle id="DistrictModal">Utter Pradesh</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            <div className='d-flex justify-content-between'>
+              <div>
+                Showing all users from Utter Pradesh
+              </div>
+              <div>
+                <CButton color="primary" variant="outline" className='ms-2'><CIcon icon={cilCloudDownload} /> Export as Excel</CButton>
+              </div>
+            </div>
+
+
+            <div className='district-table mt-4'>
+              <CTable bordered hover>
+                <CTableHead>
+                  <CTableRow>
+                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">District</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Total Users</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Total Active Users</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Total Inactive Users</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Action</CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody>
+                  <CTableRow>
+                    <CTableHeaderCell scope="row">1</CTableHeaderCell>
+                    <CTableDataCell>Lucknow</CTableDataCell>
+                    <CTableDataCell>12500</CTableDataCell>
+                    <CTableDataCell>8000</CTableDataCell>
+                    <CTableDataCell>4500</CTableDataCell>
+                    <CTableDataCell>
+                      <CButton
+                        color="primary"
+                        onClick={() => {
+                          setVisible(false)
+                          setVisible2(true)
+                        }}
+                      >
+                        View Details
+                      </CButton>
+                    </CTableDataCell>
+                  </CTableRow>
+                  <CTableRow>
+                    <CTableHeaderCell scope="row">1</CTableHeaderCell>
+                    <CTableDataCell>Lucknow</CTableDataCell>
+                    <CTableDataCell>12500</CTableDataCell>
+                    <CTableDataCell>8000</CTableDataCell>
+                    <CTableDataCell>4500</CTableDataCell>
+                    <CTableDataCell>
+                      <CButton
+                        color="primary"
+                        onClick={() => {
+                          setVisible(false)
+                          setVisible2(true)
+                        }}
+                      >
+                        View Details
+                      </CButton>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+              </CTable>
+            </div>
+
+          </CModalBody>
+
+        </CModal>
+
+
+        <CModal
+          visible={visible2}
+          size="xl"
+          onClick={() => {
+            setVisible(true)
+            setVisible2(false)
+          }}
+          aria-labelledby="CityModal"
+        >
+          <CModalHeader>
+            <CModalTitle id="CityModal">Lucknow</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            <div className='d-flex justify-content-between'>
+              <div>
+                Showing all users from Lucknow
+              </div>
+              <div>
+                <CButton color="primary" variant="outline" className='ms-2'><CIcon icon={cilCloudDownload} /> Export as Excel</CButton>
+              </div>
+            </div>
+
+
+            <div className='city-table mt-4'>
+              <CTable bordered hover align="middle" responsive>
+                <CTableHead>
+                  <CTableRow>
+                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">User Name</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Location</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Contact Number</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Install Date</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Last Active</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Total XP Balance</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Total Reward Redeems</CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody>
+                  <CTableRow>
+                    <CTableHeaderCell scope="row">1</CTableHeaderCell>
+                    <CTableDataCell>
+                      <Link to={'/users/all-users'}>
+                        Ayan Mukhopadhyay
+                      </Link>
+                    </CTableDataCell>
+                    <CTableDataCell>
+                      <a href='https://www.google.com/maps/place/thakurganj,+lucknow/data=!4m2!3m1!1s0x399bfe03f2d08611:0x8b96b394a9be352c?sa=X&ved=1t:242&ictx=111' target='_blank'>
+                        Thakurganj
+                      </a>
+                    </CTableDataCell>
+                    <CTableDataCell>+91123879545</CTableDataCell>
+                    <CTableDataCell>12/02/2024</CTableDataCell>
+                    <CTableDataCell>15th Sept 2024 at 12:50 PM</CTableDataCell>
+                    <CTableDataCell>2500 xp</CTableDataCell>
+                    <CTableDataCell>5</CTableDataCell>
+
+                  </CTableRow>
+
+                </CTableBody>
+              </CTable>
+            </div>
+
+          </CModalBody>
+
+        </CModal>
       </CRow>
 
     </>
