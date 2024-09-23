@@ -114,6 +114,7 @@ const AllOffers = () => {
     useEffect(() => {
         fetchOffer();
     },[pageNumber])
+    
     return (
         <CCard>
             <CCardHeader>
@@ -143,6 +144,7 @@ const AllOffers = () => {
                                 <tr>
                                     <th><CFormCheck  id="flexCheckDefault" /></th>
                                     <th>Offer ID</th>
+                                    <th>Image</th>
                                     <th>Title</th>
                                     <th>In Homepage ?</th>
                                     <th>Crated At</th>
@@ -163,6 +165,14 @@ const AllOffers = () => {
                                                     />
                                                 </td>
                                                 <td>{item.id}</td>
+                                                <td>
+                                                    {item.image &&
+                                                        <img src={item.image_url} 
+                                                            className="img-thumbnail" 
+                                                            style={{width:"70px",height:"70px",objectFit:"cover"}}
+                                                            alt="Description of image" width={"80"} height={'50'} />
+                                                    }                                                
+                                                </td>
                                                 <td>{item.title}</td>      
                                                 <td>{(item.is_home === 1) ? 'Yes' : 'No'}</td>      
                                                 <td>{item.created_at}</td>

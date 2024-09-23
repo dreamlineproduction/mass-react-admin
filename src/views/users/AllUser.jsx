@@ -192,16 +192,20 @@ const AllUser = () => {
                                                     </td>
                                                     
                                                     <td>{user.id}</td>
-                                                    <img src="https://greendroprecycling.com/wp-content/uploads/2017/04/GreenDrop_Station_Aluminum_Can_Pepsi.jpg" className="img-thumbnail" alt="Description of image" width={80} />
+                                                    {/* <img src="https://greendroprecycling.com/wp-content/uploads/2017/04/GreenDrop_Station_Aluminum_Can_Pepsi.jpg" className="img-thumbnail" alt="Description of image" width={80} /> */}
+
+                                                    <td>
+                                                        <img src={`https://ui-avatars.com/api/?name=${user.name}&background=random`} className="img-thumbnail" alt={user.name} width={80} />    
+                                                    </td>
                                                     <td>{user.name}</td>
                                                     <td>{user.phone}</td>
                                                     <td>{user.city}</td>
                                                     <td>{user.state}</td>
                                                     <td>{user.created_at}</td>
                                                     <td>{user.device_info ? user.device_info: 'N/A'}</td>
-                                                    <td>17 Products</td>
-                                                    <td>2500 XP</td>
-                                                    <td>12 Items</td>
+                                                    <td>0 Products</td>
+                                                    <td>0 XP</td>
+                                                    <td>0 Items</td>
                                                     <td>
                                                         {statusBadge(user.status)}
                                                     </td>

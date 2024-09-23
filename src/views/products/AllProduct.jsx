@@ -109,7 +109,6 @@ const AllProduct = () => {
         setSelectedItems([]); 
     };
 
-
     useEffect(() => {
         fetchProduct()
     }, [pageNumber])
@@ -162,7 +161,16 @@ const AllProduct = () => {
                                                         id="flexCheckDefault" 
                                                     />
                                                 </td>
-                                                <td><img src="https://greendroprecycling.com/wp-content/uploads/2017/04/GreenDrop_Station_Aluminum_Can_Pepsi.jpg" className="img-thumbnail" alt="Description of image" width={80} /></td>
+
+                                                <td>
+                                                    {product.image &&
+                                                        <img src={product.image_url} 
+                                                            className="img-thumbnail" 
+                                                            style={{width:"70px",height:"70px",objectFit:"cover"}}
+                                                            alt="Description of image" width={"15%"} />
+                                                    }
+                                                    
+                                                </td>
                                                 <td>{product.unique_id}</td>
                                                 <td>{product.name}</td>       
                                                 <td>{product.created_at}</td>

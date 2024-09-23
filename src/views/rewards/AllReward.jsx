@@ -149,6 +149,7 @@ const AllReward = () => {
                             <tr>
                                 <th><CFormCheck  id="flexCheckDefault" /></th>
                                 <th>Reward ID</th>
+                                <th>Image</th>
                                 <th>Title</th>
                                 <th>XP Required</th>
                                 <th>Created At</th>
@@ -169,6 +170,14 @@ const AllReward = () => {
                                                 />
                                             </td>
                                             <td>{item.id}</td>
+                                            <td>
+                                                {item.image &&
+                                                    <img src={item.image_url} 
+                                                        className="img-thumbnail" 
+                                                        style={{width:"70px",height:"70px",objectFit:"cover"}}
+                                                        alt="Description of image" width={"80"} height={'50'} />
+                                                }                                                
+                                            </td>
                                             <td>{item.title}</td>       
                                             <td>{item.xp_value}</td>       
                                             <td>{item.created_at}</td>
