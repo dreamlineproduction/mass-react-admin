@@ -28,7 +28,9 @@ const Dashboard = () => {
 	const [transactions,setTransaction] = useState([]);
 	const [pageNumberTransaction, setPageNumberTransaction] = useState(1);
     const [pageCountTransaction, setPageCountTransaction] = useState(0);
-	
+	const [selectedValue, setSelectedValue] = useState('');
+
+
 	// Qr Codes State
 	const [loadingQrCode,setLoadingQrCode] = useState(true);
 	const [qrCodes, setQrCode] = useState([]);
@@ -64,7 +66,12 @@ const Dashboard = () => {
 	setLoadingTransaction(true)
 
 	//--Fetch Data
-	let response = await actionFetchData(`${API_URL}/dashboard/transaction?page=${pageNumberTransaction}&perPage=${perPage}`,accessToken);
+	let finalUrl = `${API_URL}/dashboard/transaction?page=${pageNumberTransaction}&perPage=${perPage}`;
+	if(selectedValue){
+		finalUrl+=`&filter=${selectedValue}`;
+	}
+
+	let response = await actionFetchData(finalUrl,accessToken);
 	response    = await response.json();	
 	if (response.status) {
 		setTransaction(response.data.data);
@@ -73,11 +80,15 @@ const Dashboard = () => {
 	setLoadingTransaction(false)
   }
 
+  const filterTransaction = (filter) => {
+	setSelectedValue(filter)
+  }
+
   const exportTransactionToExcel = () => {
 
 	let data = transactions.map(item => {
 		return {
-			"Id":item.id,
+			"#":item.id,
 			"Referee name":item.referee.name,
 			"Join Date":item.referral.created_at,
 			"Contact":item.referral.phone,
@@ -126,7 +137,7 @@ const Dashboard = () => {
   const exportCityUserToExcel = () => {
 	let data = cityUsers.map(item => {
 		return {
-			"Id":item.id,
+			"#":item.id,
 			"City":item.city,
 			"Total User":item.total_user,
 			"Active User":item.active_users,
@@ -154,7 +165,22 @@ const Dashboard = () => {
 	setManageUi({...manageUi,loadingModal:false,selectedCity:city});
   }
 
-  console.log(manageUi);
+  const exportUserToExcel = () => {
+	let data = users.map(item => {
+		return {
+			"#":item.id,
+			"User Name":item.name,
+			"Location":item.city,
+			"Contact Number":item.phone,
+			"Install Date":item.created_at,
+			"Last Active":item.last_login,
+			"Total XP Balance":item.total_xp ? item.total_xp : 0+' xp',
+			"Total Reward Redeems":item.redeem_xp ? item.redeem_xp : 0+ ' xp'
+		}
+	})
+
+	exportToExcel(data);
+  }
 
   useEffect(() => {
 	fetchDashboard();
@@ -162,7 +188,7 @@ const Dashboard = () => {
 
   useEffect(()=>{
 	fetchTransaction();
-  },[pageNumberTransaction])
+  },[pageNumberTransaction,selectedValue])
 
   useEffect(()=>{
 	fetchQrCodes()	
@@ -270,13 +296,13 @@ const Dashboard = () => {
 					<CCol md={6}>
 					<div className='d-flex justify-content-end'>
 						<div>
-						<CFormSelect aria-label="Default select example">
-							<option disabled>Select Date</option>
-							<option value="7days">1 Week</option>
-							<option value="15days">15 Days</option>
-							<option value="30days">1 Month</option>
-							<option value="90days">3 Months</option>
-							<option value="365days">1 Year</option>
+						<CFormSelect aria-label="Default select example" defaultValue={selectedValue}  onChange={(e) => filterTransaction(e.target.value)}>
+							<option disabled value={''} >Select Date</option>
+							<option value="1_week">1 Week</option>
+							<option value="15_days">15 Days</option>
+							<option value="1_month">1 Month</option>
+							<option value="3_month">3 Months</option>
+							<option value="1_year">1 Year</option>
 						</CFormSelect>
 						</div>
 						<div>
@@ -472,6 +498,7 @@ const Dashboard = () => {
 
 	<CModal
 			visible={visible}
+			backdrop="static"
 			onClose={() => setVisible(false)}
 			aria-labelledby="DistrictModal"
 			size="xl"
@@ -552,86 +579,89 @@ const Dashboard = () => {
 		</CModal>
 
 
-			<CModal
-				visible={visible2}
-				size="xl"
-				onClick={() => {
+		<CModal
+			visible={visible2}
+			backdrop="static"
+			size="xl"
+			onClick={() => {
 				setVisible(true)
 				setVisible2(false)
-				}}
-				aria-labelledby="CityModal"
-			>
-				<CModalHeader>
-					<CModalTitle id="CityModal">{manageUi.selectedCity}</CModalTitle>
-				</CModalHeader>
+			}}
+			aria-labelledby="CityModal"
+		>
+			<CModalHeader>
+				<CModalTitle id="CityModal">{manageUi.selectedCity}</CModalTitle>
+			</CModalHeader>
 
-				{manageUi.loadingModal === true &&
-					<Loading />
-				}
+			{manageUi.loadingModal === true &&
+				<Loading />
+			}
 
-				{users.length > 0 &&  manageUi.loadingModal === false ?
-				<CModalBody>
-					<div className='d-flex justify-content-between'>
-						<div>
+			{users.length > 0 &&  manageUi.loadingModal === false ?
+			<CModalBody>
+				<div className='d-flex justify-content-between'>
+					<div>
 						Showing all users from {manageUi.selectedCity}
-						</div>
-						<div>
-							<CButton color="primary" variant="outline" className='ms-2'><CIcon icon={cilCloudDownload} /> Export as Excel</CButton>
-						</div>
 					</div>
-
-
-					<div className='city-table mt-4'>
-						<CTable bordered hover align="middle" responsive>
-							<CTableHead>
-								<CTableRow>
-								<CTableHeaderCell scope="col">#</CTableHeaderCell>
-								<CTableHeaderCell scope="col">User Name</CTableHeaderCell>
-								<CTableHeaderCell scope="col">Location</CTableHeaderCell>
-								<CTableHeaderCell scope="col">Contact Number</CTableHeaderCell>
-								<CTableHeaderCell scope="col">Install Date</CTableHeaderCell>
-								<CTableHeaderCell scope="col">Last Active</CTableHeaderCell>
-								<CTableHeaderCell scope="col">Total XP Balance</CTableHeaderCell>
-								<CTableHeaderCell scope="col">Total Reward Redeems</CTableHeaderCell>
-								</CTableRow>
-							</CTableHead>
-						<CTableBody>
-							{users.map((item) => {
-								return (<CTableRow key={item.id}>
-									<CTableHeaderCell scope="row">{item.id}</CTableHeaderCell>
-									<CTableDataCell>
-										<Link to={'/users/all-users'}>
-											{item.name}
-										</Link>
-									</CTableDataCell>
-									<CTableDataCell>									
-										<a href={`https://www.google.com/maps?q=${'26.8828672'},${'80.9467904'}`} target='_blank'>
-											Thakurganj
-										</a>
-									</CTableDataCell>
-									<CTableDataCell>+{item.phone} {`https://www.google.com/maps?q=${item.latitude},${item.longitude}`}</CTableDataCell>
-									<CTableDataCell>{item.created_at}</CTableDataCell>
-									<CTableDataCell>15th Sept 2024 at 12:50 PM</CTableDataCell>
-									<CTableDataCell>{item.total_xp ? item.total_xp : '0'} xp</CTableDataCell>
-									<CTableDataCell>{item.redeem_xp ? item.redeem_xp : '0'} xp</CTableDataCell>
-								</CTableRow>)
-							})
-							}
-							
-
-						</CTableBody>
-						</CTable>
+					<div>
+						<CButton onClick={exportUserToExcel} color="primary"  variant="outline" className='ms-2'>
+							<CIcon icon={cilCloudDownload} /> Export as Excel
+						</CButton>
 					</div>
+				</div>
 
-				</CModalBody>
-				:
-				<CModalBody>
-					<NoState 
-						message='No records found (s).'
-					/>
-				</CModalBody>
-				}
-			</CModal>
+
+				<div className='city-table mt-4'>
+					<CTable bordered hover align="middle" responsive>
+						<CTableHead>
+							<CTableRow>
+							<CTableHeaderCell scope="col">#</CTableHeaderCell>
+							<CTableHeaderCell scope="col">User Name</CTableHeaderCell>
+							<CTableHeaderCell scope="col">Location</CTableHeaderCell>
+							<CTableHeaderCell scope="col">Contact Number</CTableHeaderCell>
+							<CTableHeaderCell scope="col">Install Date</CTableHeaderCell>
+							<CTableHeaderCell scope="col">Last Active</CTableHeaderCell>
+							<CTableHeaderCell scope="col">Total XP Balance</CTableHeaderCell>
+							<CTableHeaderCell scope="col">Total Reward Redeems</CTableHeaderCell>
+							</CTableRow>
+						</CTableHead>
+					<CTableBody>
+						{users.map((item) => {
+							return (<CTableRow key={item.id}>
+								<CTableHeaderCell scope="row">{item.id}</CTableHeaderCell>
+								<CTableDataCell>
+									<Link to={'/users/all-users'}>
+										{item.name}
+									</Link>
+								</CTableDataCell>
+								<CTableDataCell>									
+									<a href={`https://www.google.com/maps?q=${item.latitude},${item.longitude}`} target='_blank'>
+										{item.city}
+									</a>
+								</CTableDataCell>
+								<CTableDataCell>+{item.phone}</CTableDataCell>
+								<CTableDataCell>{item.created_at}</CTableDataCell>
+								<CTableDataCell>{item.last_login}</CTableDataCell>
+								<CTableDataCell>{item.total_xp ? item.total_xp : '0'} xp</CTableDataCell>
+								<CTableDataCell>{item.redeem_xp ? item.redeem_xp : '0'} xp</CTableDataCell>
+							</CTableRow>)
+						})
+						}
+						
+
+					</CTableBody>
+					</CTable>
+				</div>
+
+			</CModalBody>
+			:
+			<CModalBody>
+				<NoState 
+					message='No records found (s).'
+				/>
+			</CModalBody>
+			}
+		</CModal>
 
     </>
   )
