@@ -63,7 +63,7 @@ const _nav = [
   //   name: 'Report',
   //   to: '/theme/typography',
   //   icon: <CIcon icon={cilBarChart} customClassName="nav-icon" />,
-  // },
+  // }, Edit
 
   {
     component: CNavTitle,
