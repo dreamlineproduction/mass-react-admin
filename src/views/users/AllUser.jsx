@@ -195,7 +195,12 @@ const AllUser = () => {
                                                     {/* <img src="https://greendroprecycling.com/wp-content/uploads/2017/04/GreenDrop_Station_Aluminum_Can_Pepsi.jpg" className="img-thumbnail" alt="Description of image" width={80} /> */}
 
                                                     <td>
-                                                        <img src={`https://ui-avatars.com/api/?name=${user.name}&background=random`} className="img-thumbnail" alt={user.name} width={80} />    
+                                                        {user.image ?
+                                                            <img src={user.image_url} className="img-thumbnail" alt={user.name} width={80} />    
+                                                            :
+                                                            <img src={`https://ui-avatars.com/api/?name=${user.name}&background=random`} className="img-thumbnail" alt={user.name} width={80} />    
+                                                        }
+                                                        
                                                     </td>
                                                     <td>{user.name}</td>
                                                     <td>{user.phone}</td>
@@ -218,7 +223,7 @@ const AllUser = () => {
                                                                 Edit
                                                             </Link>
                                                             <CDropdownItem onClick={() => changeStatus(user.id)}>
-                                                                {user.status === 1 ? 'Block' : 'Active' }
+                                                                {user.status === 1 ? 'Inactive' : 'Active' }
                                                             </CDropdownItem>
                                                             <CDropdownItem className="text-danger" onClick={() =>  deleteUser(user.id)}>Delete</CDropdownItem>
                                                         </CDropdownMenu>

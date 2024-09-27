@@ -190,7 +190,7 @@ const AllReward = () => {
                                                 <CDropdownMenu>                                                    
                                                     <Link className="dropdown-item" to={`/rewards/edit-reward/${item.id}`}>Edit</Link>
                                                     <CDropdownItem onClick={() => changeStatus(item.id)}>
-                                                        {item.status === 1 ? 'Block' : 'Active' }
+                                                        {item.status === 1 ? 'Inactive' : 'Active' }
                                                     </CDropdownItem>
                                                     <CDropdownItem className="text-danger" onClick={() =>  deleteReward(item.id)}>Delete</CDropdownItem>
                                                 </CDropdownMenu>

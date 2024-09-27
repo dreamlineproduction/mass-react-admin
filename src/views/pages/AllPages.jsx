@@ -106,7 +106,7 @@ const AllPages = () => {
                                                     <CDropdownMenu>                                                    
                                                         <Link className="dropdown-item" to={`/pages/edit-page/${item.id}`}>Edit</Link>
                                                         <CDropdownItem onClick={() => changeStatus(item.id)}>
-                                                            {item.status === 1 ? 'Block' : 'Active' }
+                                                            {item.status === 1 ? 'Inactive' : 'Active' }
                                                         </CDropdownItem>
                                                     </CDropdownMenu>
                                                 </CDropdown>

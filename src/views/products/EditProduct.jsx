@@ -60,11 +60,20 @@ const EditProduct = () => {
     }
 
 
-    const updateVideoPreview = (event) => {
-
-        const input = (event) ? event.target.value : event;
+    const updateVideoPreview = (event,ytube = '') => {
+        let  input = event.target.value
         
         const match = input.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+
+        if (match) {
+            setPreviewVideo(match[1])
+        } else {
+            setPreviewVideo(null)
+        }
+    }
+
+    const youTubePreview = (youtubeUrl) => {
+        const match = youtubeUrl.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
 
         if (match) {
             setPreviewVideo(match[1])
@@ -117,7 +126,7 @@ const EditProduct = () => {
             setImage(data.data.image_url)   
             setLoading(false);
             if(data.data.video_url){
-                updateVideoPreview(data.data.video_url)
+                youTubePreview(data.data.video_url)
             }           
             slugRef.current.value = data.data.slug;
         }

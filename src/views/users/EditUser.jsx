@@ -150,6 +150,7 @@ const EditUser = () => {
                                 name="phone"
                                 floatingLabel="Phone Number"
                                 placeholder="Enter phone number" 
+                                readOnly
                             />
                             <p className="invalid-feedback d-block">{errors.phone?.message}</p>
                         </CCol>

@@ -14,7 +14,7 @@ export const statusBadge = (status) => {
     if(status === 1){
         return (<span className="badge bg-success">Active</span>)
     } else {
-        return (<span className="badge bg-danger">Block</span>)
+        return (<span className="badge bg-danger">Inactive</span>)
     }
 }
 

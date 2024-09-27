@@ -185,7 +185,7 @@ const AllOffers = () => {
                                                     <CDropdownMenu>                                                    
                                                         <Link className="dropdown-item" to={`/offers/edit-offer/${item.id}`}>Edit</Link>
                                                         <CDropdownItem onClick={() => changeStatus(item.id)}>
-                                                            {item.status === 1 ? 'Block' : 'Active' }
+                                                            {item.status === 1 ? 'Inactive' : 'Active' }
                                                         </CDropdownItem>
                                                         <CDropdownItem className="text-danger" onClick={() =>  deleteOffer(item.id)}>Delete</CDropdownItem>
                                                     </CDropdownMenu>
