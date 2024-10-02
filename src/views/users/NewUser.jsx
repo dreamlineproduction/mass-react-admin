@@ -132,7 +132,7 @@ const NewUser = () => {
                         <CCol md="4">
                             <CFormInput 
                                 {...register("email", {
-                                    required: "Please enter email.",
+                                    required: false,
                                     pattern: {
                                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                                         message: "Please enter valid email!"
@@ -217,17 +217,7 @@ const NewUser = () => {
                                 placeholder="Enter landmark" 
                             />
                             <p className="invalid-feedback d-block">{errors.near_location?.message}</p>
-                        </CCol>
-                        <CCol md="4">
-                            <CFormInput   
-                                {...register("referral_code")}                                
-                                type="text" 
-                                name="referral_code"
-                                id="referral_code" 
-                                floatingLabel="Referral Code (if any)"
-                                placeholder="Referral Code" 
-                            />                                
-                        </CCol>
+                        </CCol>                       
                         <CCol md="4">
                             <CFormFloating>
                                 <CFormSelect 

@@ -102,14 +102,7 @@ const AllReferrals = () => {
         <CCard>
             <CCardHeader>
                 <div className="d-flex justify-content-between align-items-center">
-                    <div><strong>All Referrals</strong></div>
-                    <div className="d-flex">
-                        <div>
-                            <Link to={'/referrals/new-referrals'}>
-                                <CButton color="primary" className="me-3">+ Add New Referral</CButton>
-                            </Link>
-                        </div>
-                    </div>
+                    <div><strong>All Referrals</strong></div>                    
                 </div>
             </CCardHeader>
 
@@ -144,11 +137,7 @@ const AllReferrals = () => {
                                             <td>
                                                 <CButton color="primary" variant="outline" onClick={() => handleOpenModal(item)}>
                                                     <CIcon icon={cilMagnifyingGlass} />
-                                                </CButton>
-
-                                                <CButton color="dark" variant="outline" className="ms-2">
-                                                    <CIcon icon={cilPenAlt} />
-                                                </CButton>
+                                                </CButton>                                              
                                                 <CButton color="danger" variant="outline" className="ms-2" onClick={() =>  deleteReferralCode(item.from_id)}>
                                                     <CIcon icon={cilTrash} />
                                                 </CButton>
@@ -231,7 +220,7 @@ const AllReferrals = () => {
                                                             <th scope="row">{item.referral.id || 'N/A'}</th>
                                                             <td>{item.referral.name || 'N/A'}</td>
                                                             <td>{item.referral.created_at || 'N/A'}</td>
-                                                            <td>2000XP</td>
+                                                            <td>0XP</td>
                                                             <td>{item.referral.phone || 'N/A'}</td>
                                                             <td>{'N/A'}</td>
                                                             <td>{0}XP</td>

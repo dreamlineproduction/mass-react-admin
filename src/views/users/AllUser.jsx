@@ -170,7 +170,7 @@ const AllUser = () => {
                                         <th>City</th>
                                         <th>State</th>
                                         <th>Joined date</th>
-                                        <th>Device Info</th>
+                                        <th>Referral Code</th>
                                         <th>Total Product Scanned</th>
                                         <th>XP Balance</th>
                                         <th>Total Redeemed</th>
@@ -210,16 +210,8 @@ const AllUser = () => {
                                                     <td>{user.city}</td>
                                                     <td>{user.state_str || 'N/A'}</td>
                                                     <td>{user.created_at}</td>
-                                                    {/* <td>{user.device_info ? user.device_info: 'N/A'}</td> */}
-                                                    {user.device_info ? 
-                                                        <td>
-                                                            <div>Model Name {user.device_info.model}</div>
-                                                            <div>Device Info {user.device_info.osVersion}</div>
-                                                            <div>Operating System {user.device_info.operatingSystem}</div>
-                                                        </td>
-                                                        :
-                                                        <td>N/A</td>
-                                                    }
+                                                    <td>{user.referral_code ? user.referral_code: 'N/A'}</td>
+                                                    
                                                     <td>0 Products</td>
                                                     <td>0 XP</td>
                                                     <td>0 Items</td>

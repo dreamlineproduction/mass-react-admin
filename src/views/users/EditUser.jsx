@@ -145,7 +145,7 @@ const EditUser = () => {
                                     }
                                 })}
                                 className={errors.phone && 'is-invalid'} 
-                                type="number" 
+                                type="text" 
                                 id="phone" 
                                 name="phone"
                                 floatingLabel="Phone Number"
@@ -251,6 +251,7 @@ const EditUser = () => {
                                 id="referral_code" 
                                 floatingLabel="Referral Code (if any)"
                                 placeholder="Referral Code" 
+                                readOnly
                             />                                
                         </CCol>
                         <CCol md="4">
