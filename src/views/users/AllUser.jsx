@@ -196,9 +196,12 @@ const AllUser = () => {
 
                                                     <td>
                                                         {user.image ?
-                                                            <img src={user.image_url} className="img-thumbnail" alt={user.name} width={80} />    
+                                                            <img src={user.image_url} className="img-thumbnail" alt={user.name} width={50} />    
                                                             :
-                                                            <img src={`https://ui-avatars.com/api/?name=${user.name}&background=random`} className="img-thumbnail" alt={user.name} width={80} />    
+                                                            <img 
+                                                            src={`https://ui-avatars.com/api/?name=${user.name}&background=212631&color=fff`} 
+                                                            className="img-thumbnail" 
+                                                            alt={user.name} width={50} />    
                                                         }
                                                         
                                                     </td>
@@ -207,7 +210,16 @@ const AllUser = () => {
                                                     <td>{user.city}</td>
                                                     <td>{user.state}</td>
                                                     <td>{user.created_at}</td>
-                                                    <td>{user.device_info ? user.device_info: 'N/A'}</td>
+                                                    {/* <td>{user.device_info ? user.device_info: 'N/A'}</td> */}
+                                                    {user.device_info ? 
+                                                        <td>
+                                                            <div>Model Name {user.device_info.model}</div>
+                                                            <div>Device Info {user.device_info.osVersion}</div>
+                                                            <div>Operating System {user.device_info.operatingSystem}</div>
+                                                        </td>
+                                                        :
+                                                        <td>N/A</td>
+                                                    }
                                                     <td>0 Products</td>
                                                     <td>0 XP</td>
                                                     <td>0 Items</td>
