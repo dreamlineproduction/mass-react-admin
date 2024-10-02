@@ -208,7 +208,7 @@ const AllUser = () => {
                                                     <td>{user.name}</td>
                                                     <td>{user.phone}</td>
                                                     <td>{user.city}</td>
-                                                    <td>{user.state}</td>
+                                                    <td>{user.state_str || 'N/A'}</td>
                                                     <td>{user.created_at}</td>
                                                     {/* <td>{user.device_info ? user.device_info: 'N/A'}</td> */}
                                                     {user.device_info ? 
