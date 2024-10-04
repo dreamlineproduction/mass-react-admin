@@ -111,7 +111,7 @@ export const actionDownloadPdf = (productId, batchNumber, accessToken) => {
 		});
 }
 
-export const actionImageUpload = async (file, accessToken) => {
+export const actionImageUplaod = async (file, accessToken) => {
 	try {
 		const formData = new FormData();
 		formData.append("image", file);
