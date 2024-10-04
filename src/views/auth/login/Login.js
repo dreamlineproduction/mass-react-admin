@@ -39,7 +39,7 @@ const Login = () => {
             isSubmitting
         } } = useForm({
             defaultValues: {
-                email: 'admin@admin.com',
+                email: '',
             }
         });
 
