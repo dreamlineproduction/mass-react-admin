@@ -47,7 +47,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'AllRedemptions',
+    name: 'All Redemptions',
     to: '/redemptions/all-redemptions',
     icon: <CIcon icon={cilShare} customClassName="nav-icon" />,
 
