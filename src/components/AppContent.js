@@ -22,7 +22,6 @@ import EditOffer from '../views/offers/EditOffer';
 import AllPages from '../views/pages/AllPages';
 import EditPage from '../views/pages/EditPage';
 import AllReferrals from '../views/referrals/AllReferrals';
-import NewReferrals from '../views/referrals/NewReferrals';
 
 const AppContent = () => {
     return (
@@ -135,14 +134,7 @@ const AppContent = () => {
                         }
                     />
 
-                    <Route
-                        path='/referrals/new-referrals'
-                        element={
-                            <RequireAuth>
-                                <NewReferrals />
-                            </RequireAuth>
-                        }
-                    />
+                    
                     <Route
                         path='/offers/edit-offer/:id'
                         element={

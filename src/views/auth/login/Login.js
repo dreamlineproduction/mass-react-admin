@@ -45,7 +45,7 @@ const Login = () => {
 
     const submitHandler = useCallback(async (data) => {
         const toastId = toast.loading("Please wait...")
-        try{
+        try {
             await fetch(`${API_URL}/login`, {
                 headers: {
                     "Content-Type": "application/json",
@@ -53,36 +53,36 @@ const Login = () => {
                 method: "POST",
                 body: JSON.stringify(data),
             })
-            .then(res => res.json())
-            .then(response => {
-                if (response.status) {
-                    toast.success('Logged in ', {
-                        id: toastId
-                    });
-    
-                    let userInfo = {
-                        accessToken: response.token,
-                        name: response.data.name,
-                        userId: response.data.id
+                .then(res => res.json())
+                .then(response => {
+                    if (response.status) {
+                        toast.success('Logged in ', {
+                            id: toastId
+                        });
+
+                        let userInfo = {
+                            accessToken: response.token,
+                            name: response.data.name,
+                            userId: response.data.id
+                        }
+
+                        localStorage.setItem('user-info', JSON.stringify(userInfo));
+                        login(userInfo)
+                        reset();
+                        navigate(redirectPath, { replace: true });
+                    } else {
+                        toast.error(response.message, {
+                            id: toastId
+                        });
                     }
-    
-                    localStorage.setItem('user-info', JSON.stringify(userInfo));
-                    login(userInfo)
-                    reset();
-                    navigate(redirectPath, { replace: true });
-                } else {
-                    toast.error(response.message, {
-                        id: toastId
-                    });
-                }
-            })
-            .catch((e) =>
-                toast.error(e)
-            )
-        } catch(error){
+                })
+                .catch((e) =>
+                    toast.error(e)
+                )
+        } catch (error) {
             toast.error(error)
         }
-        
+
     })
 
     const showPassword = () => {
@@ -108,7 +108,7 @@ const Login = () => {
                 />
                 <CContainer>
                     <CRow className="justify-content-center">
-                        <CCol md="8">
+                        <CCol md="4">
                             <CCardGroup>
                                 <CCard className="p-4">
                                     <CCardBody>
@@ -163,16 +163,16 @@ const Login = () => {
                                                     placeholder="Enter password"
                                                 />
                                                 <p className="invalid-feedback d-block">{errors.password?.message}</p>
-                                            </CInputGroup>                                           
-                                            <CRow>                                                
+                                            </CInputGroup>
+                                            <CRow>
                                                 <CCol xs="6">
                                                     <div className='d-grid'>
-                                                    <CButton
-                                                        color="primary"
-                                                        disabled={isSubmitting}
-                                                        type="submit" >
+                                                        <CButton
+                                                            color="primary"
+                                                            disabled={isSubmitting}
+                                                            type="submit" >
                                                             Login
-                                                    </CButton>
+                                                        </CButton>
                                                     </div>
                                                 </CCol>
                                                 <CCol xs="6" className="text-end">
