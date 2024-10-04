@@ -47,8 +47,8 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Redemptions',
-    to: '/theme/typography',
+    name: 'AllRedemptions',
+    to: '/redemptions/all-redemptions',
     icon: <CIcon icon={cilShare} customClassName="nav-icon" />,
 
   },
@@ -58,12 +58,7 @@ const _nav = [
     to: '/referrals/all-referrals',
     icon: <CIcon icon={cilLan} customClassName="nav-icon" />,
   },
-  // {
-  //   component: CNavItem,
-  //   name: 'Report',
-  //   to: '/theme/typography',
-  //   icon: <CIcon icon={cilBarChart} customClassName="nav-icon" />,
-  // }, Edit
+
 
   {
     component: CNavTitle,

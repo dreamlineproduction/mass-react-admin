@@ -22,6 +22,7 @@ import EditOffer from '../views/offers/EditOffer';
 import AllPages from '../views/pages/AllPages';
 import EditPage from '../views/pages/EditPage';
 import AllReferrals from '../views/referrals/AllReferrals';
+import AllRedemptions from '../views/redemptions/AllRedemptions';
 
 const AppContent = () => {
     return (
@@ -134,7 +135,7 @@ const AppContent = () => {
                         }
                     />
 
-                    
+
                     <Route
                         path='/offers/edit-offer/:id'
                         element={
@@ -177,6 +178,15 @@ const AppContent = () => {
                         element={
                             <RequireAuth>
                                 <QrsDetail />
+                            </RequireAuth>
+                        }
+                    />
+
+                    <Route
+                        path='/redemptions/all-redemptions'
+                        element={
+                            <RequireAuth>
+                                <AllRedemptions />
                             </RequireAuth>
                         }
                     />

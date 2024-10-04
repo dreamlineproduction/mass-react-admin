@@ -4,14 +4,14 @@ import * as XLSX from 'xlsx';
 export const API_URL = import.meta.env.REACT_APP_API_URL;
 
 export const createSlug = (text = '') => {
-    if(text) {
+    if (text) {
         return text.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
-    }    
+    }
     return
 }
 
 export const statusBadge = (status) => {
-    if(status === 1){
+    if (status === 1) {
         return (<span className="badge bg-success">Active</span>)
     } else {
         return (<span className="badge bg-danger">Inactive</span>)
@@ -25,7 +25,7 @@ export const getRandomInt = (min, max) => {
 }
 
 export const exportToExcel = (data = []) => {
-    if(data === undefined || data === null || data.length === 0){
+    if (data === undefined || data === null || data.length === 0) {
         throw new Error('The variable is undefined or null.');
     }
 
@@ -43,6 +43,6 @@ export const exportToExcel = (data = []) => {
     // Create a Blob and save the file
     const file = new Blob([excelBuffer], { type: 'application/octet-stream' });
 
-	const fileName = getRandomInt(1,99999);
-    saveAs(file,`${fileName}-data.xlsx`);
+    const fileName = getRandomInt(1, 99999);
+    saveAs(file, `${fileName}-data.xlsx`);
 }

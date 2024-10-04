@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 
-import { CSpinner} from '@coreui/react'
+import { CSpinner } from '@coreui/react'
 import './scss/style.scss'
 
 // Containers
