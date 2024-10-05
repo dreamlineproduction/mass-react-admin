@@ -24,14 +24,15 @@ export default defineConfig(() => {
     },
     optimizeDeps: {
       force: true,
+      include: ['svgmap'], // Force Vite to optimize svgMap
       esbuildOptions: {
         loader: {
           '.js': 'jsx',
         },
       },
     },
-    envPrefix:"REACT_APP_",
-    plugins: [react(),envCompatible()],
+    envPrefix: "REACT_APP_",
+    plugins: [react(), envCompatible()],
     resolve: {
       alias: [
         {
