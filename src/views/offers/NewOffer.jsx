@@ -44,8 +44,9 @@ const NewOffer = () => {
         const toastId = toast.loading("Please wait...")
         const file = event.target.files[0]
         if (file) {
-            let response = await actionImageUplaod(file,accessToken);
+            let response = await actionImageUplaod(file,accessToken);            
             response    = await response.json();
+          
             if(response.status ){
                 setImageId(response.image_id)
                 toast.success(response.message, {

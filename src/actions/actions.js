@@ -129,8 +129,9 @@ export const actionImageUplaod = async (file, accessToken) => {
 			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
 
+		return response;
 		// Return the parsed response JSON
-		return await response.json();
+		//return await response.json();
 	} catch (error) {
 		console.error('Failed to upload image:', error.message || error);
 	}

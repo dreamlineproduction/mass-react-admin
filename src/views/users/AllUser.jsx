@@ -152,7 +152,7 @@ const AllUser = () => {
                 </CCardHeader>
 
                 <CCardBody>
-                    <div> 
+                    <div className="table-responsive"> 
                         {isLoading && 
                             <Loading />
                         } 
@@ -166,6 +166,7 @@ const AllUser = () => {
                                         <th>ID</th>
                                         <th>User Image</th>
                                         <th>Full Name</th>
+                                        <th>User Type</th>
                                         <th>Phone Number</th>
                                         <th>City</th>
                                         <th>State</th>
@@ -206,6 +207,7 @@ const AllUser = () => {
                                                         
                                                     </td>
                                                     <td>{user.name}</td>
+                                                    <td>{user.role.name}</td>
                                                     <td>{user.phone}</td>
                                                     <td>{user.city}</td>
                                                     <td>{user.state_str || 'N/A'}</td>

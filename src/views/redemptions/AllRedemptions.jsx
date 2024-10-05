@@ -12,17 +12,7 @@ const AllRedemptions = () => {
     <CCard>
       <CCardHeader>
         <div className="d-flex justify-content-between align-items-center">
-          <div><strong>All Redemptions</strong></div>
-          <div className="d-flex">
-            <div>
-              <div>
-                <Link to={'/rewards/new-reward'}>
-                  <CButton color="primary" className="me-3">+ Add New Reward</CButton>
-                </Link>
-              </div>
-            </div>
-
-          </div>
+          <div><strong>All Redemptions</strong></div>         
         </div>
       </CCardHeader>
 

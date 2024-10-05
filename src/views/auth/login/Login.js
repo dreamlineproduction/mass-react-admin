@@ -24,6 +24,7 @@ import AuthContext from '../../../context/auth';
 import { API_URL } from '../../../config';
 
 const Login = () => {
+
     const { AuthCheck, login } = useContext(AuthContext)
     const navigate = useNavigate()
     const location = useLocation()
