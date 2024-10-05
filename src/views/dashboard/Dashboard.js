@@ -242,7 +242,6 @@ const Dashboard = () => {
 							<CCol xs={4} className='p-0'><span className='inactive-signal'></span>In transit {dashboard.total_transit_count} </CCol>
 							</CRow>
 						</CContainer>
-						{/* <CButton color="primary" href="#">All Redemption</CButton> */}
 						<Link className='btn btn-primary' to={'#'}>All Redemption</Link>
 				</CCardBody>
 			</CCard>
@@ -252,11 +251,11 @@ const Dashboard = () => {
 			<CCard>
 				<CCardHeader>Offers</CCardHeader>
 					<CCardBody>
-					<h1>3</h1>
+					<h1>{dashboard.active_offer_count}</h1>
 					<CContainer>
 						<CRow className="justify-content-start dash-card-wrap mb-3 mt-2">
-						<CCol xs={4} className='p-0'><span className='active-signal'></span> Active 2</CCol>
-						<CCol xs={4} className='p-0'><span className='inactive-signal'></span> Inactive 10</CCol>
+						<CCol xs={4} className='p-0'><span className='active-signal'></span> Active {dashboard.active_offer_count}</CCol>
+						<CCol xs={4} className='p-0'><span className='inactive-signal'></span> Inactive {dashboard.inactive_offer_count}</CCol>
 						</CRow>
 					</CContainer>
 					<Link className='btn btn-primary' to={'/offers/all-offers'}>All Offers</Link>

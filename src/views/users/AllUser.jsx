@@ -144,9 +144,7 @@ const AllUser = () => {
                                     <CButton color="primary" className="me-3">+ Add New User</CButton>
                                 </Link>
                             </div>
-                            {/* <div>
-                                <CFormInput  type="text" placeholder="Search..." />
-                            </div> */}
+                           
                         </div>
                     </div>
                 </CCardHeader>
