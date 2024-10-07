@@ -24,7 +24,6 @@ const NewOffer = () => {
         register, 
         handleSubmit, 
         reset,
-        watch,
         formState: { 
           errors,
           isSubmitting

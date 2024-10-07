@@ -1,13 +1,15 @@
 import { CButton, CCard, CCardBody, CCol, CForm, CFormCheck, CFormFloating, CFormInput } from '@coreui/react';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState,useCallback } from 'react';
 import Header from '../../components/form/Header';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useForm } from 'react-hook-form';
-import { actionFetchData } from '../../actions/actions';
+import { actionFetchData, actionPostData } from '../../actions/actions';
 import { API_URL, createSlug } from '../../config';
 import { useNavigate, useParams } from 'react-router-dom';
 import AuthContext from '../../context/auth';
+import toast from 'react-hot-toast';
+import LoadingButton from '../../components/LoadingButton';
 
 const EditPage = () => {
     const params = useParams()
@@ -17,12 +19,14 @@ const EditPage = () => {
 
     const slugRef = useRef();
     const [isLoading,setLoading] = useState(true);
+    const [description, setDescription] = useState('');
+
+
 
     const { 
         register, 
         handleSubmit, 
         reset,
-        watch,
         formState: { 
           errors,
           isSubmitting
@@ -46,10 +50,37 @@ const EditPage = () => {
         
         if(data.status){
             reset(data.data); 
+            setDescription(data.data.description);
             setLoading(false);
             slugRef.current.value = data.data.slug;
         }
     }
+
+    // Update Offer
+    const submitHandler = useCallback(async (data) => {   
+        const slug = slugRef.current.value;      
+        let postObject = {...data,description,slug}
+        const toastId = toast.loading("Please wait...")
+
+        try{          
+            let response =  await actionPostData(`${API_URL}/pages/${params.id}`,accessToken,postObject,'PUT');
+            response    = await response.json();
+
+            if (response.status) {
+                toast.success(response.message, {
+                    id: toastId
+                });
+                reset();
+                navigate('/pages/all-pages');
+            } else {
+                toast.error('server error', {
+                    id: toastId
+                });
+            }                
+        } catch(error){
+            toast.error(error)
+        }
+    })
 
     useEffect(() => {
         fetchPage();
@@ -62,7 +93,9 @@ const EditPage = () => {
                 url={'/pages/all-pages'}
             />           
             <CCardBody>
-                <CForm className="row g-3 needs-validation">
+                {isLoading && <div className="cover-body"></div>}    
+
+                <CForm className="row g-3 needs-validation" onSubmit={handleSubmit(submitHandler)}>
                     <CCol md="12">
                         <CFormFloating>
                             <CFormInput 
@@ -109,23 +142,18 @@ const EditPage = () => {
                                 theme="snow" 
                                 toolbar="essential"  
                                 placeholder="Enter page content" 
+                                style={{ height: '100%' }}
+                                value={description}
+                                onChange={setDescription}
                             />
                         </div>
                     </CCol>
-
-
-                    <CCol md="12">
-                        <CFormCheck inline type="radio" name="inlineRadioOptions" id="inlineCheckbox1" value="active"
-                            label="Active" />
-                        <CFormCheck inline type="radio" name="inlineRadioOptions" id="inlineCheckbox2" value="inactive"
-                            label="Inactive" />
-                    </CCol>
-
-
-
-
                     <CCol xs="12">
-                        <CButton color="primary" type="submit">Update Page</CButton>
+                        {isSubmitting ? 
+                            <LoadingButton />
+                        :
+                            <CButton color="primary" type="submit" >Update Page</CButton>
+                        }
                     </CCol>
                 </CForm>
             </CCardBody>

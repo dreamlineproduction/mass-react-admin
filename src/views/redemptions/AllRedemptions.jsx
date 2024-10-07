@@ -1,20 +1,51 @@
 import { CButton, CCard, CCardBody, CCardHeader, CForm, CTable, CFormTextarea, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CFormInput, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CFormCheck, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState,useCallback } from "react";
 import AuthContext from "../../context/auth";
 import { API_URL } from "../../config";
 import Loading from "../../components/Loading";
 import NoState from "../../components/NoState";
 import Pagination from "../../components/Pagination";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
+import { actionPostData } from "../../actions/actions";
+import { useForm } from "react-hook-form";
+import LoadingButton from "../../components/LoadingButton";
 
 const AllRedemptions = () => {
 
 	const { Auth } = useContext(AuthContext)
 	const perPage = 20;
 	const accessToken = Auth('accessToken');
+
+	const { 
+        register, 
+        handleSubmit, 
+        reset,
+        formState: { 
+          errors,
+          isSubmitting
+        } 
+    } = useForm();
+
+	const { 
+        register:registerForm2, 
+        handleSubmit:handleSubmitForm2, 
+        reset:reset2,
+        formState: { 
+          errors:errors2,
+          isSubmitting:isSubmitting2
+        } 
+    } = useForm();
+
+
+	const [singleOrder, setSingleOrder] = useState(null);
+
 	const [orders, setOrder] = useState([])
 	const [manageUI, setManageUI] = useState({
 		showDispatchedModel: false,
-		showDeclinedModel: false
+		showDeclinedModel: false,
+		id:0,
+		order_id:0,
 	})
 
 	const [pageNumber, setPageNumber] = useState(1);
@@ -47,6 +78,86 @@ const AllRedemptions = () => {
 			toast.error(error)
 		}
 	}
+
+	const updateOrderStatus = async (id,postData) => {
+
+		const toastId = toast.loading("Please wait...")
+        let findedIndex = orders.findIndex(item => item.id === id);
+
+        try {
+            let response = await actionPostData(`${API_URL}/orders/change-status`, accessToken,postData);
+            response = await response.json();
+
+            if (response.status) {
+                orders[findedIndex].order.status = postData.status;
+        		setOrder([...orders]);
+                toast.success(response.message, {
+                    id: toastId
+                });
+
+            }
+        } catch (error) {
+            toast.error(error)
+        }
+	}
+
+	// Change Status
+	const changeStatus =  (id,order_id) => {
+		Swal.fire({
+            title: "Deliver Confirmation",
+            text: "Are you sure you want to delivered this?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Deliver it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+				// Status 3 Delivered 
+				let postObject = {status:3,order_id}
+                updateOrderStatus(id,postObject);
+            }
+        });
+
+       
+    }
+
+
+	// Create Offer
+    const submitHandler = useCallback(async (data) => {   
+        let postObject = {...data,
+			status:2,
+			order_id:manageUI.order_id,
+		};		
+
+		await updateOrderStatus(manageUI.id,postObject);  
+		
+		setManageUI({...manageUI,
+			showDispatchedModel:false,
+			id:0,
+			order_id:0
+		});
+		
+    })
+
+
+    const submitHandler2 = useCallback(async (data) => {   
+        let postObject = {...data,
+			status:4,
+			order_id:manageUI.order_id,
+		};		
+
+		await updateOrderStatus(manageUI.id,postObject);  
+		
+		setManageUI({...manageUI,
+			showDeclinedModel:false,
+			id:0,
+			order_id:0
+		});
+		setSingleOrder(null);
+		
+    })
+
 
 	useEffect(() => {
 		fetchOrder();
@@ -116,15 +227,26 @@ const AllRedemptions = () => {
 													{item?.order?.updated_at ? item.order.updated_at : 'N/A'}
 												</td>
 												<td>
-													<CDropdown>
-														<CDropdownToggle color="dark">More Options</CDropdownToggle>
+													{item.order.status == 1 ?
+													<CDropdown >
+														<CDropdownToggle  color="dark">More Options</CDropdownToggle>
 														<CDropdownMenu>
 															<button
 																type="button"
-																onClick={() => setManageUI({ ...manageUI, showDispatchedModel: true })} className="dropdown-item">
+																onClick={() => {
+																	reset()
+																	setManageUI({ ...manageUI, 
+																		showDispatchedModel: true,
+																		id:item.id,
+																		order_id:item.order_id 
+																	})
+																	}
+																} 
+																className="dropdown-item">
 																Dispatched
 															</button>
 															<button
+																onClick={()=> changeStatus(item.id,item.order_id)}
 																type="button"
 																className="dropdown-item">
 																Delivered
@@ -132,11 +254,23 @@ const AllRedemptions = () => {
 															<button
 																style={{ color: "#e55353", }}
 																type="button"
-																onClick={() => setManageUI({ ...manageUI, showDeclinedModel: true })} className="dropdown-item">
+																onClick={() => {
+																	reset2()
+																	setSingleOrder(item)
+																	setManageUI({ ...manageUI, 
+																		showDeclinedModel: true,
+																		id:item.id,
+																		order_id:item.order_id  
+																	})}
+																} 
+																className="dropdown-item">
 																Declined
 															</button>
 														</CDropdownMenu>
 													</CDropdown>
+													:
+													<CButton disabled type="submit" color="dark">More Options</CButton>
+													}
 												</td>
 											</tr>
 										)
@@ -173,41 +307,68 @@ const AllRedemptions = () => {
 				alignment="center"
 
 				visible={manageUI.showDispatchedModel}
-				onClose={() => setManageUI({ ...manageUI, showDispatchedModel: false })}
+				onClose={() => setManageUI({ ...manageUI, 
+						showDispatchedModel: false,
+						id:0,
+						order_id:0 
+				})}
 				aria-labelledby="DispatchedModelTitle"
 			>
+				<CForm className="sdas" onSubmit={handleSubmit(submitHandler)}>
 				<CModalHeader>
 					<CModalTitle id="DispatchedModelTitle">Dispatch Product Name </CModalTitle>
 				</CModalHeader>
 				<CModalBody>
-					<CForm>
-						<CFormInput className="mb-3"
+					<div>
+						<CFormInput 
+							{...register("tracking_number", {
+								required: "Please enter tracking number",								
+							})}
+							className={`${errors.tracking_number && 'is-invalid'}` } 
 							type="text"
-							id="exampleFormControlInput1"
+							id="tracking_number"
+							name="tracking_number"
 							label="Tracking Number"
 							placeholder="Enter tracking number"
 							aria-describedby="exampleFormControlInputHelpInline"
 						/>
-						<CFormInput className="mb-3"
+						<p className="invalid-feedback d-block">{errors.tracking_number?.message}</p>
+						<CFormInput 
+							{...register("delivery_partner", {
+								required: "Please enter tracking partner name",								
+							})}
+							className={`${errors.delivery_partner && 'is-invalid'}` } 
 							type="text"
-							id="exampleFormControlInput1"
+							id="delivery_partner"
+							name="delivery_partner"
 							label="Tracking Partner"
 							placeholder="Enter tracking partner name"
 							aria-describedby="exampleFormControlInputHelpInline"
 						/>
-						<CFormInput className="mb-3"
+						<p className="invalid-feedback d-block">{errors.delivery_partner?.message}</p>
+						<CFormInput
+							{...register("tracking_url", {
+								required: false,								
+							})}
+							className={`${errors.tracking_url && 'is-invalid'}` } 
 							type="url"
-							id="exampleFormControlInput1"
+							id="tracking_url"
+							name="tracking_url"
 							label="Tracking URL (if any)"
-							placeholder="Enter tracking url"
+							placeholder="https://example.com"
 							aria-describedby="exampleFormControlInputHelpInline"
 						/>
-					</CForm>
+						<p className="invalid-feedback d-block">{errors.tracking_url?.message}</p>
+					</div>
 				</CModalBody>
 				<CModalFooter>
-
-					<CButton color="primary">Submit</CButton>
+					{isSubmitting ? 
+						<LoadingButton />
+						:
+						<CButton color="primary" type="submit" >Submit</CButton>
+					}
 				</CModalFooter>
+				</CForm>
 			</CModal>
 
 
@@ -216,55 +377,69 @@ const AllRedemptions = () => {
 				backdrop="static"
 				alignment="center"
 				visible={manageUI.showDeclinedModel}
-				onClose={() => setManageUI({ ...manageUI, showDeclinedModel: false })}
+				onClose={() => setManageUI({ ...manageUI, 
+					showDeclinedModel: false,
+					id:0,
+					order_id:0  
+				})}
 				aria-labelledby="DeclinedModelTitle"
 			>
-				<CModalHeader>
-					<CModalTitle id="DeclinedModelTitle">Declined Order</CModalTitle>
-				</CModalHeader>
-				<CModalBody>
-					<div>
+				<CForm className="sdas" onSubmit={handleSubmitForm2(submitHandler2)}>
+					<CModalHeader>
+						<CModalTitle id="DeclinedModelTitle">Declined Order</CModalTitle>
+					</CModalHeader>
+					<CModalBody>
+						<div>
+							<CTable bordered borderColor="primary">
+								{singleOrder && 
+									<CTableBody>
+										<CTableRow>
+											<CTableHeaderCell scope="row">Order Number:</CTableHeaderCell>
+											<CTableDataCell>{singleOrder.order_id}</CTableDataCell>
 
-						<CTable bordered borderColor="primary">
-							<CTableBody>
-								<CTableRow>
-									<CTableHeaderCell scope="row">Order Number:</CTableHeaderCell>
-									<CTableDataCell>548787845</CTableDataCell>
+										</CTableRow>
+										<CTableRow>
+											<CTableHeaderCell scope="row">Item:</CTableHeaderCell>
+											<CTableDataCell>{singleOrder.reward.title}</CTableDataCell>
 
-								</CTableRow>
-								<CTableRow>
-									<CTableHeaderCell scope="row">Item:</CTableHeaderCell>
-									<CTableDataCell>iPhone 16</CTableDataCell>
+										</CTableRow>
+										<CTableRow>
+											<CTableHeaderCell scope="row">Customer Name:</CTableHeaderCell>
+											<CTableDataCell>{singleOrder.user.name}</CTableDataCell>
 
-								</CTableRow>
-								<CTableRow>
-									<CTableHeaderCell scope="row">Customer Name:</CTableHeaderCell>
-									<CTableDataCell>Ayan Mukhopadhyay</CTableDataCell>
+										</CTableRow>
+										<CTableRow>
+											<CTableHeaderCell scope="row">Requested On:</CTableHeaderCell>
+											<CTableDataCell>{singleOrder.order.order_date}</CTableDataCell>
 
-								</CTableRow>
-								<CTableRow>
-									<CTableHeaderCell scope="row">Requested On:</CTableHeaderCell>
-									<CTableDataCell>06-10-2024 at 7:56PM</CTableDataCell>
-
-								</CTableRow>
-							</CTableBody>
-						</CTable>
-
-						<CForm>
-							<CFormTextarea
-								id="exampleFormControlTextarea1"
-								label="Reason"
-								rows={3}
-								text="Enter the reason why you are declining this order."
-							></CFormTextarea>
-						</CForm>
-
-					</div>
-				</CModalBody>
-				<CModalFooter>
-
-					<CButton color="primary">Update Status</CButton>
-				</CModalFooter>
+										</CTableRow>
+									</CTableBody>
+								}
+								
+							</CTable>
+								<CFormTextarea
+									{...registerForm2("decline_reason", {
+										required: "Please enter reason",								
+									})}
+									className={`${errors2.decline_reason && 'is-invalid'}` } 
+									id="decline_reason"
+									name="decline_reason"
+									label="Reason"
+									rows={3}
+									text="Enter the reason why you are declining this order."
+								></CFormTextarea>
+								<p className="invalid-feedback d-block">{errors2.decline_reason?.message}</p>
+						</div>
+					</CModalBody>
+					<CModalFooter>
+						{isSubmitting2 ? 
+							<LoadingButton />
+							:
+							<CButton type="submit" color="primary">Update Status</CButton>
+						}
+						
+					</CModalFooter>
+				</CForm>
 			</CModal>
 		</CCard>
 

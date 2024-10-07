@@ -25,7 +25,6 @@ const EditOffer = () => {
         register, 
         handleSubmit, 
         reset,
-        watch,
         formState: { 
           errors,
           isSubmitting
