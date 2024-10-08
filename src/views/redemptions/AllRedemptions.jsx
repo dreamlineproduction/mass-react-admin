@@ -225,51 +225,71 @@ const AllRedemptions = () => {
 												</td>
 												<td>
 													{item?.order?.updated_at ? item.order.updated_at : 'N/A'}
+													{
+														item.order.status
+													}
 												</td>
 												<td>
-													{item.order.status == 1 ?
-													<CDropdown >
-														<CDropdownToggle  color="dark">More Options</CDropdownToggle>
-														<CDropdownMenu>
-															<button
-																type="button"
-																onClick={() => {
-																	reset()
-																	setManageUI({ ...manageUI, 
-																		showDispatchedModel: true,
-																		id:item.id,
-																		order_id:item.order_id 
-																	})
-																	}
-																} 
-																className="dropdown-item">
-																Dispatched
-															</button>
-															<button
-																onClick={()=> changeStatus(item.id,item.order_id)}
-																type="button"
-																className="dropdown-item">
-																Delivered
-															</button>
-															<button
-																style={{ color: "#e55353", }}
-																type="button"
-																onClick={() => {
-																	reset2()
-																	setSingleOrder(item)
-																	setManageUI({ ...manageUI, 
-																		showDeclinedModel: true,
-																		id:item.id,
-																		order_id:item.order_id  
-																	})}
-																} 
-																className="dropdown-item">
-																Declined
-															</button>
-														</CDropdownMenu>
-													</CDropdown>
-													:
-													<CButton disabled type="submit" color="dark">More Options</CButton>
+													{item.order.status === 1 &&
+														<CDropdown >
+															<CDropdownToggle  color="dark">More Options</CDropdownToggle>
+															<CDropdownMenu>
+																<button
+																	type="button"
+																	onClick={() => {
+																		reset()
+																		setManageUI({ ...manageUI, 
+																			showDispatchedModel: true,
+																			id:item.id,
+																			order_id:item.order_id 
+																		})
+																		}
+																	} 
+																	className="dropdown-item">
+																	Dispatched
+																</button>
+																<button
+																	onClick={()=> changeStatus(item.id,item.order_id)}
+																	type="button"
+																	className="dropdown-item">
+																	Delivered
+																</button>
+																<button
+																	style={{ color: "#e55353", }}
+																	type="button"
+																	onClick={() => {
+																		reset2()
+																		setSingleOrder(item)
+																		setManageUI({ ...manageUI, 
+																			showDeclinedModel: true,
+																			id:item.id,
+																			order_id:item.order_id  
+																		})}
+																	} 
+																	className="dropdown-item">
+																	Declined
+																</button>
+															</CDropdownMenu>
+														</CDropdown>
+													}
+
+													{item.order.status === 2 &&
+														<CDropdown >
+															<CDropdownToggle  color="dark">More Options</CDropdownToggle>
+															<CDropdownMenu>
+																
+																<button
+																	onClick={()=> changeStatus(item.id,item.order_id)}
+																	type="button"
+																	className="dropdown-item">
+																	Delivered
+																</button>																
+															</CDropdownMenu>
+														</CDropdown>
+													}
+
+													{(item.order.status === 3   || item.order.status === 4) &&
+														<CButton disabled type="button" color="dark">More Options</CButton>																										
 													}
 												</td>
 											</tr>
