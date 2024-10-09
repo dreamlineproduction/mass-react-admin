@@ -1,5 +1,5 @@
 import { CButton, CCard, CCardBody, CCol, CForm, CFormCheck, CFormFloating, CFormInput } from '@coreui/react';
-import React, { useContext, useEffect, useRef, useState,useCallback } from 'react';
+import React, { useContext, useEffect, useRef, useState, useCallback } from 'react';
 import Header from '../../components/form/Header';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -13,43 +13,43 @@ import LoadingButton from '../../components/LoadingButton';
 
 const EditPage = () => {
     const params = useParams()
-    const { Auth } =  useContext(AuthContext)
+    const { Auth } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
 
     const slugRef = useRef();
-    const [isLoading,setLoading] = useState(true);
+    const [isLoading, setLoading] = useState(true);
     const [description, setDescription] = useState('');
 
 
 
-    const { 
-        register, 
-        handleSubmit, 
+    const {
+        register,
+        handleSubmit,
         reset,
-        formState: { 
-          errors,
-          isSubmitting
-        } 
+        formState: {
+            errors,
+            isSubmitting
+        }
     } = useForm();
 
     const handlePaste = (e) => {
         const pastedText = e.target.value;
-        if(pastedText)  
+        if (pastedText)
             slugRef.current.value = createSlug(pastedText);
-        else 
-            slugRef.current.value = '';        
+        else
+            slugRef.current.value = '';
     };
 
 
     const fetchPage = async () => {
         setLoading(true);
         let apiUrl = `${API_URL}/pages/${params.id}`;
-        let response = await actionFetchData(apiUrl,accessToken);
-        let data     = await response.json();
-        
-        if(data.status){
-            reset(data.data); 
+        let response = await actionFetchData(apiUrl, accessToken);
+        let data = await response.json();
+
+        if (data.status) {
+            reset(data.data);
             setDescription(data.data.description);
             setLoading(false);
             slugRef.current.value = data.data.slug;
@@ -57,14 +57,14 @@ const EditPage = () => {
     }
 
     // Update Offer
-    const submitHandler = useCallback(async (data) => {   
-        const slug = slugRef.current.value;      
-        let postObject = {...data,description,slug}
+    const submitHandler = useCallback(async (data) => {
+        const slug = slugRef.current.value;
+        let postObject = { ...data, description, slug }
         const toastId = toast.loading("Please wait...")
 
-        try{          
-            let response =  await actionPostData(`${API_URL}/pages/${params.id}`,accessToken,postObject,'PUT');
-            response    = await response.json();
+        try {
+            let response = await actionPostData(`${API_URL}/pages/${params.id}`, accessToken, postObject, 'PUT');
+            response = await response.json();
 
             if (response.status) {
                 toast.success(response.message, {
@@ -76,43 +76,43 @@ const EditPage = () => {
                 toast.error('server error', {
                     id: toastId
                 });
-            }                
-        } catch(error){
+            }
+        } catch (error) {
             toast.error(error)
         }
     })
 
     useEffect(() => {
         fetchPage();
-    },[])
+    }, [])
 
     return (
         <CCard className="mb-5">
-            <Header 
+            <Header
                 title={'Edit Page'}
                 url={'/pages/all-pages'}
-            />           
+            />
             <CCardBody>
-                {isLoading && <div className="cover-body"></div>}    
+                {isLoading && <div className="cover-body"></div>}
 
                 <CForm className="row g-3 needs-validation" onSubmit={handleSubmit(submitHandler)}>
                     <CCol md="12">
                         <CFormFloating>
-                            <CFormInput 
-                                 {...register("title", {
+                            <CFormInput
+                                {...register("title", {
                                     required: "Please enter title",
                                     minLength: {
                                         value: 6,
                                         message: "Title must be at least 6 characters long!"
                                     }
                                 })}
-                                className={errors.title && 'is-invalid'} 
+                                className={errors.title && 'is-invalid'}
                                 onKeyUp={(e) => handlePaste(e)}
-                                type="text" 
-                                id="title" 
+                                type="text"
+                                id="title"
                                 name='title'
                                 floatingLabel="Page Name"
-                                placeholder="Enter page name*" 
+                                placeholder="Enter page name*"
                             />
                             <p className="invalid-feedback d-block">{errors.title?.message}</p>
                         </CFormFloating>
@@ -122,12 +122,12 @@ const EditPage = () => {
 
                     <CCol md="12">
                         <CFormFloating>
-                            <CFormInput 
-                                className={errors.slug && 'is-invalid'} 
-                                type="text" 
+                            <CFormInput
+                                className={errors.slug && 'is-invalid'}
+                                type="text"
                                 name="slug"
-                                id="slug" 
-                                floatingLabel="Page Slug" 
+                                id="slug"
+                                floatingLabel="Page Slug"
                                 placeholder="Page Slug"
                                 disabled
                                 readOnly
@@ -137,27 +137,29 @@ const EditPage = () => {
                     </CCol>
 
                     <CCol md="12" className="editor">
-                        <div>
-                            <ReactQuill 
-                                theme="snow" 
-                                toolbar="essential"  
-                                placeholder="Enter page content" 
-                                style={{ height: '100%' }}
+                        <div style={{ height: '350px' }}> {/* Adjust the height here */}
+                            <ReactQuill
+                                theme="snow"
                                 value={description}
                                 onChange={setDescription}
+                                placeholder="Enter page content"
+                                style={{ height: '100%', border: '1px solid #ccc' }} // Adjust editor's height and style
+                                modules={{
+                                    toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                                }}
                             />
                         </div>
                     </CCol>
                     <CCol xs="12">
-                        {isSubmitting ? 
+                        {isSubmitting ?
                             <LoadingButton />
-                        :
+                            :
                             <CButton color="primary" type="submit" >Update Page</CButton>
                         }
                     </CCol>
                 </CForm>
             </CCardBody>
-    </CCard>
+        </CCard>
     );
 };
 

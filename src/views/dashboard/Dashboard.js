@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { CCol, CRow, CCard, CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CCardHeader, CCardBody, CContainer, CPagination, CPaginationItem, CCardTitle, CCardText, CButton, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CFormSelect, } from '@coreui/react';
 import CIcon from "@coreui/icons-react";
 import { Link, NavLink } from "react-router-dom";
-import { cilCloudDownload } from "@coreui/icons";
+import { cilArrowLeft, cilCloudDownload } from "@coreui/icons";
 import AuthContext from '../../context/auth';
 import { actionFetchData } from '../../actions/actions';
 import { API_URL, exportToExcel, getRandomInt, statusBadge } from "../../config";
@@ -249,11 +249,11 @@ const Dashboard = () => {
 						<CCard>
 							<CCardHeader>Offers</CCardHeader>
 							<CCardBody>
-								<h1>3</h1>
+								<h1>{dashboard.total_offer_count}</h1>
 								<CContainer>
 									<CRow className="justify-content-start dash-card-wrap mb-3 mt-2">
-										<CCol xs={4} className='p-0'><span className='active-signal'></span> Active 2</CCol>
-										<CCol xs={4} className='p-0'><span className='inactive-signal'></span> Inactive 10</CCol>
+										<CCol xs={4} className='p-0'><span className='active-signal'></span> Active {dashboard.active_offer_count}</CCol>
+										<CCol xs={4} className='p-0'><span className='inactive-signal'></span> Inactive {dashboard.inactive_offer_count}</CCol>
 									</CRow>
 								</CContainer>
 								<Link className='btn btn-primary' to={'/offers/all-offers'}>All Offers</Link>
@@ -591,7 +591,7 @@ const Dashboard = () => {
 				aria-labelledby="CityModal"
 			>
 				<CModalHeader>
-					<CModalTitle id="CityModal">{manageUi.selectedCity}</CModalTitle>
+					<CModalTitle id="CityModal"><CIcon icon={cilArrowLeft} className="mr-3" /> {manageUi.selectedCity}</CModalTitle>
 				</CModalHeader>
 
 				{manageUi.loadingModal === true &&
