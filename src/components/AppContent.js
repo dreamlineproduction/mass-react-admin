@@ -23,6 +23,7 @@ import AllPages from '../views/pages/AllPages';
 import EditPage from '../views/pages/EditPage';
 import AllReferrals from '../views/referrals/AllReferrals';
 import AllRedemptions from '../views/redemptions/AllRedemptions';
+import CityUser from '../views/users/CityUser';
 
 const AppContent = () => {
     return (
@@ -45,6 +46,14 @@ const AppContent = () => {
                         element={
                             <RequireAuth>
                                 <AllUser />
+                            </RequireAuth>
+                        }
+                    />
+                    <Route
+                        path='/users/city-users/:city'
+                        element={
+                            <RequireAuth>
+                                <CityUser />
                             </RequireAuth>
                         }
                     />

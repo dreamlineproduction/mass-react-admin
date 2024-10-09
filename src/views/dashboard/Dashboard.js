@@ -48,7 +48,8 @@ const Dashboard = () => {
 	const [visible, setVisible] = useState(false); // Modal visibility state
 	const [visible2, setVisible2] = useState(false)
 
-
+	const [mapLoading, setMapLoading] = useState(true);
+	const [mapData,setMapData] = useState(null);
 
 
 
@@ -93,11 +94,11 @@ const Dashboard = () => {
 				"Referee name": item.referee.name,
 				"Join Date": item.referral.created_at,
 				"Contact": item.referral.phone,
-				"Last Scanned Product": 'N/A',
-				"Earned XP": "0 xp",
-				"Total XP Balance": "0 xp",
+				"Last Scanned Product": item?.reward?.title ? item.reward.short_title : 'N/A',
+				"Earned XP": item?.referral?.total_xp ? item.referral.total_xp+' XP' : '0 XP',
+				"Total XP Balance": item?.referral?.balance_xp+ ' XP' ? item.referral.balance_xp : '0 XP',
 				"Referral’s Name": item.referral.name,
-				"Referral’s Total XP Balance": 0,
+				"Referral’s Total XP Balance": item?.referee?.balance_xp+' XP' ? item.referee.balance_xp : '0 XP',
 			}
 		})
 
@@ -148,24 +149,7 @@ const Dashboard = () => {
 
 		exportToExcel(data);
 	}
-
-	const handleCityShowModal = async (city) => {
-		setManageUi({ ...manageUi, loadingModal: true });
-
-		setVisible(false)
-		setVisible2(true)
-
-
-		//--Fetch Data
-		let response = await actionFetchData(`${API_URL}/dashboard/city-users/${city}`, accessToken);
-		response = await response.json();
-
-		if (response.status) {
-			setUser(response.users);
-		}
-		setManageUi({ ...manageUi, loadingModal: false, selectedCity: city });
-	}
-
+	
 	const exportUserToExcel = () => {
 		let data = users.map(item => {
 			return {
@@ -183,8 +167,20 @@ const Dashboard = () => {
 		exportToExcel(data);
 	}
 
+	const fetchMap = async () => {
+		//--Fetch Data
+		let response = await actionFetchData(`${API_URL}/dashboard/map-data`, accessToken);
+		response = await response.json();
+
+		if (response.status) {
+			setMapData(response.data);
+			setMapLoading(false);
+		}
+	}
+
 	useEffect(() => {
 		fetchDashboard();
+		fetchMap();
 	}, [])
 
 	useEffect(() => {
@@ -342,11 +338,11 @@ const Dashboard = () => {
 															<CTableDataCell>{item.referral.name}</CTableDataCell>
 															<CTableDataCell>{item.referral.created_at}</CTableDataCell>
 															<CTableDataCell>{item.referral.phone}</CTableDataCell>
-															<CTableDataCell>N/A</CTableDataCell>
-															<CTableDataCell>0 xp</CTableDataCell>
-															<CTableDataCell>0 xp</CTableDataCell>
-															<CTableDataCell>{item.referee.name}</CTableDataCell>
-															<CTableDataCell>0 xp</CTableDataCell>
+															<CTableDataCell>{item?.reward?.title ? item.reward.short_title : 'N/A'}</CTableDataCell>
+															<CTableDataCell>{item?.referral?.total_xp ? item.referral.total_xp : 0} XP</CTableDataCell>
+															<CTableDataCell>{item?.referral?.balance_xp ? item.referral.balance_xp : 0} XP</CTableDataCell>
+															<CTableDataCell>{item?.referee?.name ? item.referee.name : 'N/A'}</CTableDataCell>
+															<CTableDataCell>{item?.referee?.balance_xp ? item.referee.balance_xp : 0} XP</CTableDataCell>
 														</CTableRow>
 													)
 												})
@@ -459,7 +455,14 @@ const Dashboard = () => {
 						<div className='p-3'>
 							<CRow className='mt-3'>
 								<CCol md="6">
-									<IndiaMap />
+									{mapLoading ? 
+										<Loading />
+										:
+										<IndiaMap 
+											stateInfo={mapData}
+										/>
+									}
+									
 								</CCol>
 								<CCol md="6">
 									<CTable bordered className='mt-3'>
@@ -554,12 +557,9 @@ const Dashboard = () => {
 													<CTableDataCell>{item.active_users}</CTableDataCell>
 													<CTableDataCell>{item.inactive_users}</CTableDataCell>
 													<CTableDataCell>
-														<CButton
-															color="primary"
-															onClick={() => handleCityShowModal(item.city)}
-														>
-															View Details
-														</CButton>
+														<Link target="_blank" to={`/users/city-users/${item.city}`}>
+															<CButton color="primary">View Details</CButton>
+														</Link>
 													</CTableDataCell>
 												</CTableRow>
 											)
@@ -582,7 +582,7 @@ const Dashboard = () => {
 
 			<CModal
 				visible={visible2}
-				backdrop="static"
+				backdrop={true}
 				size="xl"
 				onClick={() => {
 					setVisible(true)

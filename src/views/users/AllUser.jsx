@@ -7,7 +7,6 @@ import AuthContext from "../../context/auth";
 import Loading from "../../components/Loading";
 import Pagination from "../../components/Pagination";
 import Swal from 'sweetalert2'
-import Header from "../../components/form/Header";
 import NoState from "../../components/NoState";
 import { actionDeleteData, actionPostData } from "../../actions/actions";
 
@@ -143,8 +142,7 @@ const AllUser = () => {
                                 <Link to={'/users/add-user'}>
                                     <CButton color="primary" className="me-3">+ Add New User</CButton>
                                 </Link>
-                            </div>
-                           
+                            </div>                           
                         </div>
                     </div>
                 </CCardHeader>
