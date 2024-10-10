@@ -24,6 +24,8 @@ import EditPage from '../views/pages/EditPage';
 import AllReferrals from '../views/referrals/AllReferrals';
 import AllRedemptions from '../views/redemptions/AllRedemptions';
 import CityUser from '../views/users/CityUser';
+import AllNotification from '../views/notification/all-notifications';
+import NewNotification from '../views/notification/new-notification';
 
 const AppContent = () => {
     return (
@@ -196,6 +198,22 @@ const AppContent = () => {
                         element={
                             <RequireAuth>
                                 <AllRedemptions />
+                            </RequireAuth>
+                        }
+                    />
+                    <Route
+                        path='/notification/all-notifications'
+                        element={
+                            <RequireAuth>
+                                <AllNotification />
+                            </RequireAuth>
+                        }
+                    />
+                    <Route
+                        path='/notification/new-notification'
+                        element={
+                            <RequireAuth>
+                                <NewNotification />
                             </RequireAuth>
                         }
                     />
