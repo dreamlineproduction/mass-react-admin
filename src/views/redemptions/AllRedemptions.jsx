@@ -44,6 +44,8 @@ const AllRedemptions = () => {
 	const [manageUI, setManageUI] = useState({
 		showDispatchedModel: false,
 		showDeclinedModel: false,
+		showDeclinedReasonModel:false,
+		showViewDispatchedModel: false,
 		id:0,
 		order_id:0,
 	})
@@ -137,7 +139,7 @@ const AllRedemptions = () => {
 			id:0,
 			order_id:0
 		});
-		
+		setSingleOrder(null);
     })
 
 
@@ -163,6 +165,7 @@ const AllRedemptions = () => {
 		fetchOrder();
 	}, [pageNumber])
 
+	//console.log(singleOrder.order);
 	return (
 		<CCard>
 			<CCardHeader>
@@ -237,6 +240,7 @@ const AllRedemptions = () => {
 																<button
 																	type="button"
 																	onClick={() => {
+																		setSingleOrder(item)
 																		reset()
 																		setManageUI({ ...manageUI, 
 																			showDispatchedModel: true,
@@ -276,19 +280,47 @@ const AllRedemptions = () => {
 													{item.order.status === 2 &&
 														<CDropdown >
 															<CDropdownToggle  color="dark">More Options</CDropdownToggle>
-															<CDropdownMenu>
-																
+															<CDropdownMenu>																
 																<button
 																	onClick={()=> changeStatus(item.id,item.order_id)}
 																	type="button"
 																	className="dropdown-item">
 																	Delivered
-																</button>																
-															</CDropdownMenu>
+																</button>
+																<button
+																	onClick={() => {
+																		setSingleOrder(item)
+																		setManageUI({ ...manageUI, 
+																			showViewDispatchedModel:true
+																		})}
+																	} 
+																	type="button"
+																	className="dropdown-item">
+																	View Tracking
+																</button>																		
+															</CDropdownMenu>															
 														</CDropdown>
 													}
 
-													{(item.order.status === 3   || item.order.status === 4) &&
+													{item.order.status === 4 &&
+														<CDropdown >
+															<CDropdownToggle  color="dark">More Options</CDropdownToggle>
+															<CDropdownMenu>																																
+																<button
+																	onClick={() => {
+																		setSingleOrder(item)
+																		setManageUI({ ...manageUI, 
+																			showDeclinedReasonModel: true,
+																		})}
+																	} 
+																	type="button"
+																	className="dropdown-item">
+																	View Decline Reason
+																</button>																		
+															</CDropdownMenu>															
+														</CDropdown>
+													}
+													{item.order.status === 3  &&
 														<CButton disabled type="button" color="dark">More Options</CButton>																										
 													}
 												</td>
@@ -325,18 +357,22 @@ const AllRedemptions = () => {
 			<CModal
 				backdrop="static"
 				alignment="center"
-
 				visible={manageUI.showDispatchedModel}
-				onClose={() => setManageUI({ ...manageUI, 
+				onClose={() => {
+					setSingleOrder(null);
+					setManageUI({ ...manageUI, 
 						showDispatchedModel: false,
 						id:0,
 						order_id:0 
-				})}
+					})
+				}}
 				aria-labelledby="DispatchedModelTitle"
 			>
 				<CForm className="sdas" onSubmit={handleSubmit(submitHandler)}>
 				<CModalHeader>
-					<CModalTitle id="DispatchedModelTitle">Dispatch Product Name </CModalTitle>
+					{singleOrder?.reward?.title &&
+						<CModalTitle id="DispatchedModelTitle">Dispatch {singleOrder.reward.short_title} </CModalTitle>
+					}
 				</CModalHeader>
 				<CModalBody>
 					<div>
@@ -390,6 +426,74 @@ const AllRedemptions = () => {
 				</CModalFooter>
 				</CForm>
 			</CModal>
+
+			{/* View Dispatch Modal */}
+			<CModal
+				backdrop="static"
+				alignment="center"
+				visible={manageUI.showViewDispatchedModel}
+				onClose={() => {
+					setSingleOrder(null);
+					setManageUI({ ...manageUI, 
+						showViewDispatchedModel: false,
+					})
+				}}
+				aria-labelledby="DispatchedModelTitle"
+			>
+				<CModalHeader>
+					{singleOrder?.reward?.title && 
+						<CModalTitle id="DispatchedModelTitle">Dispatch {singleOrder.reward.short_title} </CModalTitle>
+					}
+				</CModalHeader>
+				{singleOrder &&				
+				<CModalBody>
+					<div>
+						<CFormInput 
+							defaultValue={singleOrder.order.tracking_number}
+							disabled
+							readOnly	
+							className="mb-4"
+							label="Tracking Number"					
+							type="text"
+							placeholder="Enter tracking number"
+							aria-describedby="exampleFormControlInputHelpInline"
+						/>						
+						<CFormInput 
+							defaultValue={singleOrder.order.delivery_partner}
+							disabled
+							readOnly	
+							className="mb-4"	
+							label="Tracking Partner"				
+							type="text"
+							placeholder="Enter tracking partner name"
+							aria-describedby="exampleFormControlInputHelpInline"
+						/>
+						<CFormInput
+							defaultValue={singleOrder.order.tracking_url}
+							disabled
+							readOnly	
+							className="mb-4"
+							type="url"
+							label="Tracking URL (if any)"
+							placeholder="https://example.com"
+							aria-describedby="exampleFormControlInputHelpInline"
+						/>
+					</div>
+				</CModalBody>
+				}
+				<CModalFooter>
+					<CButton 
+						onClick={() => {
+							setSingleOrder(null);
+							setManageUI({ ...manageUI, 
+								showViewDispatchedModel: false,
+							})
+						}}
+						style={{color:"#fff"}} color="danger" type="button" >Close It
+					</CButton>
+				</CModalFooter>
+			</CModal>
+
 
 
 			{/* Decline Modal */}
@@ -460,6 +564,72 @@ const AllRedemptions = () => {
 						
 					</CModalFooter>
 				</CForm>
+			</CModal>
+
+			{/* Decline Reason Modal */}
+			<CModal
+				backdrop="static"
+				alignment="center"
+				visible={manageUI.showDeclinedReasonModel}
+				onClose={() => {
+					setSingleOrder(null);
+					setManageUI({ ...manageUI, 
+						showDeclinedReasonModel: false,
+					})
+				}}
+				aria-labelledby="DeclinedReasonModelTitle"
+			>
+					<CModalHeader>
+						<CModalTitle id="DeclinedReasonModelTitle">View Decline Reason</CModalTitle>
+					</CModalHeader>
+					{singleOrder && 
+					<CModalBody>
+						<div>
+							<CTable bordered borderColor="primary">
+									<CTableBody>
+										<CTableRow>
+											<CTableHeaderCell scope="row">Order Number:</CTableHeaderCell>
+											<CTableDataCell>{singleOrder.order_id}</CTableDataCell>
+
+										</CTableRow>
+										<CTableRow>
+											<CTableHeaderCell scope="row">Item:</CTableHeaderCell>
+											<CTableDataCell>{singleOrder.reward.title}</CTableDataCell>
+
+										</CTableRow>
+										<CTableRow>
+											<CTableHeaderCell scope="row">Customer Name:</CTableHeaderCell>
+											<CTableDataCell>{singleOrder.user.name}</CTableDataCell>
+
+										</CTableRow>
+										<CTableRow>
+											<CTableHeaderCell scope="row">Requested On:</CTableHeaderCell>
+											<CTableDataCell>{singleOrder.order.order_date}</CTableDataCell>
+
+										</CTableRow>
+									</CTableBody>
+							</CTable>
+							<CFormTextarea	
+								disabled
+								readOnly								
+								label="Reason"
+								rows={3}
+								defaultValue={singleOrder.order.decline_reason}
+							></CFormTextarea>
+						</div>
+					</CModalBody>
+					}		
+					<CModalFooter>
+						<CButton 
+							onClick={() => {
+								setSingleOrder(null);
+								setManageUI({ ...manageUI, 
+									showDeclinedReasonModel: false,
+								})
+							}}
+							style={{color:"#ffffff"}} 
+							type="button" color="danger">Close It</CButton>						
+					</CModalFooter>			
 			</CModal>
 		</CCard>
 

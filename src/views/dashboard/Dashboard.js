@@ -236,7 +236,8 @@ const Dashboard = () => {
 								<CContainer>
 									<CRow className="justify-content-start dash-card-wrap mb-3 mt-2">
 										<CCol xs={4} className='p-0'><span className='active-signal'></span>Delivered {dashboard.total_deliver_count}</CCol>
-										<CCol xs={4} className='p-0'><span className='inactive-signal'></span>In transit {dashboard.total_transit_count} </CCol>
+										<CCol xs={4} className='p-0'><span style={{backgroundColor:"#5856d6"}} className='inactive-signal'></span>In transit {dashboard.total_transit_count} </CCol>
+										<CCol xs={4} className='p-0'><span className='inactive-signal'></span>Decline {dashboard.total_cancel_count} </CCol>
 									</CRow>
 								</CContainer>
 								{/* <CButton color="primary" href="#">All Redemption</CButton> */}
