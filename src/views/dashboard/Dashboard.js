@@ -49,7 +49,7 @@ const Dashboard = () => {
 	const [visible2, setVisible2] = useState(false)
 
 	const [mapLoading, setMapLoading] = useState(true);
-	const [mapData,setMapData] = useState(null);
+	const [mapData, setMapData] = useState(null);
 
 
 
@@ -95,10 +95,10 @@ const Dashboard = () => {
 				"Join Date": item.referral.created_at,
 				"Contact": item.referral.phone,
 				"Last Scanned Product": item?.reward?.title ? item.reward.short_title : 'N/A',
-				"Earned XP": item?.referral?.total_xp ? item.referral.total_xp+' XP' : '0 XP',
-				"Total XP Balance": item?.referral?.balance_xp+ ' XP' ? item.referral.balance_xp : '0 XP',
+				"Earned XP": item?.referral?.total_xp ? item.referral.total_xp + ' XP' : '0 XP',
+				"Total XP Balance": item?.referral?.balance_xp + ' XP' ? item.referral.balance_xp : '0 XP',
 				"Referral’s Name": item.referral.name,
-				"Referral’s Total XP Balance": item?.referee?.balance_xp+' XP' ? item.referee.balance_xp : '0 XP',
+				"Referral’s Total XP Balance": item?.referee?.balance_xp + ' XP' ? item.referee.balance_xp : '0 XP',
 			}
 		})
 
@@ -149,7 +149,7 @@ const Dashboard = () => {
 
 		exportToExcel(data);
 	}
-	
+
 	const exportUserToExcel = () => {
 		let data = users.map(item => {
 			return {
@@ -230,18 +230,18 @@ const Dashboard = () => {
 
 					<CCol md="3">
 						<CCard>
-							<CCardHeader>New Redemption</CCardHeader>
+							<CCardHeader>Total Redemption</CCardHeader>
 							<CCardBody>
 								<h1>{dashboard.total_redemption_count}</h1>
 								<CContainer>
 									<CRow className="justify-content-start dash-card-wrap mb-3 mt-2">
 										<CCol xs={4} className='p-0'><span className='active-signal'></span>Delivered {dashboard.total_deliver_count}</CCol>
-										<CCol xs={4} className='p-0'><span style={{backgroundColor:"#5856d6"}} className='inactive-signal'></span>In transit {dashboard.total_transit_count} </CCol>
+										<CCol xs={4} className='p-0'><span style={{ backgroundColor: "#5856d6" }} className='inactive-signal'></span>In transit {dashboard.total_transit_count} </CCol>
 										<CCol xs={4} className='p-0'><span className='inactive-signal'></span>Decline {dashboard.total_cancel_count} </CCol>
 									</CRow>
 								</CContainer>
 								{/* <CButton color="primary" href="#">All Redemption</CButton> */}
-								<Link className='btn btn-primary' to={'#'}>All Redemption</Link>
+								<Link className='btn btn-primary' to={'/redemptions/all-redemptions'}>All Redemption</Link>
 							</CCardBody>
 						</CCard>
 					</CCol>
@@ -456,14 +456,14 @@ const Dashboard = () => {
 						<div className='p-3'>
 							<CRow className='mt-3'>
 								<CCol md="6">
-									{mapLoading ? 
+									{mapLoading ?
 										<Loading />
 										:
-										<IndiaMap 
+										<IndiaMap
 											stateInfo={mapData}
 										/>
 									}
-									
+
 								</CCol>
 								<CCol md="6">
 									<CTable bordered className='mt-3'>

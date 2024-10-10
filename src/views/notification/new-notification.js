@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { CButton, CCard, CCardBody, CCardHeader, CForm, CFormInput, CFormLabel, CFormSelect, CFormTextarea, CRow, CCol } from '@coreui/react';
-import Select from 'react-select'; // To enable multi-select and searchable dropdowns
+import { CButton, CCard, CCardBody, CCardHeader, CForm, CFormInput, CFormLabel, CFormTextarea, CRow, CCol } from '@coreui/react';
+import Select from 'react-select';
 import './phoneframe.css';
 
 const NewNotification = () => {
@@ -8,9 +8,8 @@ const NewNotification = () => {
     const [description, setDescription] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const [notificationName, setNotificationName] = useState('');
-    const [sendTo, setSendTo] = useState('bulk');  // single or bulk
-    const [userId, setUserId] = useState('');
     const [selectedUsers, setSelectedUsers] = useState([]); // For multi-select
+    const [isSelectAll, setIsSelectAll] = useState(false);
 
     // Example user data (can be fetched from backend)
     const users = [
@@ -27,24 +26,29 @@ const NewNotification = () => {
             description,
             imageUrl,
             notificationName,
-            sendTo,
-            userId: sendTo === 'single' ? userId : null,
-            selectedUsers: sendTo === 'bulk' ? selectedUsers : null
+            selectedUsers: isSelectAll ? users.map(user => user.value) : selectedUsers
         };
 
         // Logic to send notification via Firebase
         console.log(notificationData);
     };
 
+    const handleSelectAll = (isSelected) => {
+        setIsSelectAll(isSelected);
+        if (isSelected) {
+            setSelectedUsers(users.map(user => user.value));
+        } else {
+            setSelectedUsers([]);
+        }
+    };
+
     return (
         <CRow>
             {/* Left card - Notification form */}
-            <CCol md={4}>
+            <CCol md={6}>
                 <CCard>
                     <CCardHeader>
-                        <div className="d-flex justify-content-between align-items-center">
-                            <strong>Create New Notification</strong>
-                        </div>
+                        <strong>Create New Notification</strong>
                     </CCardHeader>
                     <CCardBody>
                         <CForm onSubmit={handleSubmit}>
@@ -84,11 +88,20 @@ const NewNotification = () => {
                             </div>
 
                             <div className="mb-3">
-                                <CFormLabel>Send To</CFormLabel>
-                                <CFormSelect value={sendTo} onChange={(e) => setSendTo(e.target.value)}>
-                                    <option value="bulk">Bulk Users</option>
-                                    <option value="single">Single User</option>
-                                </CFormSelect>
+                                <CFormLabel>Select User(s)</CFormLabel>
+                                <Select
+                                    options={[{ value: 'select_all', label: 'Select All Users' }, ...users]}
+                                    onChange={(selectedOptions) => {
+                                        const isSelectedAll = selectedOptions.some(option => option.value === 'select_all');
+                                        handleSelectAll(isSelectedAll);
+                                        if (!isSelectedAll) {
+                                            setSelectedUsers(selectedOptions.map(option => option.value));
+                                        }
+                                    }}
+                                    isMulti
+                                    isSearchable
+                                    value={isSelectAll ? [{ value: 'select_all', label: 'Select All Users' }] : users.filter(user => selectedUsers.includes(user.value))}
+                                />
                             </div>
 
                             <CButton type="submit" color="primary">Send Notification</CButton>
@@ -97,46 +110,8 @@ const NewNotification = () => {
                 </CCard>
             </CCol>
 
-            {/* Right card - User selection & Preview */}
-            <CCol md={4}>
-                <CCard>
-                    <CCardHeader>
-                        <strong>Select User(s)</strong>
-                    </CCardHeader>
-                    <CCardBody>
-                        {/* Single user selection */}
-                        {sendTo === 'single' && (
-                            <div className="mb-3">
-                                <CFormLabel>Select Single User</CFormLabel>
-                                <Select
-                                    options={users}
-                                    onChange={(option) => setUserId(option.value)}
-                                    isSearchable
-                                />
-                            </div>
-                        )}
-
-                        {/* Bulk user selection */}
-                        {sendTo === 'bulk' && (
-                            <div className="mb-3">
-                                <CFormLabel>Select Multiple Users</CFormLabel>
-                                <Select
-                                    options={users}
-                                    onChange={(selectedOptions) => setSelectedUsers(selectedOptions.map(option => option.value))}
-                                    isMulti
-                                    isSearchable
-                                />
-                            </div>
-                        )}
-                    </CCardBody>
-                </CCard>
-
-
-            </CCol>
-
-
-            <CCol md={4}>
-                {/* Preview Card */}
+            {/* Right card - Preview */}
+            <CCol md={6}>
                 <CCard>
                     <CCardHeader>
                         <strong>Preview Notification</strong>
