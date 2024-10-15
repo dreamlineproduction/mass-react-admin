@@ -1,4 +1,4 @@
-import { cilNotes } from "@coreui/icons";
+import { cilEyedropper, cilNotes } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 import { CButton, CCard, CCardBody, CCardHeader, CFormInput } from "@coreui/react"
 import { Link, useParams } from "react-router-dom";
@@ -21,6 +21,7 @@ const QrsDetail = () => {
     const [isLoading,setLoading] = useState(true);
     const [qrCodes, setQrCode] = useState([]);
     const [product, setProduct] = useState('');
+    const [viewPdf, setViewPdf] = useState('');
 
     // Fetch data
     let finalUrl = `${API_URL}/qr-codes-details?product_id=${params.productId}&batch_number=${params.batchNumber}&page=${pageNumber}&perPage=${perPage}`;
@@ -32,6 +33,7 @@ const QrsDetail = () => {
         if(response.status){
             setQrCode(response.data.data);
             setProduct(response.product)
+            setViewPdf(response.viewPdf)
             setPageCount(response.totalPage);
         }  
         setLoading(false);
@@ -47,6 +49,11 @@ const QrsDetail = () => {
                 <div className="d-flex justify-content-between align-items-center">
                     <div><strong>Result</strong></div>
                     <div className="d-flex">
+                        <div>
+                            <Link target="_blank" to={viewPdf}  color="primary" className="btn btn-outline-primary me-3" variant="outline" click="actionDownloadPdf">
+                                <CIcon icon={cilEyedropper} /> View PDF
+                            </Link>                            
+                        </div>
                         <div>
                             <CButton onClick={()=>actionDownloadPdf(params.productId,params.batchNumber,accessToken)} color="primary" className="me-3" variant="outline" click="actionDownloadPdf">
                                 <CIcon icon={cilNotes} /> Download PDF

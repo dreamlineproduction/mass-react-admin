@@ -9,13 +9,15 @@ import Pagination from "../../components/Pagination";
 import Swal from 'sweetalert2'
 import NoState from "../../components/NoState";
 import { actionDeleteData, actionPostData } from "../../actions/actions";
+import CIcon from "@coreui/icons-react";
+import { cilSearch } from "@coreui/icons";
 
 const AllUser = () => {
     const { Auth } =  useContext(AuthContext)
     const perPage = 20;
     const accessToken = Auth('accessToken');
     const [users, setUsers] = useState([])
-    const [selectedItems, setSelectedItems] = useState([]);
+    const [search, setSearchinput] = useState('')
 
 
     const [pageNumber, setPageNumber] = useState(1);
@@ -109,20 +111,14 @@ const AllUser = () => {
         }
     }
 
-    // Bulk Action
-    const handleCheckboxChange = (id) => {
-        setSelectedItems(prevSelectedItems =>
-          prevSelectedItems.includes(id)
-            ? prevSelectedItems.filter(itemId => itemId !== id)
-            : [...prevSelectedItems, id]
-        );
+    const handlerSearch = () => {
+        if (search.trim() !== '') {
+            finalUrl+=`&search=${search}`
+            fetchUsers();
+        }   
     };
-
-    const deleteSelectedItems = () => {
-        console.log(selectedItems);
-        // setUsers(prevItems => prevItems.filter(item => !selectedItems.includes(item.id)));
-        setSelectedItems([]); 
-    };
+    
+    
 
     useEffect(() => {
         fetchUsers()
@@ -132,8 +128,31 @@ const AllUser = () => {
    
 
     return (
-        <>           
-            <CCard>               
+        <>       
+            <div className="mb-4 d-flex justify-content-end  gap-3">
+                <div className="search-input-outer">
+                    <input 
+                        onChange={(e) => {
+                            setSearchinput(e.target.value)
+                            if(e.target.value === ''){
+                                fetchUsers()
+                            }
+                        }}
+                        value={search}
+                        className="form-control" 
+                        type="text"                                   
+                        placeholder="Search ID,name,phone,Referral Code etc." 
+                    />
+                </div>
+                
+                <div>
+                    <CButton onClick={handlerSearch} color="primary" className="me-3">
+                        <CIcon icon={cilSearch} /> Search
+                    </CButton>
+                </div>
+            </div>    
+            <CCard> 
+                              
                 <CCardHeader>
                     <div className="d-flex justify-content-between align-items-center">
                         <div><strong>All Users</strong></div>
@@ -156,9 +175,7 @@ const AllUser = () => {
                         {users.length > 0 ? 
                             <table className="table">
                                 <thead>
-                                    <tr>
-                                        <th><CFormCheck  id="flexCheckDefault" />
-                                        </th>
+                                    <tr>                                      
                                         <th>ID</th>
                                         <th>User Image</th>
                                         <th>Full Name</th>
@@ -180,14 +197,6 @@ const AllUser = () => {
                                         users.map(user => {
                                             return(
                                                 <tr key={user.id}>
-                                                    <td>
-                                                        <CFormCheck 
-                                                            checked={selectedItems.includes(user.id)}
-                                                            onChange={() => handleCheckboxChange(user.id)}
-                                                            id="flexCheckDefault" 
-                                                        />
-                                                    </td>
-                                                    
                                                     <td>{user.id}</td>
                                                     {/* <img src="https://greendroprecycling.com/wp-content/uploads/2017/04/GreenDrop_Station_Aluminum_Can_Pepsi.jpg" className="img-thumbnail" alt="Description of image" width={80} /> */}
 
@@ -251,10 +260,7 @@ const AllUser = () => {
                    
 
                     {users.length > 0 &&
-                        <div className='d-flex  align-items-start justify-content-end'>
-                            {/* <button className="btn btn-danger text-white" onClick={deleteSelectedItems} disabled={selectedItems.length === 0}>
-                                Delete Selected
-                            </button> */}
+                        <div className='d-flex  align-items-start justify-content-end'>                           
                             <Pagination 
                                 pageCount={pageCount}
                                 handlePageChange={(event) => setPageNumber(event.selected+1)}

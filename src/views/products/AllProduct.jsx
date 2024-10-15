@@ -9,13 +9,16 @@ import Pagination from "../../components/Pagination";
 import Swal from "sweetalert2";
 import NoState from "../../components/NoState";
 import { actionDeleteData, actionFetchData, actionPostData } from "../../actions/actions";
+import CIcon from "@coreui/icons-react";
+import { cilSearch } from "@coreui/icons";
 
 const AllProduct = () => {
     const { Auth } = useContext(AuthContext)
     const perPage = 20;
     const accessToken = Auth('accessToken');
     const [products, setProduct] = useState([])
-    const [selectedItems, setSelectedItems] = useState([]);
+    const [search, setSearchinput] = useState('')
+
 
 
     const [pageNumber, setPageNumber] = useState(1);
@@ -25,6 +28,7 @@ const AllProduct = () => {
     // Fetch data
     let finalUrl = `${API_URL}/products?page=${pageNumber}&perPage=${perPage}`;
     const fetchProduct = async () => {
+        setLoading(true);
         let response = await actionFetchData(finalUrl, accessToken);
         response = await response.json();
         if (response.status) {
@@ -94,19 +98,12 @@ const AllProduct = () => {
         }
     }
 
-    // Bulk Action
-    const handleCheckboxChange = (id) => {
-        setSelectedItems(prevSelectedItems =>
-            prevSelectedItems.includes(id)
-                ? prevSelectedItems.filter(itemId => itemId !== id)
-                : [...prevSelectedItems, id]
-        );
-    };
-
-    const deleteSelectedItems = () => {
-        //console.log(selectedItems);
-        // setUsers(prevItems => prevItems.filter(item => !selectedItems.includes(item.id)));
-        setSelectedItems([]);
+   
+    const handlerSearch = () => {
+        if (search.trim() !== '') {
+            finalUrl+=`&search=${search}`
+            fetchProduct();
+        }   
     };
 
     useEffect(() => {
@@ -114,109 +111,119 @@ const AllProduct = () => {
     }, [pageNumber])
 
     return (
-        <CCard>
-            <CCardHeader>
-                <div className="d-flex justify-content-between align-items-center">
-                    <div><strong>All Products</strong></div>
-                    <div className="d-flex">
-                        <div>
-                            <Link to={'/products/add-product'}>
-                                <CButton color="primary" className="me-3">+ Add New Product</CButton>
-                            </Link>
+        <main>
+            <div className="mb-4 d-flex justify-content-end  gap-3">
+                <div className="search-input-outer">
+                    <input 
+                        onChange={(e) => {
+                            setSearchinput(e.target.value)
+                            if(e.target.value === ''){
+                                fetchProduct()
+                            }
+                        }}
+                        value={search}
+                        className="form-control" 
+                        type="text"                                   
+                        placeholder="Search..." 
+                    />
+                </div>
+                
+                <div>
+                    <CButton onClick={handlerSearch} color="primary" className="me-3">
+                        <CIcon icon={cilSearch} /> Search
+                    </CButton>
+                </div>
+            </div>    
+
+            <CCard>
+                <CCardHeader>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <div><strong>All Products</strong></div>
+                        <div className="d-flex">
+                            <div>
+                                <Link to={'/products/add-product'}>
+                                    <CButton color="primary" className="me-3">+ Add New Product</CButton>
+                                </Link>
+                            </div>                            
                         </div>
-                        {/* <div>
-                            <CFormInput  type="text" placeholder="Search..." />
-                        </div> */}
                     </div>
-                </div>
-            </CCardHeader>
+                </CCardHeader>
 
-            <CCardBody>
-                <div className="table-responsive">
-                    {isLoading &&
-                        <Loading />
-                    }
-                    {products.length > 0 ?
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th><CFormCheck id="flexCheckDefault" /></th>
-                                    <th>Image</th>
-                                    <th>Product ID</th>
-                                    <th>Product Name</th>
-                                    <th>Created At</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    products.map(product => {
-                                        return (
-                                            <tr key={product.id} className="align-middle">
-                                                <td>
-                                                    <CFormCheck
-                                                        checked={selectedItems.includes(product.id)}
-                                                        onChange={() => handleCheckboxChange(product.id)}
-                                                        id="flexCheckDefault"
-                                                    />
-                                                </td>
+                <CCardBody>
+                    <div className="table-responsive">
+                        {isLoading &&
+                            <Loading />
+                        }
+                        {products.length > 0 ?
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Product ID</th>
+                                        <th>Product Name</th>
+                                        <th>Created At</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        products.map(product => {
+                                            return (
+                                                <tr key={product.id} className="align-middle">
+                                                    <td>
+                                                        {product.image &&
+                                                            <img src={product.image_url}
+                                                                className="img-thumbnail"
+                                                                style={{ width: "70px", height: "70px", objectFit: "cover" }}
+                                                                alt="Description of image" width={"15%"} />
+                                                        }
 
-                                                <td>
-                                                    {product.image &&
-                                                        <img src={product.image_url}
-                                                            className="img-thumbnail"
-                                                            style={{ width: "70px", height: "70px", objectFit: "cover" }}
-                                                            alt="Description of image" width={"15%"} />
-                                                    }
+                                                    </td>
+                                                    <td>{product.unique_id}</td>
+                                                    <td>{product.name}</td>
+                                                    <td>{product.created_at}</td>
+                                                    <td>
+                                                        {statusBadge(product.status)}
+                                                    </td>
+                                                    <td>
+                                                        <CDropdown >
+                                                            <CDropdownToggle className="border-0" caret={false} href="#" color="ghost">...</CDropdownToggle>
+                                                            <CDropdownMenu>
+                                                                <Link className="dropdown-item" to={`/products/edit-product/${product.id}`}>Edit</Link>
+                                                                <CDropdownItem onClick={() => changeStatus(product.id)}>
+                                                                    {product.status === 1 ? 'Inactive' : 'Active'}
+                                                                </CDropdownItem>
+                                                                <CDropdownItem className="text-danger" onClick={() => deleteProduct(product.id)}>Delete</CDropdownItem>
+                                                            </CDropdownMenu>
+                                                        </CDropdown>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
 
-                                                </td>
-                                                <td>{product.unique_id}</td>
-                                                <td>{product.name}</td>
-                                                <td>{product.created_at}</td>
-                                                <td>
-                                                    {statusBadge(product.status)}
-                                                </td>
-                                                <td>
-                                                    <CDropdown >
-                                                        <CDropdownToggle className="border-0" caret={false} href="#" color="ghost">...</CDropdownToggle>
-                                                        <CDropdownMenu>
-                                                            <Link className="dropdown-item" to={`/products/edit-product/${product.id}`}>Edit</Link>
-                                                            <CDropdownItem onClick={() => changeStatus(product.id)}>
-                                                                {product.status === 1 ? 'Inactive' : 'Active'}
-                                                            </CDropdownItem>
-                                                            <CDropdownItem className="text-danger" onClick={() => deleteProduct(product.id)}>Delete</CDropdownItem>
-                                                        </CDropdownMenu>
-                                                    </CDropdown>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
-
-                                }
-                            </tbody>
-                        </table>
-                        :
-                        <NoState
-                            message="No Product"
-                        />
-                    }
-                </div>
-                {products.length > 0 &&
-                    <div className='d-flex  align-items-start justify-content-end'>
-                        {/* <button className="btn btn-danger text-white"  onClick={deleteSelectedItems} disabled={selectedItems.length === 0}>
-                            Delete Selected
-                        </button>   */}
-                        <Pagination
-                            pageCount={pageCount}
-                            handlePageChange={(event) => setPageNumber(event.selected + 1)}
-                        />
-
+                                    }
+                                </tbody>
+                            </table>
+                            :
+                            <NoState
+                                message="No Product"
+                            />
+                        }
                     </div>
+                    {products.length > 0 &&
+                        <div className='d-flex  align-items-start justify-content-end'>                           
+                            <Pagination
+                                pageCount={pageCount}
+                                handlePageChange={(event) => setPageNumber(event.selected + 1)}
+                            />
 
-                }
-            </CCardBody>
-        </CCard>
+                        </div>
+
+                    }
+                </CCardBody>
+            </CCard>
+        </main>
     );
 };
 

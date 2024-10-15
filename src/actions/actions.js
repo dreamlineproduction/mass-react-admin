@@ -79,7 +79,7 @@ export const actionFetchData = async (url, accessToken) => {
 
 export const actionDownloadPdf = (productId, batchNumber, accessToken) => {
 	let downloadUrl = `${API_URL}/qr-codes/download?product_id=${productId}&batch_number=${batchNumber}`;
-
+	
 	fetch(downloadUrl, {
 		method: 'GET',
 		headers: {
@@ -87,28 +87,28 @@ export const actionDownloadPdf = (productId, batchNumber, accessToken) => {
 			'Authorization': `Bearer ${accessToken}`
 		},
 	})
-		.then((response) => response.blob())
-		.then((blob) => {
-			const url = window.URL.createObjectURL(
-				new Blob([blob]),
-			);
+	.then((response) => response.blob())
+	.then((blob) => {
+		const url = window.URL.createObjectURL(
+			new Blob([blob]),
+		);
 
-			const link = document.createElement('a');
-			link.href = url;
-			link.setAttribute(
-				'download',
-				`product-${productId}-batch-${batchNumber}.pdf`
-			);
+		const link = document.createElement('a');
+		link.href = url;
+		link.setAttribute(
+			'download',
+			`product-${productId}-batch-${batchNumber}.pdf`
+		);
 
-			// Append to html link element page
-			document.body.appendChild(link);
+		// Append to html link element page
+		document.body.appendChild(link);
 
-			// Start download
-			link.click();
+		// Start download
+		link.click();
 
-			// Clean up and remove the link
-			link.parentNode.removeChild(link);
-		});
+		// Clean up and remove the link
+		link.parentNode.removeChild(link);
+	});
 }
 
 export const actionImageUplaod = async (file, accessToken) => {

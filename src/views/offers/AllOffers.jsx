@@ -9,6 +9,8 @@ import NoState from "../../components/NoState";
 import Pagination from "../../components/Pagination";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import { cilSearch } from "@coreui/icons";
+import CIcon from "@coreui/icons-react";
 
 const AllOffers = () => {
 
@@ -21,7 +23,7 @@ const AllOffers = () => {
     const [pageNumber, setPageNumber] = useState(1);
     const [pageCount, setPageCount] = useState(0);
     const [isLoading, setLoading] = useState(true);
-    const [selectedItems, setSelectedItems] = useState([]);
+    const [search, setSearchinput] = useState('')
 
     // Delete Data
     const actionDelete = async (id) => {
@@ -95,20 +97,14 @@ const AllOffers = () => {
         }
     }
 
-    // Bulk Action
-    const handleCheckboxChange = (id) => {
-        setSelectedItems(prevSelectedItems =>
-            prevSelectedItems.includes(id)
-                ? prevSelectedItems.filter(itemId => itemId !== id)
-                : [...prevSelectedItems, id]
-        );
+   
+    const handlerSearch = () => {
+        if (search.trim() !== '') {
+            finalUrl+=`&search=${search}`
+            fetchOffer();
+        }   
     };
-
-    const deleteSelectedItems = () => {
-        //console.log(selectedItems);
-        // setUsers(prevItems => prevItems.filter(item => !selectedItems.includes(item.id)));
-        setSelectedItems([]);
-    };
+   
 
 
     useEffect(() => {
@@ -116,109 +112,119 @@ const AllOffers = () => {
     }, [pageNumber])
 
     return (
-        <CCard>
-            <CCardHeader>
-                <div className="d-flex justify-content-between align-items-center">
-                    <div><strong>All Offers</strong></div>
-                    <div className="d-flex">
-                        <div>
-                            <Link to={'/offers/new-offer'}>
-                                <CButton color="primary" className="me-3">+ Add New Offer</CButton>
-                            </Link>
+        <main>
+            <div className="mb-4 d-flex justify-content-end  gap-3">
+                <div className="search-input-outer">
+                    <input 
+                        onChange={(e) => {
+                            setSearchinput(e.target.value)
+                            if(e.target.value === ''){
+                                fetchOffer()
+                            }
+                        }}
+                        value={search}
+                        className="form-control" 
+                        type="text"                                   
+                        placeholder="Search..." 
+                    />
+                </div>
+                
+                <div>
+                    <CButton onClick={handlerSearch} color="primary" className="me-3">
+                        <CIcon icon={cilSearch} /> Search
+                    </CButton>
+                </div>
+            </div>
+            <CCard>
+                <CCardHeader>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <div><strong>All Offers</strong></div>
+                        <div className="d-flex">
+                            <div>
+                                <Link to={'/offers/new-offer'}>
+                                    <CButton color="primary" className="me-3">+ Add New Offer</CButton>
+                                </Link>
+                            </div>                      
                         </div>
-                        {/* <div>
-                            <CFormInput v-model="params.search" type="text" placeholder="Search..." />
-                        </div> */}
                     </div>
-                </div>
-            </CCardHeader>
+                </CCardHeader>
 
-            <CCardBody>
-                <div className="table-responsive">
-                    {isLoading &&
-                        <Loading />
-                    }
-                    {offers.length > 0 ?
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th><CFormCheck id="flexCheckDefault" /></th>
-                                    <th>Offer ID</th>
-                                    <th>Image</th>
-                                    <th>Title</th>
-                                    <th>In Homepage ?</th>
-                                    <th>Crated At</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    offers.map(item => {
-                                        return (
-                                            <tr key={item.id}>
-                                                <td>
-                                                    <CFormCheck
-                                                        checked={selectedItems.includes(item.id)}
-                                                        onChange={() => handleCheckboxChange(item.id)}
-                                                        id="flexCheckDefault"
-                                                    />
-                                                </td>
-                                                <td>{item.id}</td>
-                                                <td>
-                                                    {item.image &&
-                                                        <img src={item.image_url}
-                                                            className="img-thumbnail"
-                                                            style={{ width: "70px", height: "70px", objectFit: "cover" }}
-                                                            alt="Description of image" width={"80"} height={'50'} />
-                                                    }
-                                                </td>
-                                                <td>{item.title}</td>
-                                                <td>{(item.is_home === 1) ? 'Yes' : 'No'}</td>
-                                                <td>{item.created_at}</td>
-                                                <td>
-                                                    {statusBadge(item.status)}
-                                                </td>
-                                                <td>
-                                                    <CDropdown >
-                                                        <CDropdownToggle className="border-0" caret={false} href="#" color="ghost">...</CDropdownToggle>
-                                                        <CDropdownMenu>
-                                                            <Link className="dropdown-item" to={`/offers/edit-offer/${item.id}`}>Edit</Link>
-                                                            <CDropdownItem onClick={() => changeStatus(item.id)}>
-                                                                {item.status === 1 ? 'Inactive' : 'Active'}
-                                                            </CDropdownItem>
-                                                            <CDropdownItem className="text-danger" onClick={() => deleteOffer(item.id)}>Delete</CDropdownItem>
-                                                        </CDropdownMenu>
-                                                    </CDropdown>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
+                <CCardBody>
+                    <div className="table-responsive">
+                        {isLoading &&
+                            <Loading />
+                        }
+                        {offers.length > 0 ?
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Offer ID</th>
+                                        <th>Image</th>
+                                        <th>Title</th>
+                                        <th>In Homepage ?</th>
+                                        <th>Crated At</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        offers.map(item => {
+                                            return (
+                                                <tr key={item.id}>                                                
+                                                    <td>{item.id}</td>
+                                                    <td>
+                                                        {item.image &&
+                                                            <img src={item.image_url}
+                                                                className="img-thumbnail"
+                                                                style={{ width: "70px", height: "70px", objectFit: "cover" }}
+                                                                alt="Description of image" width={"80"} height={'50'} />
+                                                        }
+                                                    </td>
+                                                    <td>{item.title}</td>
+                                                    <td>{(item.is_home === 1) ? 'Yes' : 'No'}</td>
+                                                    <td>{item.created_at}</td>
+                                                    <td>
+                                                        {statusBadge(item.status)}
+                                                    </td>
+                                                    <td>
+                                                        <CDropdown >
+                                                            <CDropdownToggle className="border-0" caret={false} href="#" color="ghost">...</CDropdownToggle>
+                                                            <CDropdownMenu>
+                                                                <Link className="dropdown-item" to={`/offers/edit-offer/${item.id}`}>Edit</Link>
+                                                                <CDropdownItem onClick={() => changeStatus(item.id)}>
+                                                                    {item.status === 1 ? 'Inactive' : 'Active'}
+                                                                </CDropdownItem>
+                                                                <CDropdownItem className="text-danger" onClick={() => deleteOffer(item.id)}>Delete</CDropdownItem>
+                                                            </CDropdownMenu>
+                                                        </CDropdown>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
 
-                                }
-                            </tbody>
-                        </table>
-                        :
-                        <NoState
-                            message="No Product"
-                        />
-                    }
-                </div>
-                {offers.length > 0 &&
-                    <div className='d-flex  align-items-start justify-content-end'>
-                        {/* <button className="btn btn-danger text-white"  onClick={deleteSelectedItems} disabled={selectedItems.length === 0}>
-                            Delete Selected
-                        </button>   */}
-                        <Pagination
-                            pageCount={pageCount}
-                            handlePageChange={(event) => setPageNumber(event.selected + 1)}
-                        />
-
+                                    }
+                                </tbody>
+                            </table>
+                            :
+                            <NoState
+                                message="No Product"
+                            />
+                        }
                     </div>
+                    {offers.length > 0 &&
+                        <div className='d-flex  align-items-start justify-content-end'>                      
+                            <Pagination
+                                pageCount={pageCount}
+                                handlePageChange={(event) => setPageNumber(event.selected + 1)}
+                            />
 
-                }
-            </CCardBody>
-        </CCard>
+                        </div>
+
+                    }
+                </CCardBody>
+            </CCard>
+        </main>
     );
 };
 
