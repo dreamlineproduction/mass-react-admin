@@ -1,60 +1,67 @@
 // Here you can add other styles
 .base-image-input {
-    height: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-size: cover;
-    background-position: center;
-    border: 2px dashed #b6b6b6;
-    cursor: pointer;
-    position: relative;
-    border-radius: 12px;
-    background-color: #f3f4f7;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: contain;
+  background-position: center;
+  border: 2px dashed #b6b6b6;
+  cursor: pointer;
+  position: relative;
+  border-radius: 12px;
+  background-color: #f3f4f7;
+  background-repeat: no-repeat;
+}
+
+.replace-image {
+  position: absolute;
+  top: 60px;
+  right: 30px;
 }
 
 .placeholder {
-    color: #999;
-    font-size: 16px;
+  color: #999;
+  font-size: 16px;
 }
 
 
 .file-input {
-    display: none;
+  display: none;
 }
 
 .remove-image-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
 }
 
 .video-preview {
-    width: 100%;
-    height: 356px;
-    margin-top: 20px;
+  width: 100%;
+  height: 356px;
+  margin-top: 20px;
 
-    iframe {
-        width: 100%;
-        height: 100%;
-        border-radius: 12px;
-        border: none;
-    }
+  iframe {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    border: none;
+  }
 }
 
 .cover-body {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0.40;
-    background: #fff;
-    z-index: 10;
-    cursor: progress;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.40;
+  background: #fff;
+  z-index: 10;
+  cursor: progress;
 }
 
 .container-xxl,
@@ -63,77 +70,78 @@
 .container-md,
 .container-sm,
 .container {
-    max-width: 100%;
+  max-width: 100%;
 }
 
 .btn-primary {
-    --cui-btn-color: #fff;
-    --cui-btn-bg: #2f31f8;
-    --cui-btn-border-color: #2f31f8;
-    --cui-btn-hover-color: #fff;
-    --cui-btn-hover-bg: #1718a2;
-    --cui-btn-hover-border-color: #4645ab;
-    --cui-btn-focus-shadow-rgb: 113, 111, 220;
-    --cui-btn-active-color: #fff;
-    --cui-btn-active-bg: #4645ab;
-    --cui-btn-active-border-color: #4241a1;
-    --cui-btn-active-shadow: inset 0 3px 5px rgba(8, 10, 12, 0.125);
-    --cui-btn-disabled-color: #fff;
-    --cui-btn-disabled-bg: #2f31f8;
-    --cui-btn-disabled-border-color: #2f31f8;
+  --cui-btn-color: #fff;
+  --cui-btn-bg: #2f31f8;
+  --cui-btn-border-color: #2f31f8;
+  --cui-btn-hover-color: #fff;
+  --cui-btn-hover-bg: #1718a2;
+  --cui-btn-hover-border-color: #4645ab;
+  --cui-btn-focus-shadow-rgb: 113, 111, 220;
+  --cui-btn-active-color: #fff;
+  --cui-btn-active-bg: #4645ab;
+  --cui-btn-active-border-color: #4241a1;
+  --cui-btn-active-shadow: inset 0 3px 5px rgba(8, 10, 12, 0.125);
+  --cui-btn-disabled-color: #fff;
+  --cui-btn-disabled-bg: #2f31f8;
+  --cui-btn-disabled-border-color: #2f31f8;
 }
 
 .btn-outline-primary {
-    --cui-btn-color: #2f31f8;
-    --cui-btn-border-color: #2f31f8;
-    --cui-btn-hover-color: #fff;
-    --cui-btn-hover-bg: #2f31f8;
-    --cui-btn-hover-border-color: #2f31f8;
-    --cui-btn-focus-shadow-rgb: 88, 86, 214;
-    --cui-btn-active-color: #fff;
-    --cui-btn-active-bg: #2f31f8;
-    --cui-btn-active-border-color: #2f31f8;
-    --cui-btn-active-shadow: inset 0 3px 5px rgba(8, 10, 12, 0.125);
-    --cui-btn-disabled-color: #2f31f8;
-    --cui-btn-disabled-bg: transparent;
-    --cui-gradient: none;
+  --cui-btn-color: #2f31f8;
+  --cui-btn-border-color: #2f31f8;
+  --cui-btn-hover-color: #fff;
+  --cui-btn-hover-bg: #2f31f8;
+  --cui-btn-hover-border-color: #2f31f8;
+  --cui-btn-focus-shadow-rgb: 88, 86, 214;
+  --cui-btn-active-color: #fff;
+  --cui-btn-active-bg: #2f31f8;
+  --cui-btn-active-border-color: #2f31f8;
+  --cui-btn-active-shadow: inset 0 3px 5px rgba(8, 10, 12, 0.125);
+  --cui-btn-disabled-color: #2f31f8;
+  --cui-btn-disabled-bg: transparent;
+  --cui-gradient: none;
 }
 
 .form-control:focus {
-    color: var(--cui-body-color);
-    background-color: var(--cui-body-bg);
-    border-color: #2f31f8;
-    outline: 0;
-    box-shadow: 0 0 0 0.25rem rgb(88 86 214 / 0%);
-    border-width: 1px;
+  color: var(--cui-body-color);
+  background-color: var(--cui-body-bg);
+  border-color: #2f31f8;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgb(88 86 214 / 0%);
+  border-width: 1px;
 }
 
 
 
 .referraluserbody {
 
-    p {
-        margin-bottom: .5rem;
-    }
+  p {
+    margin-bottom: .5rem;
+  }
 }
 
 .active-signal {
-    background-color: #6ACD1B;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: .3rem;
+  background-color: #6ACD1B;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: .3rem;
 }
 
 .inactive-signal {
-    background-color: #FF4134;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: .3rem;
+  background-color: #FF4134;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: .3rem;
 }
-.search-input-outer{
-    width: 325px;
+
+.search-input-outer {
+  width: 325px;
 }

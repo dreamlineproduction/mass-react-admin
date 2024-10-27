@@ -189,7 +189,7 @@ const NewProduct = () => {
           </CCol>
 
           <CCol md="6">
-            <label className="mb-3">Product Image* <small>(Recommended Size 1000 X 454 Pixel)</small></label>
+            <label className="mb-3">Product Image* <small>(Recommended Size 500 X 500 Pixel)</small></label>
             <div
               className={`base-image-input`}
               style={{ backgroundImage: imageData ? `url(${imageData})` : '', borderColor: imageError ? '#e55353' : '' }}
@@ -211,7 +211,7 @@ const NewProduct = () => {
                 <button
                   onClick={removeImage}
                   className="btn btn-danger text-white remove-image-button">
-                  RemoveImage
+                  Remove Image
                 </button>
               }
             </div>
