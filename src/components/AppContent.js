@@ -192,6 +192,8 @@ const AppContent = () => {
                             </RequireAuth>
                         }
                     />
+                   
+
 
                     <Route
                         path='/redemptions/all-redemptions'
