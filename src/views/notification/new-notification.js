@@ -45,7 +45,7 @@ const NewNotification = () => {
     return (
         <CRow>
             {/* Left card - Notification form */}
-            <CCol md={6}>
+            <CCol md={8}>
                 <CCard>
                     <CCardHeader>
                         <strong>Create New Notification</strong>
@@ -111,7 +111,7 @@ const NewNotification = () => {
             </CCol>
 
             {/* Right card - Preview */}
-            <CCol md={6}>
+            <CCol md={4}>
                 <CCard>
                     <CCardHeader>
                         <strong>Preview Notification</strong>
