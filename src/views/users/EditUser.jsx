@@ -12,14 +12,14 @@ import Loading from "../../components/Loading";
 
 const EditUser = () => {
     const params = useParams();
-    const defaultAvtar = 'AV';
-
+    const defaultAvtar = 'AV';    
     const { Auth } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
 
     const userAvtar = useRef(null);
     const [states, setState] = useState([]);
     const [isLoading, setLoading] = useState(true);
+    const [orders,setOrder] = useState([]);
 
     const navigate = useNavigate();
 
@@ -94,9 +94,22 @@ const EditUser = () => {
         }
     }
 
+    const fetchOrder = async () => {
+        let url = `${API_URL}/front/orders?userId=${params.id}`;
+        let response = await actionFetchData(url, accessToken);
+        response = await response.json();
+
+        if (response.status) {
+            setOrder(response.data.data);
+        }
+    }
+  
+    
+
     useEffect(() => {
         fetchState()
         fetchUser();
+        fetchOrder()
     }, [])
 
     return (
@@ -285,13 +298,6 @@ const EditUser = () => {
                             }
                         </CCol>
                     </CForm>
-
-
-
-                    <div>
-                        Add new card bellow this card with all redeemed items details
-                    </div>
-
                 </CCardBody>
             </CCard>
 

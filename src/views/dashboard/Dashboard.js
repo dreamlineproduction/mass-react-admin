@@ -417,7 +417,7 @@ const Dashboard = () => {
                         return (
                           <CTableRow key={item.id}>
                             <CTableHeaderCell scope="row">{item.id}</CTableHeaderCell>
-                            <CTableDataCell>{item.product.name}</CTableDataCell>
+                            <CTableDataCell>{item?.product?.name}</CTableDataCell>
                             <CTableDataCell>{item.xp_value}</CTableDataCell>
                             <CTableDataCell>{item.batch_number}</CTableDataCell>
                             <CTableDataCell>{item.created_at}</CTableDataCell>
