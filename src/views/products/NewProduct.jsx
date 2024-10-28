@@ -8,6 +8,8 @@ import AuthContext from "../../context/auth";
 import LoadingButton from "../../components/LoadingButton";
 import Header from "../../components/form/Header";
 import { actionImageUplaod, actionPostData } from "../../actions/actions";
+import ReactQuill from "react-quill";
+import 'react-quill/dist/quill.snow.css';
 
 const NewProduct = () => {
   const { Auth } = useContext(AuthContext)
@@ -24,16 +26,31 @@ const NewProduct = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     reset,
     formState: {
       errors,
-      isSubmitting
+      isSubmitting,
     }
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      description: "",
+      instruction:""
+    }
+  });
 
   const chooseImage = () => {
     fileInput.current.click();
   }
+
+  const handleDescriptionChange = (value) => {
+    setValue("description", value, { shouldValidate: true });
+  };
+
+  const handleInstructionChange = (value) => {
+    setValue("instruction", value, { shouldValidate: true });
+  };
+
 
   const removeImage = (e) => {
     e.stopPropagation();
@@ -88,7 +105,6 @@ const NewProduct = () => {
     }
 
     let postData = { ...data, image: imageId, slug };
-
     const toastId = toast.loading("Please wait...")
     try {
       let response = await actionPostData(`${API_URL}/products`, accessToken, postData);
@@ -154,40 +170,36 @@ const NewProduct = () => {
                 ref={slugRef}
               />
             </CFormFloating>
-          </CCol>
-          <CCol md="6">
-            <CFormFloating>
-              <CFormTextarea
-                {...register("description", {
-                  required: "Please enter description",
-                })}
-                className={errors.description && 'is-invalid'}
-                placeholder="Product description"
-                id="description"
-                name="description"
-                style={{ height: "400px" }}
-                floatingLabel="Product Description*">
-              </CFormTextarea>
+          </CCol>          
+          <CCol md="6" className="editor">
+              <div style={{ height: '350px',marginBottom:"60px" }}> 
+                  <ReactQuill
+                      theme="snow"
+                      onChange={handleDescriptionChange}
+                      placeholder="Enter product description"
+                      style={{ height: '100%', }} 
+                      modules={{
+                          toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                      }}
+                  />
+              </div>
               <p className="invalid-feedback d-block">{errors.description?.message}</p>
-            </CFormFloating>
           </CCol>
-          <CCol md="6">
-            <CFormFloating>
-              <CFormTextarea
-                {...register("instruction", {
-                  required: "Please enter description",
-                })}
-                className={errors.instruction && 'is-invalid'}
-                placeholder="Instruction"
-                id="instruction"
-                name="instruction"
-                style={{ height: "400px" }}
-                floatingLabel="Product Instruction">
-              </CFormTextarea>
+          
+          <CCol md="6" className="editor">
+              <div style={{ height: '350px',marginBottom:"60px" }}> 
+                  <ReactQuill
+                      theme="snow"
+                      onChange={handleInstructionChange}
+                      placeholder="Enter product instruction"
+                      style={{ height: '100%'}} 
+                      modules={{
+                          toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                      }}
+                  />
+              </div>
               <p className="invalid-feedback d-block">{errors.instruction?.message}</p>
-            </CFormFloating>
           </CCol>
-
           <CCol md="6">
             <label className="mb-3">Product Image* <small>(Recommended Size 500 X 500 Pixel)</small></label>
             <div
@@ -221,13 +233,10 @@ const NewProduct = () => {
 
           </CCol>
 
-          <CCol md="6">
+          <CCol md="6" className="mt-5">
             <CFormFloating>
               <CFormInput
-                {...register("video_url", {
-                  required: "Please enter description",
-                })}
-                className={errors.video_url && 'is-invalid'}
+                {...register("video_url")}
                 type="text"
                 id="video_url"
                 name="video_url"
@@ -236,7 +245,6 @@ const NewProduct = () => {
                 floatingLabel="Product Video Link (Only Youtube)"
                 placeholder="Product Video Link (Optional)"
               />
-              <p className="invalid-feedback d-block">{errors.video_url?.message}</p>
             </CFormFloating>
             {previewVideo &&
               <div className="mt-3">

@@ -137,7 +137,7 @@ const EditPage = () => {
                     </CCol>
 
                     <CCol md="12" className="editor">
-                        <div style={{ height: '350px' }}> {/* Adjust the height here */}
+                        <div style={{ height: '350px' }}> 
                             <ReactQuill
                                 theme="snow"
                                 value={description}

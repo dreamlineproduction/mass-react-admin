@@ -95,7 +95,7 @@ const CityUser = ({}) => {
                                         return (<CTableRow key={item.id}>
                                             <CTableHeaderCell scope="row">{item.id}</CTableHeaderCell>
                                             <CTableDataCell>
-                                                <Link to={'/users/all-users'}>
+                                                <Link to={`/users/edit-user/${item.id}`}>
                                                     {item.name}
                                                 </Link>
                                             </CTableDataCell>
@@ -109,7 +109,7 @@ const CityUser = ({}) => {
                                                 }
                                                 
                                             </CTableDataCell>
-                                            <CTableDataCell>+{item.phone}</CTableDataCell>
+                                            <CTableDataCell>{item.phone}</CTableDataCell>
                                             <CTableDataCell>{item.created_at}</CTableDataCell>
                                             <CTableDataCell>{item.last_login}</CTableDataCell>
                                             <CTableDataCell>{item.total_xp ? item.total_xp : '0'} xp</CTableDataCell>
