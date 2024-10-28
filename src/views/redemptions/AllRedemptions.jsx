@@ -239,7 +239,7 @@ const AllRedemptions = () => {
 												<td>
 													{item.order.status === 1 &&
 														<CDropdown >
-															<CDropdownToggle color="dark">More Options</CDropdownToggle>
+															<CDropdownToggle color="secondary">More Options</CDropdownToggle>
 															<CDropdownMenu>
 																<button
 																	type="button"
@@ -286,7 +286,7 @@ const AllRedemptions = () => {
 
 													{item.order.status === 2 &&
 														<CDropdown >
-															<CDropdownToggle color="dark">More Options</CDropdownToggle>
+															<CDropdownToggle color="secondary">More Options</CDropdownToggle>
 															<CDropdownMenu>
 																<button
 																	onClick={() => changeStatus(item.id, item.order_id)}

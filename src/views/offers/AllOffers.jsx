@@ -97,14 +97,14 @@ const AllOffers = () => {
         }
     }
 
-   
+
     const handlerSearch = () => {
         if (search.trim() !== '') {
-            finalUrl+=`&search=${search}`
+            finalUrl += `&search=${search}`
             fetchOffer();
-        }   
+        }
     };
-   
+
 
 
     useEffect(() => {
@@ -115,20 +115,20 @@ const AllOffers = () => {
         <main>
             <div className="mb-4 d-flex justify-content-end  gap-3">
                 <div className="search-input-outer">
-                    <input 
+                    <input
                         onChange={(e) => {
                             setSearchinput(e.target.value)
-                            if(e.target.value === ''){
+                            if (e.target.value === '') {
                                 fetchOffer()
                             }
                         }}
                         value={search}
-                        className="form-control" 
-                        type="text"                                   
-                        placeholder="Search..." 
+                        className="form-control"
+                        type="text"
+                        placeholder="Search..."
                     />
                 </div>
-                
+
                 <div>
                     <CButton onClick={handlerSearch} color="primary" className="me-3">
                         <CIcon icon={cilSearch} /> Search
@@ -144,7 +144,7 @@ const AllOffers = () => {
                                 <Link to={'/offers/new-offer'}>
                                     <CButton color="primary" className="me-3">+ Add New Offer</CButton>
                                 </Link>
-                            </div>                      
+                            </div>
                         </div>
                     </div>
                 </CCardHeader>
@@ -171,7 +171,7 @@ const AllOffers = () => {
                                     {
                                         offers.map(item => {
                                             return (
-                                                <tr key={item.id}>                                                
+                                                <tr key={item.id}>
                                                     <td>{item.id}</td>
                                                     <td>
                                                         {item.image &&
@@ -189,7 +189,7 @@ const AllOffers = () => {
                                                     </td>
                                                     <td>
                                                         <CDropdown >
-                                                            <CDropdownToggle className="border-0" caret={false} href="#" color="ghost">...</CDropdownToggle>
+                                                            <CDropdownToggle className="border-0" color="secondary" href="#">More Options</CDropdownToggle>
                                                             <CDropdownMenu>
                                                                 <Link className="dropdown-item" to={`/offers/edit-offer/${item.id}`}>Edit</Link>
                                                                 <CDropdownItem onClick={() => changeStatus(item.id)}>
@@ -213,7 +213,7 @@ const AllOffers = () => {
                         }
                     </div>
                     {offers.length > 0 &&
-                        <div className='d-flex  align-items-start justify-content-end'>                      
+                        <div className='d-flex  align-items-start justify-content-end'>
                             <Pagination
                                 pageCount={pageCount}
                                 handlePageChange={(event) => setPageNumber(event.selected + 1)}

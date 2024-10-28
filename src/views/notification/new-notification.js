@@ -72,7 +72,7 @@ const NewNotification = () => {
                             </div>
 
                             <div className="mb-3">
-                                <CFormLabel>Image URL</CFormLabel>
+                                <CFormLabel>Image URL (Optional)</CFormLabel>
                                 <CFormInput
                                     value={imageUrl}
                                     onChange={(e) => setImageUrl(e.target.value)}
