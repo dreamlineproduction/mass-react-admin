@@ -10,54 +10,54 @@ import NoState from "../../components/NoState";
 import Pagination from "../../components/Pagination";
 
 const AllPages = () => {
-    const { Auth } =  useContext(AuthContext)
+    const { Auth } = useContext(AuthContext)
     const perPage = 20;
     const accessToken = Auth('accessToken');
 
     const [pages, setPage] = useState([]);
     const [pageNumber, setPageNumber] = useState(1);
     const [pageCount, setPageCount] = useState(0);
-    const [isLoading,setLoading] = useState(true);
+    const [isLoading, setLoading] = useState(true);
 
-     //--Fetch Data
-     let finalUrl = `${API_URL}/pages?page=${pageNumber}&perPage=${perPage}`;
-     const fetchOffer = async () => {
-        let response = await actionFetchData(finalUrl,accessToken);
-        response    = await response.json();
+    //--Fetch Data
+    let finalUrl = `${API_URL}/pages?page=${pageNumber}&perPage=${perPage}`;
+    const fetchOffer = async () => {
+        let response = await actionFetchData(finalUrl, accessToken);
+        response = await response.json();
         if (response.status) {
-        setPage(response.data.data);
-        setPageCount(response.totalPage);
-        }          
+            setPage(response.data.data);
+            setPageCount(response.totalPage);
+        }
         setLoading(false)
     }
 
-     // Change Status
+    // Change Status
     const changeStatus = async (id) => {
-        const toastId = toast.loading("Please wait...")   
+        const toastId = toast.loading("Please wait...")
 
         let findedIndex = pages.findIndex(item => item.id === id);
-        let status = (pages[findedIndex].status === 1) ? 0 : 1;  
+        let status = (pages[findedIndex].status === 1) ? 0 : 1;
 
-        try{
-            const postData = {status};
-            let response =  await actionPostData(`${API_URL}/pages/change-status/${id}`,accessToken,postData,'PUT');
+        try {
+            const postData = { status };
+            let response = await actionPostData(`${API_URL}/pages/change-status/${id}`, accessToken, postData, 'PUT');
             response = await response.json();
 
             if (response.status) {
                 pages[findedIndex].status = status;
                 setPage([...pages]);
-                toast.success(response.message,{
-                    id:toastId
+                toast.success(response.message, {
+                    id: toastId
                 });
-            }             
-        } catch(error){
+            }
+        } catch (error) {
             toast.error(error)
         }
     }
 
     useEffect(() => {
         fetchOffer();
-    },[pageNumber])
+    }, [pageNumber])
 
     return (
         <CCard>
@@ -66,7 +66,7 @@ const AllPages = () => {
                     <div><strong>All Pages</strong></div>
                     <div className="d-flex">
                         <div>
-                        
+
                         </div>
                     </div>
                 </div>
@@ -74,7 +74,7 @@ const AllPages = () => {
 
             <CCardBody>
                 <div>
-                    {isLoading && 
+                    {isLoading &&
                         <Loading />
                     }
 
@@ -92,24 +92,24 @@ const AllPages = () => {
                             <tbody>
                                 {
                                     pages.map(item => {
-                                        return(
-                                            <tr key={item.id}>                                               
+                                        return (
+                                            <tr key={item.id}>
                                                 <td>{item.id}</td>
-                                                <td>{item.title}</td>      
+                                                <td>{item.title}</td>
                                                 <td>{item.created_at}</td>
                                                 <td>
-                                                    {statusBadge(item.status)}                                                    
+                                                    {statusBadge(item.status)}
                                                 </td>
                                                 <td>
-                                                <CDropdown>
-                                                    <CDropdownToggle className="border-0" caret={false} href="#" color="ghost">...</CDropdownToggle>
-                                                    <CDropdownMenu>                                                    
-                                                        <Link className="dropdown-item" to={`/pages/edit-page/${item.id}`}>Edit</Link>
-                                                        <CDropdownItem onClick={() => changeStatus(item.id)}>
-                                                            {item.status === 1 ? 'Inactive' : 'Active' }
-                                                        </CDropdownItem>
-                                                    </CDropdownMenu>
-                                                </CDropdown>
+                                                    <CDropdown>
+                                                        <CDropdownToggle className="border-0" href="#" color="secondary">More Options</CDropdownToggle>
+                                                        <CDropdownMenu>
+                                                            <Link className="dropdown-item" to={`/pages/edit-page/${item.id}`}>Edit</Link>
+                                                            <CDropdownItem onClick={() => changeStatus(item.id)}>
+                                                                {item.status === 1 ? 'Inactive' : 'Active'}
+                                                            </CDropdownItem>
+                                                        </CDropdownMenu>
+                                                    </CDropdown>
                                                 </td>
                                             </tr>
                                         )
@@ -117,23 +117,23 @@ const AllPages = () => {
 
                                 }
                             </tbody>
-                        </table>          
+                        </table>
                         :
-                        <NoState 
+                        <NoState
                             message="No Pages"
-                        />         
-                    } 
+                        />
+                    }
                 </div>
                 {pages.length > 0 &&
-                    <div className='d-flex  align-items-start justify-content-end'>                     
-                        <Pagination 
+                    <div className='d-flex  align-items-start justify-content-end'>
+                        <Pagination
                             pageCount={pageCount}
-                            handlePageChange={(event) => setPageNumber(event.selected+1)}
-                        />  
-                       
-                    </div>  
-                                     
-                }   
+                            handlePageChange={(event) => setPageNumber(event.selected + 1)}
+                        />
+
+                    </div>
+
+                }
             </CCardBody>
         </CCard>
     );

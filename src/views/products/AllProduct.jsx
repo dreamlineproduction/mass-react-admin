@@ -189,7 +189,7 @@ const AllProduct = () => {
                           <td>
 
                             <CDropdown >
-                              <CDropdownToggle color="primary" href="#" >More Option</CDropdownToggle>
+                              <CDropdownToggle color="secondary" href="#" >More Options</CDropdownToggle>
                               <CDropdownMenu>
                                 <Link className="dropdown-item" to={`/products/edit-product/${product.id}`}>Edit</Link>
                                 <CDropdownItem onClick={() => changeStatus(product.id)}>
