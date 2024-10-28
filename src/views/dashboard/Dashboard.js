@@ -285,36 +285,40 @@ const Dashboard = () => {
                 <Loading />
               }
 
+            {loadingTransaction === false &&
+              <CRow>
+                  <CCol md={6}>
+
+                  </CCol>
+                  <CCol md={6}>
+                    <div className='d-flex justify-content-end'>
+                      <div>
+                        <CFormSelect aria-label="Default select example" defaultValue={selectedValue} onChange={(e) => filterTransaction(e.target.value)}>
+                          <option disabled value={''} >Select Date</option>
+                          <option value="1_week">1 Week</option>
+                          <option value="15_days">15 Days</option>
+                          <option value="1_month">1 Month</option>
+                          <option value="3_month">3 Months</option>
+                          <option value="1_year">1 Year</option>
+                        </CFormSelect>
+                      </div>
+                      <div>
+                        <CButton
+                          onClick={exportTransactionToExcel}
+                          color="primary"
+                          variant="outline"
+                          className='ms-2'>
+                          <CIcon icon={cilCloudDownload} /> Export as Excel
+                        </CButton>
+                      </div>
+                    </div>
+                  </CCol>
+              </CRow>
+            }
+
               {transactions.length > 0 && loadingTransaction === false ?
                 <>
-                  <CRow>
-                    <CCol md={6}>
-
-                    </CCol>
-                    <CCol md={6}>
-                      <div className='d-flex justify-content-end'>
-                        <div>
-                          <CFormSelect aria-label="Default select example" defaultValue={selectedValue} onChange={(e) => filterTransaction(e.target.value)}>
-                            <option disabled value={''} >Select Date</option>
-                            <option value="1_week">1 Week</option>
-                            <option value="15_days">15 Days</option>
-                            <option value="1_month">1 Month</option>
-                            <option value="3_month">3 Months</option>
-                            <option value="1_year">1 Year</option>
-                          </CFormSelect>
-                        </div>
-                        <div>
-                          <CButton
-                            onClick={exportTransactionToExcel}
-                            color="primary"
-                            variant="outline"
-                            className='ms-2'>
-                            <CIcon icon={cilCloudDownload} /> Export as Excel
-                          </CButton>
-                        </div>
-                      </div>
-                    </CCol>
-                  </CRow>
+                  
 
                   <CTable responsive bordered className='mt-3' >
                     <CTableHead>
