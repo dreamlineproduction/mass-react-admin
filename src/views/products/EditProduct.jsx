@@ -1,12 +1,15 @@
 import { CButton, CCard, CCardBody, CCardHeader, CCol, CForm, CFormFloating, CFormInput, CFormTextarea } from "@coreui/react"
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { API_URL, createSlug } from "../../config";
 import AuthContext from "../../context/auth";
 import LoadingButton from "../../components/LoadingButton";
 import Header from "../../components/form/Header";
+import ReactQuill from "react-quill";
+import 'react-quill/dist/quill.snow.css';
+
 import { actionFetchData, actionImageUplaod, actionPostData } from "../../actions/actions";
 
 const EditProduct = () => {
@@ -26,12 +29,19 @@ const EditProduct = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     reset,
+    control,
     formState: {
       errors,
       isSubmitting
     }
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      description: "",
+      instruction:""
+    }
+  });
 
   const chooseImage = async () => {
     fileInput.current.click();
@@ -82,6 +92,8 @@ const EditProduct = () => {
     }
   }
 
+ 
+
   // update product
   const submitHandler = useCallback(async (data) => {
     const toastId = toast.loading("Please wait...")
@@ -123,6 +135,8 @@ const EditProduct = () => {
 
     if (data.status) {
       reset(data.data);
+
+     
       setImage(data.data.image_url)
       setLoading(false);
       if (data.data.video_url) {
@@ -198,7 +212,7 @@ const EditProduct = () => {
               />
             </CFormFloating>
           </CCol>
-          <CCol md="6">
+          {/* <CCol md="6">
             <CFormFloating>
               <CFormTextarea
                 {...register("description", {
@@ -213,22 +227,66 @@ const EditProduct = () => {
               </CFormTextarea>
               <p className="invalid-feedback d-block">{errors.description?.message}</p>
             </CFormFloating>
+          </CCol> */}
+          <CCol md="6" className="editor">
+              <div style={{ height: '350px',marginBottom:"60px" }}> 
+                <Controller
+                    name="description"
+                    control={control}
+                    rules={{ required: 'Description is required' }}
+                    render={({ field }) => (
+                      <ReactQuill
+                        {...field}
+                        value={field.value || ''} 
+                        onChange={(content) => field.onChange(content)}
+                        placeholder="Enter product description"
+                        modules={{
+                            toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                        }}
+                        style={{ height: '100%', }} 
+                      />
+                    )}
+                  />                  
+              </div>
+              <p className="invalid-feedback d-block">{errors.description?.message}</p>
           </CCol>
-          <CCol md="6">
-            <CFormFloating>
-              <CFormTextarea
-                {...register("instruction", {
-                  required: "Please enter description",
-                })}
-                className={errors.instruction && 'is-invalid'}
-                placeholder="Instruction"
-                id="instruction"
-                name="instruction"
-                style={{ height: "400px" }}
-                floatingLabel="Product Instruction">
-              </CFormTextarea>
+          
+          {/* <CCol md="6" className="editor">
+              <div style={{ height: '350px',marginBottom:"60px" }}> 
+                  <ReactQuill
+                      theme="snow"
+                      onChange={handleInstructionChange}
+                      placeholder="Enter product instruction"
+                      style={{ height: '100%'}} 
+                      modules={{
+                          toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                      }}
+                  />
+              </div>
               <p className="invalid-feedback d-block">{errors.instruction?.message}</p>
-            </CFormFloating>
+          </CCol> */}
+
+          <CCol md="6" className="editor">
+              <div style={{ height: '350px',marginBottom:"60px" }}> 
+                <Controller
+                    name="instruction"
+                    control={control}
+                    rules={{ required: 'Instruction is required' }}
+                    render={({ field }) => (
+                      <ReactQuill
+                        {...field}
+                        value={field.value || ''} 
+                        onChange={(content) => field.onChange(content)}
+                        placeholder="Enter product instruction"
+                        modules={{
+                            toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                        }}
+                        style={{ height: '100%', }} 
+                      />
+                    )}
+                  />                  
+              </div>
+              <p className="invalid-feedback d-block">{errors.instruction?.message}</p>
           </CCol>
 
           <CCol md="6" style={{ position: "relative" }}>
