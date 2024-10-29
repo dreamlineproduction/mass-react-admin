@@ -9,6 +9,7 @@ import { actionFetchData, actionFetchState, actionPostData } from "../../actions
 import toast from "react-hot-toast";
 import { API_URL } from "../../config";
 import Loading from "../../components/Loading";
+import NoState from "../../components/NoState";
 
 const EditUser = () => {
     const params = useParams();
@@ -19,7 +20,10 @@ const EditUser = () => {
     const userAvtar = useRef(null);
     const [states, setState] = useState([]);
     const [isLoading, setLoading] = useState(true);
+
+    const [user, setUser] = useState(null);
     const [orders,setOrder] = useState([]);
+    const [transactions, setTransaction] = useState([]);
 
     const navigate = useNavigate();
 
@@ -89,6 +93,8 @@ const EditUser = () => {
                 fullName: response.data.name,
                 ...response.data
             });
+            setUser(response.data)
+            console.log(response.data);
             userAvtar.current.innerHTML = response.data.avtar_name;
             setLoading(false);
         }
@@ -103,13 +109,24 @@ const EditUser = () => {
             setOrder(response.data.data);
         }
     }
-  
     
+    const fetchTransaction= async() => {
+        let url = `${API_URL}/front/transactions?userId=${params.id}`;
+        let response = await actionFetchData(url, accessToken);
+        response = await response.json();
+
+        if (response.status) {
+           setTransaction(response.data.data)
+        }
+    }
+    
+    console.log(user);
 
     useEffect(() => {
         fetchState()
         fetchUser();
         fetchOrder()
+        fetchTransaction();
     }, [])
 
     return (
@@ -308,9 +325,9 @@ const EditUser = () => {
                         <div><strong>All Transactions</strong></div>
                         <div className="d-flex">
                             <div>
-                                <CBadge variant="outline" className="xp-badge me-2">Total Collected: 1300</CBadge>
-                                <CBadge variant="outline" className="xp-badge me-2">Total Redeemed: 1200</CBadge>
-                                <CBadge variant="outline" className="current-xp-badge me-2">Current Balance: 100</CBadge>
+                                <CBadge variant="outline" className="xp-badge me-2">Total Collected: {user?.total_xp || 0}</CBadge>
+                                <CBadge variant="outline" className="xp-badge me-2">Total Redeemed:  {user?.redeem_xp || 0}</CBadge>
+                                <CBadge variant="outline" className="current-xp-badge me-2">Current Balance: {user?.balance_xp || 0}</CBadge>
 
 
                             </div>
@@ -319,10 +336,10 @@ const EditUser = () => {
                     </div>
                 </CCardHeader>
                 <CCardBody>
+                    {transactions.length >  0 && 
                     <CTable bordered>
                         <CTableHead>
                             <CTableRow>
-                                <CTableHeaderCell scope="col">ID</CTableHeaderCell>
                                 <CTableHeaderCell scope="col">Type</CTableHeaderCell>
                                 <CTableHeaderCell scope="col">Product Name</CTableHeaderCell>
                                 <CTableHeaderCell scope="col">Date & Time</CTableHeaderCell>
@@ -330,24 +347,39 @@ const EditUser = () => {
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                                <CTableDataCell>Redeem XP</CTableDataCell>
-                                <CTableDataCell>Firebolt Ninja Cali Pro</CTableDataCell>
-                                <CTableDataCell>27/10/2024 at 22:19</CTableDataCell>
-                                <CTableDataCell><span className="text-danger">- 1200</span></CTableDataCell>
-                            </CTableRow>
+                            {transactions.map(item => {
+                                return(
+                                    <CTableRow key={`transaction-${item.id}`}>
+                                        <CTableDataCell>
+                                            {item.type === 'redeem' && 'Redeem XP'}
+                                            {item.type === 'refund' && 'Refund'}
+                                            {item.type === 'qrcode' && 'Scan Code'}
+                                            {item.type === 'commission' && 'Commission'}
+                                            
+                                        </CTableDataCell>
+                                        <CTableDataCell>
+                                            {(item.type === 'qrcode' || item.type === 'commission') &&
+                                                item.product.short_name
+                                            }
+                                            {(item.type === 'refund' || item.type ===  'redeem') && 
+                                                item.reward.short_title
+                                            }
 
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                                <CTableDataCell>Scan QR</CTableDataCell>
-                                <CTableDataCell>Mass Wodd Polish</CTableDataCell>
-                                <CTableDataCell>22/10/2024 at 16:25</CTableDataCell>
-                                <CTableDataCell><span className="text-primary">+ 250</span></CTableDataCell>
-                            </CTableRow>
+                                        </CTableDataCell>
+                                        <CTableDataCell>{item.updated_at}</CTableDataCell>
+                                        <CTableDataCell>
+                                            {item.type ===  'redeem' && <span className="text-danger">-{item.xp}XP</span>}
+                                            {(item.type ===  'refund' || item.type === 'qrcode' || item.type === 'commission') &&
+                                                <span className="text-success">+{item.xp}XP</span>
+                                            }
 
+                                        </CTableDataCell>
+                                    </CTableRow>
+                                )
+                            })}
                         </CTableBody>
                     </CTable>
+                    }
                 </CCardBody>
             </CCard>
 
@@ -357,10 +389,10 @@ const EditUser = () => {
                 <CCardHeader>
                     <div className="d-flex justify-content-between align-items-center">
                         <div><strong>All Orders</strong></div>
-
                     </div>
                 </CCardHeader>
                 <CCardBody>
+                    {orders.length > 0 ?
                     <CTable bordered>
                         <CTableHead>
                             <CTableRow>
@@ -373,28 +405,40 @@ const EditUser = () => {
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                                <CTableDataCell>Firebolt Ninja Cali Pro</CTableDataCell>
-                                <CTableDataCell><span className="text-danger">2500</span></CTableDataCell>
-                                <CTableDataCell>22/10/2024</CTableDataCell>
-                                <CTableDataCell>27/10/2024</CTableDataCell>
-                                <CTableDataCell><span class="badge bg-primary">In transit</span></CTableDataCell>
-                            </CTableRow>
+                            {orders.map(item => {
+                                return(
+                                    <CTableRow key={`order-${item.id}`}>
+                                        <CTableHeaderCell scope="row">{item.id}</CTableHeaderCell>
+                                        <CTableDataCell>{item.title}</CTableDataCell>
+                                        <CTableDataCell><span className="text-danger">{item?.xp_value} XP</span></CTableDataCell>
+                                        <CTableDataCell>{item.order_date}</CTableDataCell>
+                                        <CTableDataCell>{item.updated_at}</CTableDataCell>
+                                        <CTableDataCell>
+                                            {item.status === 1 &&
+                                                <span className="badge bg-warning" style={{ fontWeight: "600" }}>Pending</span>
+                                            }
 
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                                <CTableDataCell>Firebolt Ninja Cali Pro</CTableDataCell>
-                                <CTableDataCell><span className="text-danger">2500</span></CTableDataCell>
-                                <CTableDataCell>22/10/2024</CTableDataCell>
-                                <CTableDataCell>27/10/2024</CTableDataCell>
-                                <CTableDataCell><span class="badge bg-success">Delivered</span></CTableDataCell>
-                            </CTableRow>
+                                            {item.status === 2 &&
+                                                <span className="badge bg-primary" style={{ fontWeight: "600" }}>In transit</span>
+                                            }
 
-
-
+                                            {item.status === 3 &&
+                                                <span className="badge bg-success" style={{ fontWeight: "600" }}>Delivered</span>
+                                            }
+                                            {item.status === 4 &&
+                                                <span className="badge bg-danger" style={{ fontWeight: "600" }}>Decline</span>
+                                            }
+                                        </CTableDataCell>
+                                    </CTableRow>
+                                )})
+                            }
                         </CTableBody>
                     </CTable>
+                    :
+                    <NoState
+                        message='No records found (s).'
+                    />
+                    }
                 </CCardBody>
             </CCard>
 
