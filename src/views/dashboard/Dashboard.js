@@ -285,8 +285,8 @@ const Dashboard = () => {
                 <Loading />
               }
 
-            {loadingTransaction === false &&
-              <CRow>
+              {loadingTransaction === false &&
+                <CRow>
                   <CCol md={6}>
 
                   </CCol>
@@ -313,12 +313,12 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </CCol>
-              </CRow>
-            }
+                </CRow>
+              }
 
               {transactions.length > 0 && loadingTransaction === false ?
                 <>
-                  
+
 
                   <CTable responsive bordered className='mt-3' >
                     <CTableHead>
@@ -417,7 +417,7 @@ const Dashboard = () => {
                         return (
                           <CTableRow key={item.id}>
                             <CTableHeaderCell scope="row">{item.id}</CTableHeaderCell>
-                            <CTableDataCell>{item?.product?.name}</CTableDataCell>
+                            <CTableDataCell>{item.name}</CTableDataCell>
                             <CTableDataCell>{item.xp_value}</CTableDataCell>
                             <CTableDataCell>{item.batch_number}</CTableDataCell>
                             <CTableDataCell>{item.created_at}</CTableDataCell>
