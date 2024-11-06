@@ -102,6 +102,7 @@ const AllQrs = () => {
 
                                         <th>ID</th>
                                         <th>Product Name</th>
+                                        <th>Total Qr</th>
                                         <th>XP Required</th>
                                         <th>Batch Number</th>
                                         <th>Created At</th>
@@ -114,6 +115,7 @@ const AllQrs = () => {
 
                                                     <td>{item.id}</td>
                                                     <td>{(item.name)}</td>
+                                                    <td>{item.qr_code_content_count || 0}</td>                                                    
                                                     <td>{item.xp_value} XP</td>
                                                     <td>{item.batch_number}</td>
                                                     <td>{item.created_at}</td>
