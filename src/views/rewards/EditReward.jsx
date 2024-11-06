@@ -199,6 +199,7 @@ const EditReward = () => {
                         </CCol>
 
                         <CCol md="12">
+                            <label className="mb-3">XP Required (Numeric Value)*</label>
                             <CFormFloating>
                                 <CFormInput 
                                     {...register("xp_value", {
@@ -208,7 +209,7 @@ const EditReward = () => {
                                     type="number" 
                                     id="xp_value" 
                                     name="xp_value"
-                                    floatingLabel="XP Required (Numeric Value)*"
+                                    floatingLabel=""
                                     placeholder="XP Required"  
                                 />
                                 <p className="invalid-feedback d-block">{errors.xp_value?.message}</p>
