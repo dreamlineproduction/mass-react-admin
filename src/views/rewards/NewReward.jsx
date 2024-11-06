@@ -198,20 +198,20 @@ const NewReward = () => {
           </CCol>
 
           <CCol md="12">
-            <CFormFloating>
-              <CFormInput
-                {...register("xp_value", {
-                  required: "Please enter XP",
-                })}
-                className={errors.xp_value && 'is-invalid'}
-                type="number"
-                id="xp_value"
-                name="xp_value"
-                floatingLabel="XP Required (Numeric Value)*"
-                placeholder="XP Required"
-              />
-              <p className="invalid-feedback d-block">{errors.xp_value?.message}</p>
-            </CFormFloating>
+            <label className="mb-3">XP Required (Numeric Value)*</label>
+            <CFormInput
+              {...register("xp_value", {
+                required: "Please enter XP",
+              })}
+              className={errors.xp_value && 'is-invalid'}
+              type="number"
+              id="xp_value"
+              name="xp_value"
+              floatingLabel="XP Required (Numeric Value)*"
+              placeholder="XP Required"
+            />
+            <p className="invalid-feedback d-block">{errors.xp_value?.message}</p>
+
           </CCol>
           <CCol xs="12">
             <CButton color="primary" type="submit">Create Reward</CButton>
