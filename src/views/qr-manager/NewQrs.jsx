@@ -60,7 +60,6 @@ const NewQrs = () => {
         setLoading(false)
     }
 
-    console.log(products);
     useEffect(() => {
         fetchProduct();
     },[])
@@ -140,17 +139,13 @@ const NewQrs = () => {
                 <CCol md="4">
                     <CFormFloating>
                         <CFormInput 
-                            {...register("batch_number", {
-                                required: "Please enter batch number",                                
-                            })}
-                            className={errors.batch_number && 'is-invalid'} 
+                            {...register("batch_number")}
                             type="text" 
                             id="batch_number" 
                             name="batch_number"
                             floatingLabel="Batch Number"
                             placeholder="Batch Number" 
                         />
-                        <p className="invalid-feedback d-block">{errors.batch_number?.message}</p>
                     </CFormFloating>
                 </CCol>
 
