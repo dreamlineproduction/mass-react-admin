@@ -26,6 +26,8 @@ import AllRedemptions from '../views/redemptions/AllRedemptions';
 import CityUser from '../views/users/CityUser';
 import AllNotification from '../views/notification/all-notifications';
 import NewNotification from '../views/notification/new-notification';
+import ProfileSetting from '../views/ProfileSetting';
+import ChangePassword from '../views/ChangePassword';
 
 const AppContent = () => {
     return (
@@ -236,7 +238,22 @@ const AppContent = () => {
                             </RequireAuth>
                         }
                     />
-
+                    <Route
+                        path='/profile'
+                        element={
+                            <RequireAuth>
+                                <ProfileSetting />
+                            </RequireAuth>
+                        }
+                    />
+                    <Route
+                        path='/change-password'
+                        element={
+                            <RequireAuth>
+                                <ChangePassword />
+                            </RequireAuth>
+                        }
+                    />
 
                 </Routes>
             </Suspense>

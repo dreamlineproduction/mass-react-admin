@@ -1,7 +1,6 @@
-import { CButton, CCard, CCardBody, CCardHeader, CFormInput } from "@coreui/react";
-import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { actionDeleteData, actionFetchData } from "../../actions/actions";
+import { CButton, CCard, CCardBody, CCardHeader, CCol, CForm, CFormFloating, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { actionDeleteData, actionFetchData, actionFetchSetting, actionPostData } from "../../actions/actions";
 import { API_URL } from "../../config";
 import Pagination from "../../components/Pagination";
 import AuthContext from "../../context/auth";
@@ -11,6 +10,8 @@ import Loading from "../../components/Loading";
 import NoState from "../../components/NoState";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
+import LoadingButton from "../../components/LoadingButton";
 
 
 
@@ -19,15 +20,29 @@ const AllReferrals = () => {
     const perPage = 20;
     const accessToken = Auth('accessToken');
 
+    const [setting, setSetting] = useState(null);
+
     const [pageNumber, setPageNumber] = useState(1);
     const [pageCount, setPageCount] = useState(0);
     const [isLoading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [referralCommissionModal, setReferralCommissionModal] = useState(false)
+
+
     const [selectedReferral, setSelectedReferral] = useState(null);
     const [referee, setReferee] = useState([]);
     const [referrals, setReferral] = useState([]);
     const [search, setSearchinput] = useState('')
 
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: {
+          errors,
+          isSubmitting
+        }
+    } = useForm();
 
     let finalUrl = `${API_URL}/referral?page=${pageNumber}&perPage=${perPage}`;
     const fetchReferee = async () => {
@@ -41,12 +56,16 @@ const AllReferrals = () => {
         setLoading(false)
     }
 
+    const fetchSetting = async () => {
+       const setting =  await actionFetchSetting(accessToken);
+       reset(setting.data)
+    }
 
 
     const handleOpenModal = async (referral) => {
-        setSelectedReferral(referral);
         setShowModal(true);
         setLoading(true)
+        setSelectedReferral(referral);
 
         let response = await actionFetchData(`${API_URL}/referral/all/${referral.from_id}`, accessToken);
         response = await response.json();
@@ -98,6 +117,32 @@ const AllReferrals = () => {
         }   
     };
 
+    const submitHandler = useCallback(async (data) => {
+        const toastId = toast.loading("Please wait...")
+
+        try {
+            let response = await actionPostData(`${API_URL}/settings/1`, accessToken, data,'PUT');
+            response = await response.json();
+
+            setReferralCommissionModal(false);
+            if (response.status) {
+                toast.success(response.message, {
+                    id: toastId
+                });
+            } else {
+                toast.error('server error', {
+                    id: toastId
+                });
+            }
+        } catch (error) {
+            toast.error(error)
+        }
+    })
+  
+    useEffect(() => {
+        fetchSetting()
+    },[])
+
     useEffect(() => {
         fetchReferee();
     }, [pageNumber]);
@@ -130,7 +175,12 @@ const AllReferrals = () => {
             <CCard>
                 <CCardHeader>
                     <div className="d-flex justify-content-between align-items-center">
-                        <div><strong>All Referrals</strong></div>
+                        <div>
+                            <strong>All Referrals</strong>
+                        </div>
+                        <div>
+                            <CButton onClick={() => setReferralCommissionModal(!referralCommissionModal)} color="dark" type="submit" >Add Referral Commission</CButton>  
+                        </div>
                     </div>
                 </CCardHeader>
 
@@ -215,10 +265,10 @@ const AllReferrals = () => {
                                 <div className="modal-body">
                                     <div className="referraluserbody">
                                         <p><strong>ID:</strong> {selectedReferral?.id}</p>
-                                        <p><strong>Name:</strong> {selectedReferral.referee.name}</p>
-                                        <p><strong>Mobile:</strong> {selectedReferral.referee.phone}</p>
+                                        <p><strong>Name:</strong> {selectedReferral?.name}</p>
+                                        <p><strong>Mobile:</strong> {selectedReferral?.phone}</p>
                                         <p><strong>No of referrals:</strong> {selectedReferral.total_referral || 0}</p>
-                                        <p><strong>XP Earned:</strong> {selectedReferral?.xpearned || 0}</p>
+                                        <p><strong>XP Earned:</strong> {selectedReferral?.xp || 0}</p>
                                     </div>
 
                                     {isLoading && referrals.length === 0 &&
@@ -287,6 +337,52 @@ const AllReferrals = () => {
                         </div>
                     </div>
                 )}
+
+                <CModal
+                    alignment="center"
+                    backdrop="static"
+                    visible={referralCommissionModal}
+                    onClose={() => setReferralCommissionModal(false)}
+                    aria-labelledby="StaticBackdropExampleLabel"
+                    >
+                    <CForm  onSubmit={handleSubmit(submitHandler)}>
+                        <CModalHeader>
+                            <CModalTitle id="StaticBackdropExampleLabel">Referral Commission</CModalTitle>
+                        </CModalHeader>
+                        <CModalBody>                        
+                                <CCol md="12">
+                                    <CFormFloating>
+                                        <CFormInput 
+                                            {...register("commission", {
+                                                required: "Please enter title", 
+                                                validate: {
+                                                    isInteger: (value) =>
+                                                        Number.isInteger(Number(value)) || "Only integer values are allowed."
+                                                }
+                                            })}    
+                                            className={errors.commission && 'is-invalid'}                              
+                                            type="text"
+                                            id="commission"
+                                            name='commission'
+                                            floatingLabel="Commission"
+                                            placeholder="Enter Commission*"
+                                        />
+                                    </CFormFloating>
+                                    <p className="invalid-feedback d-block">{errors.commission?.message}</p>
+                                </CCol>
+                        </CModalBody>
+                        <CModalFooter className="justify-content-start">                       
+                            {isSubmitting ?
+                                <LoadingButton />
+                                :
+                                <CButton color="primary" type="submit" >Save</CButton>
+                            }
+                        </CModalFooter>
+                    </CForm>
+
+                </CModal>
+
+
             </CCard>
         </main>
     );

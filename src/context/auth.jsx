@@ -6,6 +6,7 @@ export const AuthProvider = ({children}) => {
     const userInfo = localStorage.getItem('user-info');
     const [user,setUser] = useState(userInfo)
 
+
     const login = (user) => {
         setUser(user)
     }
@@ -29,6 +30,8 @@ export const AuthProvider = ({children}) => {
         }
         return authUser
     }
+
+    
 
     return (
         <AuthContext.Provider 

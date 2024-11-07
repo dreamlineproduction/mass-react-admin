@@ -77,6 +77,27 @@ export const actionFetchData = async (url, accessToken) => {
 	}
 }
 
+export const actionFetchSetting = async (accessToken) => {
+	try {
+		let response = await fetch(`${API_URL}/settings/1`, {
+			headers: {
+				"Content-Type": "application/json",
+				'Authorization': `Bearer ${accessToken}`
+			},
+			method: "GET",
+		});
+
+		if (!response.status) {
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+
+		return response = await response.json();
+
+	} catch (error) {
+		console.error('Failed to fetch clients data:', error);
+	}
+}
+
 export const actionDownloadPdf = (productId, batchNumber, accessToken) => {
 	let downloadUrl = `${API_URL}/qr-codes/download?product_id=${productId}&batch_number=${batchNumber}`;
 	
