@@ -42,21 +42,21 @@ const ProfileSetting = () => {
         const toastId = toast.loading("Please wait...")
         const file = event.target.files[0]
         if (file) {
-          let response = await actionImageUplaod(file, accessToken);
-          response = await response.json();
-    
-          if (response.status) {
-            setImageId(response.image_id)
-            toast.success(response.message, {
-              id: toastId
-            });
-    
-            const reader = new FileReader()
-            reader.onload = (e) => {
-              setImage(e.target.result)
+            let response = await actionImageUplaod(file, accessToken);
+            response = await response.json();
+
+            if (response.status) {
+                setImageId(response.image_id)
+                toast.success(response.message, {
+                    id: toastId
+                });
+
+                const reader = new FileReader()
+                reader.onload = (e) => {
+                    setImage(e.target.result)
+                }
+                reader.readAsDataURL(file)
             }
-            reader.readAsDataURL(file)
-          }
         }
     }
 
@@ -73,15 +73,15 @@ const ProfileSetting = () => {
                 ...response.data
             });
             setUser(response.data)
-            setImage(response.data.image_url)   
+            setImage(response.data.image_url)
             setLoading(false);
         }
     }
 
     // Update Offer
     const submitHandler = useCallback(async (data) => {
-        const toastId = toast.loading("Please wait...")        
-        let postObject = { ...data, imageId ,fullName:data.name}
+        const toastId = toast.loading("Please wait...")
+        let postObject = { ...data, imageId, fullName: data.name }
 
         try {
             let response = await actionPostData(`${API_URL}/users/${user.id}`, accessToken, postObject, 'PUT');
@@ -104,7 +104,7 @@ const ProfileSetting = () => {
 
     useEffect(() => {
         fetchUser();
-    },[])
+    }, [])
 
     return (
         <CCard className="mb-5">
@@ -126,14 +126,14 @@ const ProfileSetting = () => {
                         <CFormFloating>
                             <CFormInput
                                 {...register("name", {
-                                    required: "Please enter name",                                    
+                                    required: "Please enter name",
                                 })}
                                 className={errors.name && 'is-invalid'}
                                 type="text"
                                 id="name"
                                 name='name'
-                                floatingLabel="Name"
-                                placeholder="Enter name*"
+                                floatingLabel="Full Name*"
+                                placeholder="Enter full name*"
                             />
                             <p className="invalid-feedback d-block">{errors.name?.message}</p>
                         </CFormFloating>
@@ -152,8 +152,8 @@ const ProfileSetting = () => {
                                 type="email"
                                 id="email"
                                 name='email'
-                                floatingLabel="Email"
-                                placeholder="Enter email*"
+                                floatingLabel="Email Address*"
+                                placeholder="Enter email address*"
                             />
                             <p className="invalid-feedback d-block">{errors.email?.message}</p>
                         </CFormFloating>
@@ -177,17 +177,17 @@ const ProfileSetting = () => {
                                 type="text"
                                 id="phone"
                                 name='phone'
-                                floatingLabel="phone"
+                                floatingLabel="Phone Number*"
                                 placeholder="Enter Phone*"
                             />
                             <p className="invalid-feedback d-block">{errors.phone?.message}</p>
                         </CFormFloating>
                     </CCol>
                     <CCol md="12">
-                        <label className="mb-3">Profile Image <small>(Recommended Size 580 X 340 Pixel)</small></label>
+                        <label className="mb-3">Profile Image </label>
                         <div
                             className={`base-image-input`}
-                            style={{ backgroundImage: imageData ? `url(${imageData})` : ''}}
+                            style={{ width: "200px", height: "200px", borderRadius: "100px", backgroundImage: imageData ? `url(${imageData})` : '' }}
                             onClick={chooseImage}>
                             {!imageData &&
                                 <h6>Choose an Image</h6>
@@ -202,16 +202,10 @@ const ProfileSetting = () => {
                                 accept="image/*"
                                 onChange={onSelectFile}
                             />
-                            {/* {imageData &&
-                                <button
-                                onClick={removeImage}
-                                className="btn btn-danger text-white remove-image-button">
-                                Remove Image
-                                </button>
-                            } */}
-                        </div>                        
+
+                        </div>
                     </CCol>
-                   
+
                     <CCol xs="12">
                         {isSubmitting ?
                             <LoadingButton />
