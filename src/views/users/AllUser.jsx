@@ -219,9 +219,9 @@ const AllUser = () => {
                                                     <td>{user.created_at}</td>
                                                     <td>{user.referral_code ? user.referral_code : 'N/A'}</td>
 
-                                                    <td>0 Products</td>
-                                                    <td>0 XP</td>
-                                                    <td>0 Items</td>
+                                                    <td>{user.scan_product_count} Products</td>
+                                                    <td>{user.balance_xp} XP</td>
+                                                    <td>{user.order_count} Items</td>
                                                     <td>
                                                         {statusBadge(user.status)}
                                                     </td>
