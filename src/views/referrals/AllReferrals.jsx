@@ -39,8 +39,8 @@ const AllReferrals = () => {
         handleSubmit,
         reset,
         formState: {
-          errors,
-          isSubmitting
+            errors,
+            isSubmitting
         }
     } = useForm();
 
@@ -57,8 +57,8 @@ const AllReferrals = () => {
     }
 
     const fetchSetting = async () => {
-       const setting =  await actionFetchSetting(accessToken);
-       reset(setting.data)
+        const setting = await actionFetchSetting(accessToken);
+        reset(setting.data)
     }
 
 
@@ -100,7 +100,7 @@ const AllReferrals = () => {
             let response = await actionDeleteData(`${API_URL}/referral/${id}`, accessToken);
             response = await response.json();
 
-            if (response.status) {      
+            if (response.status) {
                 toast.success(response.message, {
                     id: toastId
                 });
@@ -112,16 +112,16 @@ const AllReferrals = () => {
 
     const handlerSearch = () => {
         if (search.trim() !== '') {
-            finalUrl+=`&search=${search}`
+            finalUrl += `&search=${search}`
             fetchReferee();
-        }   
+        }
     };
 
     const submitHandler = useCallback(async (data) => {
         const toastId = toast.loading("Please wait...")
 
         try {
-            let response = await actionPostData(`${API_URL}/settings/1`, accessToken, data,'PUT');
+            let response = await actionPostData(`${API_URL}/settings/1`, accessToken, data, 'PUT');
             response = await response.json();
 
             setReferralCommissionModal(false);
@@ -138,10 +138,10 @@ const AllReferrals = () => {
             toast.error(error)
         }
     })
-  
+
     useEffect(() => {
         fetchSetting()
-    },[])
+    }, [])
 
     useEffect(() => {
         fetchReferee();
@@ -152,20 +152,20 @@ const AllReferrals = () => {
         <main>
             <div className="mb-4 d-flex justify-content-end  gap-3">
                 <div className="search-input-outer">
-                    <input 
+                    <input
                         onChange={(e) => {
                             setSearchinput(e.target.value)
-                            if(e.target.value === ''){
+                            if (e.target.value === '') {
                                 fetchReferee()
                             }
                         }}
                         value={search}
-                        className="form-control" 
-                        type="text"                                   
-                        placeholder="Search..." 
+                        className="form-control"
+                        type="text"
+                        placeholder="Search..."
                     />
                 </div>
-                
+
                 <div>
                     <CButton onClick={handlerSearch} color="primary" className="me-3">
                         <CIcon icon={cilSearch} /> Search
@@ -179,7 +179,7 @@ const AllReferrals = () => {
                             <strong>All Referrals</strong>
                         </div>
                         <div>
-                            <CButton onClick={() => setReferralCommissionModal(!referralCommissionModal)} color="dark" type="submit" >Add Referral Commission</CButton>  
+                            <CButton onClick={() => setReferralCommissionModal(!referralCommissionModal)} color="dark" type="submit" >Add Referral Commission</CButton>
                         </div>
                     </div>
                 </CCardHeader>
@@ -344,34 +344,34 @@ const AllReferrals = () => {
                     visible={referralCommissionModal}
                     onClose={() => setReferralCommissionModal(false)}
                     aria-labelledby="StaticBackdropExampleLabel"
-                    >
-                    <CForm  onSubmit={handleSubmit(submitHandler)}>
+                >
+                    <CForm onSubmit={handleSubmit(submitHandler)}>
                         <CModalHeader>
                             <CModalTitle id="StaticBackdropExampleLabel">Referral Commission</CModalTitle>
                         </CModalHeader>
-                        <CModalBody>                        
-                                <CCol md="12">
-                                    <CFormFloating>
-                                        <CFormInput 
-                                            {...register("commission", {
-                                                required: "Please enter title", 
-                                                validate: {
-                                                    isInteger: (value) =>
-                                                        Number.isInteger(Number(value)) || "Only integer values are allowed."
-                                                }
-                                            })}    
-                                            className={errors.commission && 'is-invalid'}                              
-                                            type="text"
-                                            id="commission"
-                                            name='commission'
-                                            floatingLabel="Commission"
-                                            placeholder="Enter Commission*"
-                                        />
-                                    </CFormFloating>
-                                    <p className="invalid-feedback d-block">{errors.commission?.message}</p>
-                                </CCol>
+                        <CModalBody>
+                            <CCol md="12">
+                                <CFormFloating>
+                                    <CFormInput
+                                        {...register("commission", {
+                                            required: "Please enter title",
+                                            validate: {
+                                                isInteger: (value) =>
+                                                    Number.isInteger(Number(value)) || "Only integer values are allowed."
+                                            }
+                                        })}
+                                        className={errors.commission && 'is-invalid'}
+                                        type="text"
+                                        id="commission"
+                                        name='commission'
+                                        floatingLabel="Commission(%)"
+                                        placeholder="Enter Commission*"
+                                    />
+                                </CFormFloating>
+                                <p className="invalid-feedback d-block">{errors.commission?.message}</p>
+                            </CCol>
                         </CModalBody>
-                        <CModalFooter className="justify-content-start">                       
+                        <CModalFooter className="justify-content-start">
                             {isSubmitting ?
                                 <LoadingButton />
                                 :
