@@ -1,4 +1,5 @@
 import { API_URL } from "../config";
+import Swal from "sweetalert2";
 
 export const actionFetchState = async () => {
 	try {
@@ -30,6 +31,10 @@ export const actionDeleteData = async (url, accessToken) => {
 			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
 
+		if(response.status  === 401){
+			localStorage.removeItem('user-info');
+		}
+
 		return response;
 	} catch (error) {
 		console.error('Failed to fetch clients data:', error);
@@ -40,6 +45,7 @@ export const actionPostData = async (url, accessToken, postData, method = 'POST'
 	try {
 		let response = await fetch(url, {
 			headers: {
+				"Accept": "application/json",
 				"Content-Type": "application/json",
 				'Authorization': `Bearer ${accessToken}`
 			},
@@ -51,6 +57,10 @@ export const actionPostData = async (url, accessToken, postData, method = 'POST'
 			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
 
+		if(response.status  === 401){
+			localStorage.removeItem('user-info');
+		}
+
 		return response;
 	} catch (error) {
 		console.error('Failed to fetch clients data:', error);
@@ -58,17 +68,24 @@ export const actionPostData = async (url, accessToken, postData, method = 'POST'
 }
 
 export const actionFetchData = async (url, accessToken) => {
+
 	try {
 		let response = await fetch(url, {
 			headers: {
+				"Accept": "application/json",
 				"Content-Type": "application/json",
 				'Authorization': `Bearer ${accessToken}`
 			},
 			method: "GET",
 		});
+		
 
 		if (!response.status) {
 			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+
+		if(response.status  === 401){
+			localStorage.removeItem('user-info');
 		}
 
 		return response;
@@ -81,6 +98,7 @@ export const actionFetchSetting = async (accessToken) => {
 	try {
 		let response = await fetch(`${API_URL}/settings/1`, {
 			headers: {
+				"Accept": "application/json",
 				"Content-Type": "application/json",
 				'Authorization': `Bearer ${accessToken}`
 			},
@@ -99,7 +117,7 @@ export const actionFetchSetting = async (accessToken) => {
 }
 
 export const actionDownloadPdf = (productId, batchNumber, accessToken) => {
-	let downloadUrl = `${API_URL}/qr-codes/download?product_id=${productId}&batch_number=${batchNumber}`;
+	/*let downloadUrl = `${API_URL}/qr-codes/download?product_id=${productId}&batch_number=${batchNumber}`;
 	
 	fetch(downloadUrl, {
 		method: 'GET',
@@ -129,7 +147,7 @@ export const actionDownloadPdf = (productId, batchNumber, accessToken) => {
 
 		// Clean up and remove the link
 		link.parentNode.removeChild(link);
-	});
+	});*/	
 }
 
 export const actionImageUplaod = async (file, accessToken) => {

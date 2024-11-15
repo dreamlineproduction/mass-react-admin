@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { API_URL } from "../../config";
 import { useContext, useEffect, useState } from "react";
 import AuthContext from "../../context/auth";
-import { actionFetchData, actionDownloadPdf } from "../../actions/actions";
+import { actionFetchData } from "../../actions/actions";
 import Loading from "../../components/Loading";
 import NoState from "../../components/NoState";
 import Pagination from "../../components/Pagination";
@@ -48,16 +48,16 @@ const QrsDetail = () => {
             <CCardHeader>
                 <div className="d-flex justify-content-between align-items-center">
                     <div><strong>Result</strong></div>
-                    <div className="d-flex">
+                    <div className="d-flex">                        
                         <div>
-                            <Link target="_blank" to={viewPdf}  color="primary" className="btn btn-outline-primary me-3" variant="outline" click="actionDownloadPdf">
+                            <Link 
+                                to={`https://massbackoffice.in/public/batchNumber=${params.batchNumber}&productId=${params.productId}`}
+                                color="primary" 
+                                className="me-3" 
+                                variant="outline" 
+                                click="actionDownloadPdf">
                                 <CIcon icon={cilEyedropper} /> View PDF
                             </Link>                            
-                        </div>
-                        <div>
-                            <CButton onClick={()=>actionDownloadPdf(params.productId,params.batchNumber,accessToken)} color="primary" className="me-3" variant="outline" click="actionDownloadPdf">
-                                <CIcon icon={cilNotes} /> Download PDF
-                            </CButton>                            
                         </div>
                         <div>
                             <Link to={'/qr-manager/all-qr'}>

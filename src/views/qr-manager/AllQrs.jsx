@@ -1,7 +1,7 @@
 import { CButton, CCard, CCardBody, CCardHeader, CFormCheck, CFormInput } from "@coreui/react"
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom"
-import { actionFetchData, actionDownloadPdf } from "../../actions/actions";
+import { actionFetchData } from "../../actions/actions";
 import { API_URL } from "../../config";
 import NoState from "../../components/NoState";
 import Pagination from "../../components/Pagination";
@@ -121,9 +121,14 @@ const AllQrs = () => {
                                                     <td>{item.created_at}</td>
                                                     <td>
 
-                                                        <CButton onClick={() => actionDownloadPdf(item.product_id, item.batch_number, accessToken)} color="primary" variant="outline" className="me-2">
+                                                        <Link 
+                                                            to={`https://massbackoffice.in/public/batchNumber=${item.batch_number}&productId=${item.product_id}`}  
+                                                            target="_blank"
+                                                            color="primary" 
+                                                            variant="outline" 
+                                                            className="me-2">
                                                             <CIcon icon={cilCloudDownload} />
-                                                        </CButton>
+                                                        </Link>
 
                                                         <Link to={`/qr-manager/qr-details/${item.product_id}/${item.batch_number}`}>
                                                             <CButton color="primary" variant="outline">
