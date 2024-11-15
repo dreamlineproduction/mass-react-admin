@@ -41,7 +41,7 @@ const QrsDetail = () => {
 
     useEffect(() =>{
         fetchData()
-    },[])
+    },[pageNumber])
 
     return (
         <CCard className="mb-5">
