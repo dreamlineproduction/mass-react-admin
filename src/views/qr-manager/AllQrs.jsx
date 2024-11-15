@@ -127,7 +127,9 @@ const AllQrs = () => {
                                                             color="primary" 
                                                             variant="outline" 
                                                             className="me-2">
-                                                            <CIcon icon={cilCloudDownload} />
+                                                                <CButton color="primary" variant="outline">
+                                                                    <CIcon icon={cilCloudDownload} />
+                                                                </CButton>
                                                         </Link>
 
                                                         <Link to={`/qr-manager/qr-details/${item.product_id}/${item.batch_number}`}>

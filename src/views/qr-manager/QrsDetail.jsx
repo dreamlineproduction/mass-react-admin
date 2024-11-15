@@ -53,10 +53,13 @@ const QrsDetail = () => {
                             <Link 
                                 to={`https://massbackoffice.in/public/show-pdf?batchNumber=${params.batchNumber}&productId=${params.productId}`}
                                 color="primary" 
+                                target="_blank"
                                 className="me-3" 
                                 variant="outline" 
                                 click="actionDownloadPdf">
-                                <CIcon icon={cilEyedropper} /> View PDF
+                                <CButton color="primary" variant="outline">
+                                    <CIcon icon={cilEyedropper} /> View PDF
+                                </CButton>
                             </Link>                            
                         </div>
                         <div>
