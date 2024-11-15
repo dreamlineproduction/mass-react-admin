@@ -51,7 +51,7 @@ const QrsDetail = () => {
                     <div className="d-flex">                        
                         <div>
                             <Link 
-                                to={`https://massbackoffice.in/public/batchNumber=${params.batchNumber}&productId=${params.productId}`}
+                                to={`https://massbackoffice.in/public/show-pdf?batchNumber=${params.batchNumber}&productId=${params.productId}`}
                                 color="primary" 
                                 className="me-3" 
                                 variant="outline" 

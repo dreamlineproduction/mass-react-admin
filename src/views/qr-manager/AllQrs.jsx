@@ -122,7 +122,7 @@ const AllQrs = () => {
                                                     <td>
 
                                                         <Link 
-                                                            to={`https://massbackoffice.in/public/batchNumber=${item.batch_number}&productId=${item.product_id}`}  
+                                                            to={`https://massbackoffice.in/public/show-pdf?batchNumber=${item.batch_number}&productId=${item.product_id}`}  
                                                             target="_blank"
                                                             color="primary" 
                                                             variant="outline" 
