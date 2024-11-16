@@ -74,6 +74,7 @@ const QrsDetail = () => {
                 {isLoading && 
                     <Loading />
                 }
+                
                 {!isLoading && product &&
                     <div>
                         <h6>
