@@ -111,8 +111,8 @@ const NewQrs = () => {
                                 type="text"
                                 id="quantity"
                                 name="quantity"
-                                floatingLabel="QR Code Quantity"
-                                placeholder="QR Code Quantity"
+                                floatingLabel="QR Code Quantity (Max 3000)"
+                                placeholder="QR Code Quantity (Max 3000)"
                             />
                             <p className="invalid-feedback d-block">{errors.quantity?.message}</p>
                         </CFormFloating>
