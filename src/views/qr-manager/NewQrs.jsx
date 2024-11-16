@@ -105,7 +105,20 @@ const NewQrs = () => {
                                 {...register("quantity", {
                                     required: "Please enter quantity",
                                     valueAsNumber: true,
-                                    validate: (value) => value > 0 || 'Quantity should be integer',
+                                    validate: (value) => {
+
+                                        if (!Number.isInteger(value)) {
+                                            return "Quantity should be an integer";                                        
+                                        }
+
+                                        if (value <= 0) {
+                                            return "Quantity should be greater than 0";
+                                        }
+                                        if (value > 3000) {
+                                            return "Quantity should be less than or equal to 3000";
+                                        }
+                                        return true;
+                                    },
                                 })}
                                 className={errors.quantity && 'is-invalid'}
                                 type="text"
@@ -113,6 +126,9 @@ const NewQrs = () => {
                                 name="quantity"
                                 floatingLabel="QR Code Quantity (Max 3000)"
                                 placeholder="QR Code Quantity (Max 3000)"
+                                onInput={(e) => {
+                                    e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, ""); // Allow only digits
+                                }}
                             />
                             <p className="invalid-feedback d-block">{errors.quantity?.message}</p>
                         </CFormFloating>
