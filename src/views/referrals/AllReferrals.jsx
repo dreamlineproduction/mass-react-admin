@@ -1,6 +1,7 @@
 import { CButton, CCard, CCardBody, CCardHeader, CCol, CForm, CFormFloating, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { actionDeleteData, actionFetchData, actionFetchSetting, actionPostData } from "../../actions/actions";
+import { Link } from "react-router-dom";
 import { API_URL } from "../../config";
 import Pagination from "../../components/Pagination";
 import AuthContext from "../../context/auth";
@@ -208,7 +209,11 @@ const AllReferrals = () => {
                                             return (
                                                 <tr key={`referee-${item.id}`}>
                                                     <td>{item.from_id}</td>
-                                                    <td>{item.name}</td>
+                                                    <td>
+                                                        <Link to={`/users/edit-user/${item.from_id}`}>
+                                                            {item.name}
+                                                        </Link>
+                                                    </td>
                                                     <td>{item.phone}</td>
                                                     <td>{item.total_referral || 0}</td>
                                                     <td>0</td>

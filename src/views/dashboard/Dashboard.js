@@ -340,13 +340,22 @@ const Dashboard = () => {
                           return (
                             <CTableRow key={item.id}>
                               <CTableHeaderCell scope="row">{item.id}</CTableHeaderCell>
-                              <CTableDataCell>{item.referral.name}</CTableDataCell>
+                              <CTableDataCell>
+                                <Link to={`/users/edit-user/${item.referral.id}`}>
+                                  {item.referral.name}
+                                </Link>
+
+                              </CTableDataCell>
                               <CTableDataCell>{item.referral.created_at}</CTableDataCell>
                               <CTableDataCell>{item.referral.phone}</CTableDataCell>
-                              <CTableDataCell>{item?.lastScan?.product?.title ? item.lastScan.product.short_name : 'N/A'}</CTableDataCell>
+                              <CTableDataCell>{item?.lastScan?.product?.name ? item.lastScan.product.short_name : 'N/A'}</CTableDataCell>
                               <CTableDataCell>{item?.referral?.total_xp ? item.referral.total_xp : 0} XP</CTableDataCell>
                               <CTableDataCell>{item?.referral?.balance_xp ? item.referral.balance_xp : 0} XP</CTableDataCell>
-                              <CTableDataCell>{item?.referee?.name ? item.referee.name : 'N/A'}</CTableDataCell>
+                              <CTableDataCell>
+                                <Link to={`/users/edit-user/${item.referee.id}`}>
+                                  {item?.referee?.name ? item.referee.name : 'N/A'}
+                                </Link>
+                              </CTableDataCell>
                               <CTableDataCell>{item?.referee?.balance_xp ? item.referee.balance_xp : 0} XP</CTableDataCell>
                             </CTableRow>
                           )
