@@ -343,7 +343,7 @@ const Dashboard = () => {
                               <CTableDataCell>{item.referral.name}</CTableDataCell>
                               <CTableDataCell>{item.referral.created_at}</CTableDataCell>
                               <CTableDataCell>{item.referral.phone}</CTableDataCell>
-                              <CTableDataCell>{item?.reward?.title ? item.reward.short_title : 'N/A'}</CTableDataCell>
+                              <CTableDataCell>{item?.product?.title ? item.product.title : 'N/A'}</CTableDataCell>
                               <CTableDataCell>{item?.referral?.total_xp ? item.referral.total_xp : 0} XP</CTableDataCell>
                               <CTableDataCell>{item?.referral?.balance_xp ? item.referral.balance_xp : 0} XP</CTableDataCell>
                               <CTableDataCell>{item?.referee?.name ? item.referee.name : 'N/A'}</CTableDataCell>
