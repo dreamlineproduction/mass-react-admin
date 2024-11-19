@@ -300,8 +300,8 @@ const AllReferrals = () => {
                                                                 <td>{item?.referral?.total_xp ? item.referral.total_xp  : 0} XP</td>
                                                                 <td>{item.referral.phone || 'N/A'}</td>
                                                                 <td>{item?.lastScan?.product?.name ? item.lastScan.product.short_name :  'N/A'}</td>
-                                                                <td>{item?.lastScan?.xp ? item.lastScan.xp :  '0'}XP</td>
-                                                                <td>{0}XP</td>
+                                                                <td>{item?.lastScan?.xp ? item.lastScan.xp :  '0'} XP</td>
+                                                                <td>{item?.commission?.xp ? item.commission.xp:  0} XP</td>
                                                             </tr>
                                                         )
                                                     })
