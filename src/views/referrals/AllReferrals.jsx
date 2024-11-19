@@ -268,7 +268,7 @@ const AllReferrals = () => {
                                         <p><strong>Name:</strong> {selectedReferral?.name}</p>
                                         <p><strong>Mobile:</strong> {selectedReferral?.phone}</p>
                                         <p><strong>No of referrals:</strong> {selectedReferral.total_referral || 0}</p>
-                                        <p><strong>XP Earned:</strong> {selectedReferral?.xp || 0}</p>
+                                        <p><strong>XP Earned:</strong> {selectedReferral?.total_xp || 0} XP</p>
                                     </div>
 
                                     {isLoading && referrals.length === 0 &&
@@ -284,7 +284,6 @@ const AllReferrals = () => {
                                                         <th scope="col">User</th>
                                                         <th scope="col">Joined On</th>
                                                         <th scope="col">Total XP Earned</th>
-
                                                         <th scope="col">Contact</th>
                                                         <th scope="col">Last Scanned Product</th>
                                                         <th scope="col">Referee's Earned XP</th>
@@ -298,10 +297,10 @@ const AllReferrals = () => {
                                                                 <th scope="row">{item.referral.id || 'N/A'}</th>
                                                                 <td>{item.referral.name || 'N/A'}</td>
                                                                 <td>{item.referral.created_at || 'N/A'}</td>
-                                                                <td>0XP</td>
+                                                                <td>{item?.referral?.total_xp ? item.referral.total_xp  : 0} XP</td>
                                                                 <td>{item.referral.phone || 'N/A'}</td>
-                                                                <td>{'N/A'}</td>
-                                                                <td>{0}XP</td>
+                                                                <td>{item?.lastScan?.product?.name ? item.lastScan.product.short_name :  'N/A'}</td>
+                                                                <td>{item?.lastScan?.xp ? item.lastScan.xp :  '0'}XP</td>
                                                                 <td>{0}XP</td>
                                                             </tr>
                                                         )
