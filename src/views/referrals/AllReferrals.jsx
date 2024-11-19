@@ -211,7 +211,7 @@ const AllReferrals = () => {
                                                     <td>{item.name}</td>
                                                     <td>{item.phone}</td>
                                                     <td>{item.total_referral || 0}</td>
-                                                    <td>0</td>
+                                                    <td>{item.total_xp || 0 } XP</td>
                                                     <td>
                                                         <CButton color="primary" variant="outline" onClick={() => handleOpenModal(item)}>
                                                             <CIcon icon={cilMagnifyingGlass} />
