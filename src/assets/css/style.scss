@@ -1,0 +1,210 @@
+.sidebar-dropdown {
+    .sidebar-link{
+        background: transparent;
+        border-left: 0;
+        color: #adb5bd;
+        font-size: 90%;
+        font-weight: 400;
+        padding: .625rem 1.5rem .625rem 3.25rem;
+        &:before{
+            content: "→";
+            display: inline-block;
+            left: -14px;
+            position: relative;
+            transform: translateX(0);
+            transition: all .1s ease;
+        }
+    }
+}
+.sidebar [data-bs-toggle=collapse]{
+    &:after{
+        border: solid;
+        border-width: 0 .075rem .075rem 0;
+        content: " ";
+        display: inline-block;
+        padding: 2px;
+        position: absolute;
+        right: 1.5rem;
+        top: 1.2rem;
+        transform: rotate(45deg);
+        transition: all .2s ease-out;
+    }
+}
+.sidebar [aria-expanded=true]::after,
+.sidebar [data-bs-toggle=collapse]:not(.collapsed)::after{
+    top: 1.4rem;
+    transform: rotate(-135deg);
+}
+
+.form-control,
+.form-select{
+    &.custom-input{
+        font-size: 1em;
+        padding: 12px 15px;
+    }
+}
+
+.btn-primary{
+    &.large-btn{
+        padding: 12px 30px;
+        font-size: 1.2em;
+        line-height: 1;
+    }
+}
+
+.loading-spinner {   
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+}
+
+.remove-arrows::-webkit-inner-spin-button, 
+.remove-arrows::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.remove-arrows {
+  -moz-appearance: textfield;
+}
+
+.sidebar-link, a.sidebar-link{
+    padding-left: 25px;
+}
+// Pagination
+.pagination {
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: .25rem;
+}
+  
+.page-link {
+    position: relative;
+    display: block;
+    padding: .5rem .75rem;
+    margin-left: -1px;
+    line-height: 1.25;
+    color: #3B7DDD;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+
+    &:hover {
+        color: #0056b3;
+        text-decoration: none;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+    &:focus {
+        z-index: 2;
+        outline: 0;
+        box-shadow: none;
+    }
+
+    // Opinionated: add "hand" cursor to non-disabled .page-link elements
+    &:not(:disabled):not(.disabled) {
+        cursor: pointer;
+    }
+}
+
+.page-item {
+    &:first-child {
+        .page-link {
+            margin-left: 0;
+            border-top-left-radius: .25rem;
+            border-bottom-left-radius: .25rem;
+        }
+    }
+    &:last-child {
+        .page-link {
+            border-top-right-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+    }
+
+    &.active .page-link {
+        z-index: 1;
+        color: #fff;
+        background-color: #3B7DDD;
+        border-color: #3B7DDD;
+    }
+
+    &.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+        cursor: auto;
+        background-color: #fff;
+        border-color: #dee2e6;
+    }
+}
+  
+.base-image-input{
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: contain;
+    background-position: center;
+    border: 2px dashed #b6b6b6;
+    cursor: pointer;
+    position: relative;
+    border-radius: 12px;
+    background-color: #f3f4f7;
+    background-repeat: no-repeat;
+}
+.video-preview {
+    width: 100%;
+    height: 375px;
+    margin-top: 20px;
+}
+.remove-image-button{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 99;
+}
+.cover-body{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.4;
+    background: #fff;
+    z-index: 10;
+    cursor: progress;
+}
+ 
+.active-signal{
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: #1cbb8c;
+    border-radius: 50%;
+}
+.inactive-signal{
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: #dc3545;
+    border-radius: 50%;
+}
+.xp-badge{
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #b3b3b3;
+    padding: .7rem;
+    border-radius: 4px;
+    &.current-xp-badge{
+        background-color: #1cbb8c;
+        border-color: #1cbb8c;
+    }
+}

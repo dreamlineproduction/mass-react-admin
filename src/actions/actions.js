@@ -1,5 +1,4 @@
 import { API_URL } from "../config";
-import Swal from "sweetalert2";
 
 export const actionFetchState = async () => {
 	try {
@@ -116,8 +115,8 @@ export const actionFetchSetting = async (accessToken) => {
 	}
 }
 
-export const actionDownloadPdf = (productId, batchNumber, accessToken) => {
-	/*let downloadUrl = `${API_URL}/qr-codes/download?product_id=${productId}&batch_number=${batchNumber}`;
+/*export const actionDownloadPdf = (productId, batchNumber, accessToken) => {
+	let downloadUrl = `${API_URL}/qr-codes/download?product_id=${productId}&batch_number=${batchNumber}`;
 	
 	fetch(downloadUrl, {
 		method: 'GET',
@@ -147,10 +146,10 @@ export const actionDownloadPdf = (productId, batchNumber, accessToken) => {
 
 		// Clean up and remove the link
 		link.parentNode.removeChild(link);
-	});*/	
-}
+	});
+}*/	
 
-export const actionImageUplaod = async (file, accessToken) => {
+export const actionImageUpload = async (file, accessToken) => {
 	try {
 		const formData = new FormData();
 		formData.append("image", file);
