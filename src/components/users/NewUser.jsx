@@ -118,10 +118,10 @@ const NewUser = () => {
                                     />
                                     <p className="invalid-feedback">{errors.fullName?.message}</p>
                                 </div>
-                                <div class="mb-3">
+                                <div className="mb-3">  
                                     <label className="form-label">Phone Number</label>
-                                    <div class="input-group">
-                                        <button class="btn btn-primary" type="button">+91</button>
+                                    <div className="input-group">
+                                        <button className="btn btn-primary" type="button">+91</button>
                                         <input 
                                             {...register("phone", {
                                                 required: "Please enter phone number",

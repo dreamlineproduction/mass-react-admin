@@ -8,7 +8,7 @@ import { FiShoppingBag, FiUsers } from 'react-icons/fi';
 import { PiShareFat } from 'react-icons/pi';
 import { MdOutlineAccountBalance } from 'react-icons/md';
 import { IoMdNotificationsOutline } from 'react-icons/io';
-import { LuClipboardList } from 'react-icons/lu';
+import { LuClipboardList, LuUserCog } from 'react-icons/lu';
 
 
 const AppSidebar = () => {
@@ -39,6 +39,18 @@ const AppSidebar = () => {
                             <ul id="users" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                                 <li className="sidebar-item">
                                     <NavLink className="sidebar-link" to="/users/all-users">All User</NavLink>
+                                </li>                               
+                            </ul>
+                        </li>
+                        <li className='sidebar-item'>
+                            <a data-bs-target="#employee" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                
+                                <LuUserCog    style={{height:"20px",width:"30px"}} />
+                                <span className="align-middle">Employees</span>
+                            </a>
+
+                            <ul id="employee" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                <li className="sidebar-item">
+                                    <NavLink className="sidebar-link" to="/employees/all-employee">All Employee</NavLink>
                                 </li>                               
                             </ul>
                         </li>
