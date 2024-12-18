@@ -72,8 +72,8 @@ const Dashboard = () => {
         let response = await actionFetchData(finalUrl, accessToken);
         response = await response.json();
         if (response.status) {
-        setTransaction(response.data.data);
-        setPageCountTransaction(response.totalPage);
+            setTransaction(response.data.data);
+            setPageCountTransaction(response.totalPage);
         }
         setLoadingTransaction(false)
     }
