@@ -3,7 +3,7 @@ import PageTitle from "../others/PageTitle";
 
 const NewEmployee = () => {
     const [manageUi, setManageUi] = useState({
-        hideEmployeeCode: true,
+        hideEmployeeCode: false,
     });
 
 
