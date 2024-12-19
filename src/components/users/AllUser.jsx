@@ -115,12 +115,115 @@ const AllUser = () => {
 
     return (
         <div>
+           
             <PageTitle 
                 title="All Users"
                 buttonLink="/users/add-user"
                 buttonLabel="Add New User"
             />
+            <div className="row">
+                <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
+                    <div className="card">
+                        <div className="card-header">
+                            <h3 className="card-title mb-0">Customer</h3>
+                        </div>
+                        <div className="card-body pt-0">
+                            <div className="row">
+                                <div className="col-12">
+                                    <h1>{50}</h1>
+                                </div>
+                                <div className="col-12">
+                                    <div className="row">
+                                        <div className="col-auto">
+                                            <span className="active-signal"></span> Active {20}
+                                        </div>
+                                        <div className="col-auto">
+                                            <span className="inactive-signal"></span> Inactive {30}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
+                    <div className="card">
+                        <div className="card-header">
+                            <h3 className="card-title mb-0">Carpenter</h3>
+                        </div>
+                        <div className="card-body pt-0">
+                            <div className="row">
+                                <div className="col-12">
+                                    <h1>{50}</h1>
+                                </div>
+                                <div className="col-12">
+                                    <div className="row">
+                                        <div className="col-auto">
+                                            <span className="active-signal"></span> Active {20}
+                                        </div>
+                                        <div className="col-auto">
+                                            <span className="inactive-signal"></span> Inactive {30}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
+                    <div className="card">
+                        <div className="card-header">
+                            <h3 className="card-title mb-0">Vendor</h3>
+                        </div>
+                        <div className="card-body pt-0">
+                            <div className="row">
+                                <div className="col-12">
+                                    <h1>{50}</h1>
+                                </div>
+                                <div className="col-12">
+                                    <div className="row">
+                                        <div className="col-auto">
+                                            <span className="active-signal"></span> Active {20}
+                                        </div>
+                                        <div className="col-auto">
+                                            <span className="inactive-signal"></span> Inactive {30}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
+                    <div className="card">
+                        <div className="card-header">
+                            <h3 className="card-title mb-0">Employee</h3>
+                        </div>
+                        <div className="card-body pt-0">
+                            <div className="row">
+                                <div className="col-12">
+                                    <h1>{50}</h1>
+                                </div>
+                                <div className="col-12">
+                                    <div className="row">
+                                        <div className="col-auto">
+                                            <span className="active-signal"></span> Active {20}
+                                        </div>
+                                        <div className="col-auto">
+                                            <span className="inactive-signal"></span> Inactive {30}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           
             <div className="row">
                 <div className="col-12">
                     <div className="card">
@@ -165,6 +268,7 @@ const AllUser = () => {
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>Image</th>
                                         <th>Full Name</th>
                                         <th>User Type</th>
                                         <th>Phone Number</th>
@@ -185,7 +289,6 @@ const AllUser = () => {
                                         return (
                                             <tr key={`${user.id}-user`}>
                                                 <td>{user.id}</td>
-                                              
                                                 <td>
                                                     {user.image ?
                                                         <img 
@@ -193,6 +296,8 @@ const AllUser = () => {
                                                             className="rounded-circle me-3" 
                                                             alt={user.name} 
                                                             width={48} 
+                                                            height={48}
+                                                            style={{objectFit: 'cover'}}
                                                         />
                                                         :
                                                         <img
@@ -202,6 +307,9 @@ const AllUser = () => {
                                                             width={48} 
                                                         />
                                                     }
+                                                </td>
+                                                <td>
+                                                    
                                                     {user.name}
                                                 </td>
                                                 <td>{user.role.name}</td>

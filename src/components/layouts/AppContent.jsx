@@ -26,229 +26,52 @@ import ProfileSetting from '../account/ProfileSetting';
 import ChangePassword from '../account/ChangePassword';
 import NewNotification from '../notification/NewNotification';
 import AllNotification from '../notification/AllNotification';
+import AllEmployee from '../employee/AllEmployee';
+import NewEmployee from '../employee/NewEmployee';
 
 
 const AppContent = () => {
+    const routes = [
+        { path: '/dashboard', element: <Dashboard /> },
+        { path: '/users/all-users', element: <AllUser /> },
+        { path: '/users/add-user', element: <NewUser /> },
+        { path: '/users/edit-user/:id', element: <EditUser /> },
+        { path: '/users/city-users/:city', element: <CityUser /> },
+        { path: '/products/all-products', element: <AllProduct /> },
+        { path: '/products/add-product', element: <NewProduct /> },
+        { path: '/products/edit-product/:id', element: <EditProduct /> },
+        { path: '/rewards/all-rewards', element: <AllReward /> },
+        { path: '/rewards/add-reward', element: <NewReward /> },
+        { path: '/rewards/edit-reward/:id', element: <EditReward /> },
+        { path: '/offers/all-offers', element: <AllOffers /> },
+        { path: '/offers/add-offer', element: <NewOffer /> },
+        { path: '/offers/edit-offer/:id', element: <EditOffer /> },
+        { path: '/qr-manager/all-qr', element: <AllQrs /> },
+        { path: '/qr-manager/generate-qr', element: <NewQrs /> },
+        { path: '/qr-manager/qr-details/:productId/:batchNumber', element: <QrsDetail /> },
+        { path: '/redemptions/all-redemptions', element: <AllRedemptions /> },
+        { path: '/referrals/all-referrals', element: <AllReferrals /> },
+        { path: '/pages/all-pages', element: <AllPages /> },
+        { path: '/pages/edit-page/:id', element: <EditPage /> },
+        { path: '/profile', element: <ProfileSetting /> },
+        { path: '/change-password', element: <ChangePassword /> },
+        { path: '/notification/all-notifications', element: <AllNotification /> },
+        { path: '/notification/new-notification', element: <NewNotification /> },
+        { path: '/employees/all-employee', element: <AllEmployee /> },
+        { path: '/employees/add-employee', element: <NewEmployee /> },
+    ];
+      
     return (
         <Routes>
             <Route path="/" element={<Navigate to="login" replace />} />
-            <Route
-                path='/dashboard'
-                element={
-                    <ProtectRoute>
-                        <Dashboard />
-                    </ProtectRoute>
-                }
-            />            
-
-            <Route
-                path='/users/all-users'
-                element={
-                    <ProtectRoute>
-                        <AllUser />
-                    </ProtectRoute>
-                }
-            />
-            <Route
-                path='/users/add-user'
-                element={
-                    <ProtectRoute>
-                        <NewUser />
-                    </ProtectRoute>
-                }
-            />
-            <Route
-                path='/users/edit-user/:id'
-                element={
-                    <ProtectRoute>
-                        <EditUser />
-                    </ProtectRoute>
-                }
-            />
-
-            <Route
-                path='/users/city-users/:city'
-                element={
-                    <ProtectRoute>
-                        <CityUser />
-                    </ProtectRoute>
-                }
-            />
-
-            <Route
-                path='/products/all-products'
-                element={
-                    <ProtectRoute>
-                        <AllProduct />
-                    </ProtectRoute>
-                }
-            />
-            <Route
-                path='/products/add-product'
-                element={
-                    <ProtectRoute>
-                        <NewProduct />
-                    </ProtectRoute>
-                }
-            />
-            <Route
-                path='/products/edit-product/:id'
-                element={
-                    <ProtectRoute>
-                        <EditProduct />
-                    </ProtectRoute>
-                }
-            />
-
-            <Route
-                path='/rewards/all-rewards'
-                element={
-                    <ProtectRoute>
-                        <AllReward />
-                    </ProtectRoute>
-                }
-            />
-
-            <Route
-                path='/rewards/add-reward'
-                element={
-                    <ProtectRoute>
-                        <NewReward />
-                    </ProtectRoute>
-                }
-            />
-            <Route
-                path='/rewards/edit-reward/:id'
-                element={
-                    <ProtectRoute>
-                        <EditReward />
-                    </ProtectRoute>
-                }
-            />
-
-            <Route
-                path='/offers/all-offers'
-                element={
-                    <ProtectRoute>
-                        <AllOffers />
-                    </ProtectRoute>
-                }
-            />
-
-            <Route
-                path='/offers/add-offer'
-                element={
-                    <ProtectRoute>
-                        <NewOffer />
-                    </ProtectRoute>
-                }
-            />
-
-            <Route
-                path='/offers/edit-offer/:id'
-                element={
-                    <ProtectRoute>
-                        <EditOffer />
-                    </ProtectRoute>
-                }
-            />
-
-            <Route
-                path='/qr-manager/all-qr'
-                element={
-                    <ProtectRoute>
-                        <AllQrs />
-                    </ProtectRoute>
-                }
-            />
-            
-            <Route
-                path='/qr-manager/generate-qr'
-                element={
-                    <ProtectRoute>
-                        <NewQrs />
-                    </ProtectRoute>
-                }
-            />
-            
-
-            <Route
-                path='/qr-manager/qr-details/:productId/:batchNumber'
-                element={
-                    <ProtectRoute>
-                        <QrsDetail />
-                    </ProtectRoute>
-                }
-            />
-             <Route
-                path='/redemptions/all-redemptions'
-                element={
-                    <ProtectRoute>
-                        <AllRedemptions />
-                    </ProtectRoute>
-                }
-            />
-
-            <Route
-                path='/referrals/all-referrals'
-                element={
-                    <ProtectRoute>
-                        <AllReferrals />
-                    </ProtectRoute>
-                }
-            />
-
-
-            <Route
-                path='/pages/all-pages'
-                element={
-                    <ProtectRoute>
-                        <AllPages />
-                    </ProtectRoute>
-                }
-            />
-            <Route
-                path='/pages/edit-page/:id'
-                element={
-                    <ProtectRoute>
-                        <EditPage />
-                    </ProtectRoute>
-                }
-            />
-            <Route
-                path='/profile'
-                element={
-                    <ProtectRoute>
-                        <ProfileSetting />
-                    </ProtectRoute>
-                }
-            />
-             <Route
-                path='/change-password'
-                element={
-                    <ProtectRoute>
-                        <ChangePassword />
-                    </ProtectRoute>
-                }
-            /> 
-
-            <Route
-                path='/notification/all-notifications'
-                element={
-                    <ProtectRoute>
-                        <AllNotification />
-                    </ProtectRoute>
-                }
-            />
-            <Route
-                path='/notification/new-notification'
-                element={
-                    <ProtectRoute>
-                        <NewNotification  />
-                    </ProtectRoute>
-                }
-            />          
-        </Routes>
+            {routes.map(({ path, element }) => (
+                <Route
+                    key={path}
+                    path={path}
+                    element={<ProtectRoute>{element}</ProtectRoute>}
+                />
+            ))}
+        </Routes>        
     );
 };
 

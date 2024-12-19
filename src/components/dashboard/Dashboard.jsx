@@ -195,7 +195,7 @@ const Dashboard = () => {
 }
             {Object.keys(dashboard).length > 0 && !dashboardLoading &&
                 <div className="row">
-                    <div className="col-12 col-md-3">
+                    <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
                         <div className="card">
                             <div className="card-header">
                                 <h3 className="card-title mb-0">Total Users</h3>
@@ -221,7 +221,7 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    <div className="col-12 col-md-3">
+                    <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
                         <div className="card">
                             <div className="card-header">
                                 <h3 className="card-title mb-0">Total Products</h3>
@@ -247,7 +247,7 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    <div className="col-12 col-md-3">
+                    <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
                         <div className="card">
                             <div className="card-header">
                                 <h3 className="card-title mb-0">Total Redemption</h3>
@@ -276,7 +276,7 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    <div className="col-12 col-md-3">
+                    <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
                         <div className="card">
                             <div className="card-header">
                                 <h3 className="card-title mb-0">Total Offers</h3>
