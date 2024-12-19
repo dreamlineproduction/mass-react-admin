@@ -160,6 +160,7 @@ const AllUser = () => {
                         }
                         
                         {users.length > 0 &&
+                        <div className="table-responsive">
                             <table className="table table-striped table-hover mb-0">
                                 <thead>
                                     <tr>
@@ -245,7 +246,8 @@ const AllUser = () => {
                                     })
                                 }
                                 </tbody>
-                            </table>                                                        
+                            </table>                      
+                            </div>                                  
                         }
                     </div>
 

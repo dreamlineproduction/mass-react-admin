@@ -6,7 +6,7 @@ const AppFooter = () => {
                 <div className="row text-muted">
                     <div className="col-6 text-start">
                         <p className="mb-0">
-                            &copy; 2024 mamata enterprise All rights reserved.
+                            &copy; 2025 Mamata Enterprise All rights reserved.
                         </p>
                     </div>
                     <div className="col-6 text-end">
