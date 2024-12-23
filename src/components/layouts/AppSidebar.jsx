@@ -9,6 +9,8 @@ import { PiShareFat } from 'react-icons/pi';
 import { MdOutlineAccountBalance } from 'react-icons/md';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { LuClipboardList, LuUserCog } from 'react-icons/lu';
+import { CiLock } from 'react-icons/ci';
+import { RiAdminLine } from 'react-icons/ri';
 
 
 const AppSidebar = () => {
@@ -136,7 +138,37 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        <li className="sidebar-header">
+                            Roles & Permissions
+                        </li>
+                        <li className='sidebar-item'>
+                            <a data-bs-target="#roles" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
+                                <RiAdminLine  style={{height:"20px",width:"30px"}} />
+                                <span className="align-middle">Roles</span>
+                            </a>
 
+                            <ul id="roles" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                <li className="sidebar-item">
+                                    <NavLink className="sidebar-link" to="roles/all-role">
+                                        Roles
+                                    </NavLink>
+                                </li>                               
+                            </ul>
+                        </li>
+                        <li className='sidebar-item'>
+                            <a data-bs-target="#permission" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
+                                <CiLock   style={{height:"20px",width:"30px"}} />
+                                <span className="align-middle">Permissions</span>
+                            </a>
+
+                            <ul id="permission" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                <li className="sidebar-item">
+                                    <NavLink className="sidebar-link" to="permissions/all-permission">
+                                        Permissions
+                                    </NavLink>
+                                </li>                               
+                            </ul>
+                        </li>
                         <li className="sidebar-header">
                             Others
                         </li>
@@ -166,44 +198,7 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
-                        {/* <li className="sidebar-item">
-                            <a data-bs-target="#pages" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                
-                                <Layout width={18} className='align-middle' />
-                                <span className="align-middle">Pages</span>
-                            </a>
-                            <ul id="pages" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                                <li className="sidebar-item">
-                                    <a className="sidebar-link" href="/pages-settings">Settings</a>
-                                </li>
-                                <li className="sidebar-item">
-                                    <a className="sidebar-link" href="/pages-projects">Projects <span className="sidebar-badge badge bg-primary">Pro</span></a>
-                                </li>
-                                <li className="sidebar-item">
-                                    <a className="sidebar-link" href="/pages-clients">Clients <span className="sidebar-badge badge bg-primary">Pro</span></a>
-                                </li>
-                                <li className="sidebar-item">
-                                    <a className="sidebar-link" href="/pages-orders">Orders <span className="sidebar-badge badge bg-primary">Pro</span></a>
-                                </li>
-                                <li className="sidebar-item">
-                                    <a className="sidebar-link" href="/pages-pricing">Pricing <span className="sidebar-badge badge bg-primary">Pro</span></a>
-                                </li>
-                                <li className="sidebar-item">
-                                    <a className="sidebar-link" href="/pages-chat">Chat <span className="sidebar-badge badge bg-primary">Pro</span></a>
-                                </li>
-                                <li className="sidebar-item">
-                                    <a className="sidebar-link" href="/pages-blank">Blank Page</a>
-                                </li>
-                            </ul>
-                        </li> */}
-                        {/* <li className="sidebar-header">
-                            Tools & Components
-                        </li>
-                        <li className="sidebar-item">
-                            <a className="sidebar-link" href="ui-buttons.html">
-                                <Square width={18} className='align-middle' />
-                                <span className="align-middle">Buttons</span>
-                            </a>
-                        </li> */}
+                        
                         
                     </ul>                    
                 </div>

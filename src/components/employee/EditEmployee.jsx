@@ -1,71 +1,83 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
 import { API_URL } from "../../config";
 import { actionFetchData, actionPostData } from "../../actions/actions";
+import { useForm } from "react-hook-form";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import AuthContext from "../../context/auth";
-import { useForm } from "react-hook-form";
 import LoadingButton from "../others/LoadingButton";
 
-
-const NewEmployee = () => {
+const EditEmployee = () => {
+    const defaultAvtar = 'AV';   
     const { Auth } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
-    const userAvtar = useRef(null);
-    const [roles, setRole] = useState([])
+    const params = useParams();
+
     const [isLoading, setLoading] = useState(true);
+    const [employee, setEmployee] = useState(null);
+    const [roles, setRole] = useState([]);
 
-   
-
-    const createUserAvtar = (event) =>{
-        let fullName = event.target.value
-        if(fullName !== '') {
-            const firstCharacter = fullName.charAt(0);
-            const secondCharacterAfterSpace = fullName.split(' ').slice(1).map(word => word.charAt(0)).join('');
-            userAvtar.current.innerHTML = (firstCharacter + secondCharacterAfterSpace).toUpperCase();
-        } else {
-            userAvtar.current.innerHTML = 'AV'
-        }         
-    }
+    const userAvtar = useRef(null);
 
     const {
         register,
         handleSubmit,
-        formState: { errors,isSubmitting },
-        setError,
+        reset,
+        formState: {
+            errors,
+            isSubmitting
+        }
     } = useForm();
 
-    const submitHandler = async (data) => {
+
+    const createUserAvtar = (event) => {
+
+        let fullName = event.target.value;
+        if (fullName !== '') {
+            const firstCharacter = fullName.charAt(0);
+            const secondCharacterAfterSpace = fullName.split(' ').slice(1).map(word => word.charAt(0)).join('');
+            userAvtar.current.innerHTML = (firstCharacter + secondCharacterAfterSpace).toUpperCase();
+        } else {
+            userAvtar.current.innerHTML = defaultAvtar;
+        }
+    }
+
+    const submitHandler = useCallback(async (data) => {
         const toastId = toast.loading("Please wait...")
-       
-        let postData = {...data,avtar_name:userAvtar.current.innerHTML};
-     
-         try {
-             let response = await actionPostData(`${API_URL}/employees`, accessToken, postData);
-             response = await response.json();
-     
-             if (response.status === 200) {
-                 toast.success(response.message, {
-                     id: toastId
-                 });                
-                 navigate('/employees/all-employee');
-             } 
-     
-             if(response.status === 422){
-                 Object.keys(response.errors).forEach((field) => {
-                     setError(field, {
-                         type: "server",
-                         message: response.errors[field],
-                     });
-                 });
-                toast.dismiss(toastId);
-             }
-         } catch (error) {
-             toast.error(error)
-         }
-       };
+
+        try {
+            let response = await actionPostData(`${API_URL}/employees/${params.id}`, accessToken, data, 'PUT');
+            response = await response.json();
+
+            if (response.status) {
+                toast.success(response.message, {
+                    id: toastId
+                });
+                navigate('/employees/all-employee');
+            } else {
+                toast.error(response.message, {
+                    id: toastId
+                });
+            }
+        } catch (error) {
+            toast.error(error)
+        }
+    })
+
+    const fetchData = async () => {
+        setLoading(true);
+        let response = await actionFetchData(`${API_URL}/employees/${params.id}`, accessToken);
+        response = await response.json();
+
+        if (response.status) {
+            reset(response.data);
+            setEmployee(response.data);
+            userAvtar.current.innerHTML = response.data.avtar_name;
+            setLoading(false);
+        }
+    }
 
     // Fetch Data
     const fetchRoles = async () => {
@@ -80,16 +92,15 @@ const NewEmployee = () => {
     }
 
     useEffect(() => {
-        fetchRoles();        
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        fetchRoles();
+        fetchData();          
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
-
-    
-  return (
-    <div>
+    return (
+        <div>
         <PageTitle
-            title="Add New Employee"
+            title="Edit Employee"
             buttonLink="/employees/all-employee"
             buttonLabel="Back to List"
         />
@@ -97,7 +108,7 @@ const NewEmployee = () => {
             <div className="col-12 col-xl-8">
                 <div className="card">
                     <div className="card-body">
-                    {isLoading && <div className="cover-body"></div>}
+                        {isLoading && <div className="cover-body"></div>}
                         <form onSubmit={handleSubmit(submitHandler)} method="post">
                             <div className="mb-3">
                                 <label className="form-label">Employee Avatar</label>
@@ -228,12 +239,39 @@ const NewEmployee = () => {
                                 </select>
                                 <p className="invalid-feedback">{errors.role?.message}</p>
                             </div>
-                            
+                            {employee && employee.employee_code && (
+                                <div className="mb-3">
+                                    <label className="form-label">Employee Code</label>
+                                    <input 
+                                        disabled
+                                        className={`form-control custom-input disabled`} 
+                                        type="text" 
+                                        placeholder="Enter Employee Code" 
+                                        value={employee.employee_code}
+                                    />
+                                </div>
+                            )}
+
+                            <div className="mb-3">
+                                <label className="form-label">Status</label>
+                                <select 
+                                    {...register("status", {
+                                        required: "Please select status",
+                                    })}
+                                    className={`form-control custom-input ${errors.status && `is-invalid`}` } 
+                                    defaultValue={''} 
+                                    name="status" 
+                                    id="status" 
+                                >
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
                             {isSubmitting ?
                                 <LoadingButton />
                                 :
                                 <button type="submit" className="btn  btn-primary large-btn">
-                                    Add Employee
+                                    Update Employee
                                 </button>
                             }
                         </form>
@@ -242,7 +280,7 @@ const NewEmployee = () => {
             </div>
         </div>
     </div>
-  );
+    );
 };
 
-export default NewEmployee;
+export default EditEmployee;

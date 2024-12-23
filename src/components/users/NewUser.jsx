@@ -160,6 +160,7 @@ const NewUser = () => {
                                         name="email"
                                         placeholder="Email Address (optional)" 
                                     />
+                                    <p className="invalid-feedback">{errors.email?.message}</p>
                                 </div>
                                 <div className="mb-4">
                                     <label className="form-label">Address Line 1</label>

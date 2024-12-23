@@ -17,6 +17,7 @@ const AllUser = () => {
     const perPage = 20;
     const accessToken = Auth('accessToken');
     const [users, setUsers] = useState([])
+    const [userCount, setUserCount] = useState('');
     const [search, setSearchinput] = useState('')
 
 
@@ -25,17 +26,15 @@ const AllUser = () => {
     const [isLoading, setLoading] = useState(true);
 
     // Fetch data
-    let finalUrl = `${API_URL}/users?page=${pageNumber}&perPage=${perPage}`;
-    const fetchUsers = async () => {
+    const fetchData = async () => {
         try {
-            let response = await actionFetchData(finalUrl, accessToken);
+            let response = await actionFetchData(`${API_URL}/users?page=${pageNumber}&perPage=${perPage}`, accessToken);
             response = await response.json();
             if (response.status) {
                 setUsers(response.data.data);
                 setPageCount(response.totalPage);
             }
-            setLoading(false)
-            
+            setLoading(false)            
         } catch (error) {
             toast.error(error)
         }
@@ -107,12 +106,21 @@ const AllUser = () => {
         }
     };
 
-
+    // Fetch Data user count
+    const fetchUserCount = async () => {
+        let response = await actionFetchData(`${API_URL}/users/roles/count`, accessToken);
+        response = await response.json();
+        if (response.status === 200) {
+            setUserCount(response);
+        }
+    }
 
     useEffect(() => {
-        fetchUsers()
+        fetchData()
+        fetchUserCount();
     }, [pageNumber])
 
+    console.log(userCount)
     return (
         <div>
            
@@ -121,6 +129,7 @@ const AllUser = () => {
                 buttonLink="/users/add-user"
                 buttonLabel="Add New User"
             />
+            {Object.keys(userCount).length > 0 &&
             <div className="row">
                 <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
                     <div className="card">
@@ -130,15 +139,15 @@ const AllUser = () => {
                         <div className="card-body pt-0">
                             <div className="row">
                                 <div className="col-12">
-                                    <h1>{50}</h1>
+                                    <h1>{userCount.total_customer}</h1>
                                 </div>
                                 <div className="col-12">
                                     <div className="row">
                                         <div className="col-auto">
-                                            <span className="active-signal"></span> Active {20}
+                                            <span className="active-signal"></span> Active {userCount.active_customer}
                                         </div>
                                         <div className="col-auto">
-                                            <span className="inactive-signal"></span> Inactive {30}
+                                            <span className="inactive-signal"></span> Inactive {userCount.inactive_customer}
                                         </div>
                                     </div>
                                 </div>
@@ -155,15 +164,15 @@ const AllUser = () => {
                         <div className="card-body pt-0">
                             <div className="row">
                                 <div className="col-12">
-                                    <h1>{50}</h1>
+                                    <h1>{userCount.total_carpenter}</h1>
                                 </div>
                                 <div className="col-12">
                                     <div className="row">
                                         <div className="col-auto">
-                                            <span className="active-signal"></span> Active {20}
+                                            <span className="active-signal"></span> Active {userCount.active_carpenter}
                                         </div>
                                         <div className="col-auto">
-                                            <span className="inactive-signal"></span> Inactive {30}
+                                            <span className="inactive-signal"></span> Inactive {userCount.inactive_carpenter}
                                         </div>
                                     </div>
                                 </div>
@@ -180,15 +189,15 @@ const AllUser = () => {
                         <div className="card-body pt-0">
                             <div className="row">
                                 <div className="col-12">
-                                    <h1>{50}</h1>
+                                    <h1>{userCount.total_vendor}</h1>
                                 </div>
                                 <div className="col-12">
                                     <div className="row">
                                         <div className="col-auto">
-                                            <span className="active-signal"></span> Active {20}
+                                            <span className="active-signal"></span> Active {userCount.active_vendor}
                                         </div>
                                         <div className="col-auto">
-                                            <span className="inactive-signal"></span> Inactive {30}
+                                            <span className="inactive-signal"></span> Inactive {userCount.inactive_vendor}
                                         </div>
                                     </div>
                                 </div>
@@ -205,15 +214,15 @@ const AllUser = () => {
                         <div className="card-body pt-0">
                             <div className="row">
                                 <div className="col-12">
-                                    <h1>{50}</h1>
+                                    <h1>{userCount.total_employee}</h1>
                                 </div>
                                 <div className="col-12">
                                     <div className="row">
                                         <div className="col-auto">
-                                            <span className="active-signal"></span> Active {20}
+                                            <span className="active-signal"></span> Active {userCount.active_employee}
                                         </div>
                                         <div className="col-auto">
-                                            <span className="inactive-signal"></span> Inactive {30}
+                                            <span className="inactive-signal"></span> Inactive {userCount.inactive_employee}
                                         </div>
                                     </div>
                                 </div>
@@ -222,7 +231,7 @@ const AllUser = () => {
                     </div>
                 </div>
             </div>
-
+            }
            
             <div className="row">
                 <div className="col-12">

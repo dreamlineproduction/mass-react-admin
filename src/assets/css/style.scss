@@ -208,3 +208,9 @@
         border-color: #1cbb8c;
     }
 }
+.is-invalid-select .react-select__control{
+    border-color: #dc3545 !important;
+}
+.is-invalid-select .react-select__input{
+    color: #dc3545 !important;
+}
