@@ -24,7 +24,7 @@ const AllUser = () => {
     const [pageNumber, setPageNumber] = useState(1);
     const [pageCount, setPageCount] = useState(0);
     const [isLoading, setLoading] = useState(true);
-
+    
     // Fetch data
     const fetchData = async () => {
         try {
