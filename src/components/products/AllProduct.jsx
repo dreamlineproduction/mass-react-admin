@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
-import { useContext, useEffect,  useState } from "react";
+import { useContext, useEffect,  useMemo,  useState } from "react";
 import { actionDeleteData, actionFetchData, actionPostData } from "../../actions/actions";
 import { API_URL } from "../../config";
 import AuthContext from "../../context/auth";
@@ -10,28 +10,111 @@ import Status from "../others/Status";
 import Pagination from "../others/Pagination";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import DataTable from "../others/DataTable";
+import PaginationDataTable from "../others/PaginationDataTable";
 
 const AllProduct = () => {
+    const columns = useMemo(() => [
+        {
+            accessorKey: "image",
+            header: "Image",
+            enableSorting: false,
+            cell: ({ row }) => {
+              if (row.original.image) {
+                return (
+                  <img
+                    src={row.original.image_url}
+                    className="rounded-circle me-3"
+                    alt={row.original.name}
+                    width={48}
+                    height={48}
+                    style={{ objectFit: "cover" }}
+                  />
+                );
+              } 
+            },
+        },
+        { accessorKey: "unique_id", header: "Product ID" },
+        { accessorKey: "name", header: "Product Name" },
+        { accessorKey: "created_at", header: "Created At", enableSorting: false },
+        {
+            accessorKey: "status",
+            header: "Status",
+            enableSorting: false,
+            cell: ({ getValue }) => {
+                return <Status status={getValue()} />;
+            },
+        },
+        {
+            accessorKey: "action",
+            header: "Action",
+            enableSorting: false,
+            cell: ({ row }) => {
+                return (
+                    <div className="dropdown">
+                        <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            More Options
+                        </button>
+                        <ul className="dropdown-menu">
+                            <li>
+                                <Link className="dropdown-item" to={`/products/edit-product/${row.original.id}`}>
+                                    Edit
+                                </Link>
+                            </li>
+                            <li>
+                                <button type="button" className="dropdown-item" onClick={() => changeStatus(row.original.id,row.original.status)}>
+                                    {row.original.status === 1 ? 'Inactive' : 'Active'}
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" className="dropdown-item" onClick={() => deleteProduct(row.original.id)}>
+                                    Delete
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                );
+            },
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    ],[]);
+
     const { Auth } = useContext(AuthContext)
-    const perPage = 20;
     const accessToken = Auth('accessToken');
     const [products, setProduct] = useState([])
-    const [search, setSearchinput] = useState('')
 
-
-
-    const [pageNumber, setPageNumber] = useState(1);
     const [pageCount, setPageCount] = useState(0);
     const [isLoading, setLoading] = useState(true);
 
+    const [globalFilter, setGlobalFilter] = useState('');
+    const [sorting, setSorting] = useState([]);
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+
     // Fetch data
-    let finalUrl = `${API_URL}/products?page=${pageNumber}&perPage=${perPage}`;
     const fetchProduct = async () => {
+
         setLoading(true);
-        let response = await actionFetchData(finalUrl, accessToken);
+
+        const params = {
+            page: pageIndex + 1,
+            perPage: pageSize,
+          };
+      
+          if (sorting.length > 0) {
+            params.sort = sorting[0].id;
+            params.order = sorting[0].desc ? "desc" : "asc";
+          }
+      
+        if (globalFilter !== "") {
+            params.search = globalFilter.trim();
+        }
+
+        let response = await actionFetchData(`${API_URL}/products?${new URLSearchParams(params)}`,accessToken);
         response = await response.json();
         if (response.status) {
-            setProduct(response.data.data);
+            setProduct(response.data.data || []);
             setPageCount(response.totalPage);
         }
         setLoading(false)
@@ -40,14 +123,13 @@ const AllProduct = () => {
     // Delete Data
     const actionDelete = async (id) => {
         const toastId = toast.loading("Please wait...")
-
+        setLoading(true)
         try {
             let response = await actionDeleteData(`${API_URL}/products/${id}`, accessToken);
             response = await response.json();
 
             if (response.status) {
-                const filteredData = products.filter(item => item.id !== id);
-                setProduct(filteredData);
+                setProduct(prevProducts => prevProducts.filter(item => item.id !== id));
                 toast.success(response.message, {
                     id: toastId
                 });
@@ -55,6 +137,7 @@ const AllProduct = () => {
         } catch (error) {
             toast.error(error)
         }
+        setLoading(false)
     }
 
     const deleteProduct = (id) => {
@@ -74,11 +157,10 @@ const AllProduct = () => {
     }
 
     // Change Status
-    const changeStatus = async (id) => {
+    const changeStatus = async (id,currentStatus) => {
         const toastId = toast.loading("Please wait...")
 
-        let findedIndex = products.findIndex(product => product.id === id);
-        let status = (products[findedIndex].status === 1) ? 0 : 1;
+        let status = (currentStatus === 1) ? 0 : 1;
 
         try {
             const postData = { status };
@@ -86,8 +168,9 @@ const AllProduct = () => {
             response = await response.json();
 
             if (response.status) {
-                products[findedIndex].status = status;
-                setProduct([...products]);
+                setProduct(prevProducts => 
+                    prevProducts.map(product => product.id === id ? { ...product, status } : product)
+                );
                 toast.success(response.message, {
                     id: toastId
                 });
@@ -97,17 +180,30 @@ const AllProduct = () => {
         }
     }
 
-
-    const handlerSearch = () => {
-        if (search.trim() !== '') {
-            finalUrl += `&search=${search}`
-            fetchProduct();
-        }
-    };
+    const table = useReactTable({
+        data: products,
+        columns,
+        pageCount,
+        globalFilter,
+        state: {
+            sorting,
+            pagination: { pageIndex, pageSize },
+        },
+        onSortingChange: setSorting,
+        onPaginationChange: ({ pageIndex, pageSize }) => {
+            setPageIndex(pageIndex);
+            setPageSize(pageSize);
+        },
+        manualSorting: true,
+        manualPagination: true,
+        getCoreRowModel: getCoreRowModel(),
+    });
 
     useEffect(() => {
         fetchProduct()
-    }, [pageNumber])
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageIndex, pageSize, sorting, globalFilter]);
 
     return (
         <div>
@@ -121,28 +217,14 @@ const AllProduct = () => {
                 <div className="col-12">
                     <div className="card">
                         <div className="my-4 d-flex justify-content-end gap-3">
-                            <div className="search-input-outer">
+                            <div className="search-input-outer me-4">
                                 <input
-                                    onChange={(e) => {
-                                        setSearchinput(e.target.value)
-                                        if (e.target.value === '') {
-                                            fetchProduct()
-                                        }
-                                    }}
-                                    value={search}
-                                    className="form-control"
-                                    type="text"
-                                    placeholder="Search..."
+                                placeholder="Search..."
+                                value={globalFilter}
+                                onChange={(e) => setGlobalFilter(e.target.value)}
+                                className="form-control"
+                                type="text"
                                 />
-                            </div>
-
-                            <div>
-                                <button
-                                    type="button"
-                                    onClick={handlerSearch}
-                                    className="btn btn-primary me-3">
-                                    Search
-                                </button>
                             </div>
                         </div>
 
@@ -156,81 +238,17 @@ const AllProduct = () => {
                         }
 
                         {products.length > 0 &&
-                            <table className="table table-striped table-hover mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Image</th>
-                                        <th>Product ID</th>
-                                        <th>Product Name</th>
-                                        <th>Created At</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        products.map(product => {
-                                            return (
-                                                <tr key={product.id} className="align-middle">
-                                                    <td>
-                                                        {product.image &&
-                                                            <img
-                                                                src={product.image_url}
-                                                                className="img-thumbnail"
-                                                                style={{ width: "70px", height: "70px", objectFit: "cover" }}
-                                                                alt={product.name}
-                                                            />
-                                                        }
-
-                                                    </td>
-                                                    <td>{product.unique_id}</td>
-                                                    <td>{product.name}</td>
-                                                    <td>{product.created_at}</td>
-                                                    <td>
-                                                        <Status status={product.status} />
-                                                    </td>
-                                                    <td>
-                                                        <div className="dropdown">
-                                                            <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                More Options
-                                                            </button>
-                                                            <ul className="dropdown-menu">
-                                                                <li>
-                                                                    <Link className="dropdown-item" to={`/products/edit-product/${product.id}`}>
-                                                                        Edit
-                                                                    </Link>
-                                                                </li>
-                                                                <li>
-                                                                    <button type="button" className="dropdown-item" onClick={() => changeStatus(product.id)}>
-                                                                        {product.status === 1 ? 'Inactive' : 'Active'}
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button type="button" className="dropdown-item" onClick={() => deleteProduct(product.id)}>
-                                                                        Delete
-                                                                    </button>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-
-                                                    </td>
-                                                </tr>
-                                            )
-                                        })
-
-                                    }
-                                </tbody>
-                            </table>
+                            <DataTable table={table} columns={columns} />
                         }
                     </div>
 
                     {products.length > 0 &&
-                        <div className='d-flex  align-items-start justify-content-end'>
-                            <Pagination
-                                pageCount={pageCount}
-                                handlePageChange={(event) => setPageNumber(event.selected + 1)}
-                            />
-                        </div>
+                        <PaginationDataTable
+                            table={table}
+                            pageCount={pageCount}
+                            pageIndex={pageIndex}
+                            setPageIndex={setPageIndex}
+                        />
                     }
                 </div>
             </div>

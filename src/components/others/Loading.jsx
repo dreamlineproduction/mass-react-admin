@@ -1,14 +1,21 @@
-import React from 'react';
-import { Loader } from 'react-feather';
-import { BounceLoader } from 'react-spinners';
+import { BounceLoader } from "react-spinners";
 
 const Loading = () => (
-   <div className='mx-auto py-5'>
-        <BounceLoader 
-            size={40}
-            color='#3b7ddd'
-        />
-   </div>
-  );
-  
+  <div
+    className="mx-auto py-5 position-absolute d-flex justify-content-center align-items-center w-100 h-100"
+    style={{
+      minHeight: "500px",
+      zIndex: 9,
+      backgroundColor: "rgba(255, 255, 255, 0.8)",
+      top: 0,
+      left: 0,
+    }}
+  >
+    <div className="d-flex justify-content-center flex-column align-items-center">
+      <BounceLoader size={40} color="#3b7ddd" />
+      <p className="text-center">Loading...</p>
+    </div>
+  </div>
+);
+
 export default Loading;

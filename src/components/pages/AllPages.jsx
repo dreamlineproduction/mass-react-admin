@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import AuthContext from "../../context/auth";
 import { API_URL } from "../../config";
 import { actionFetchData, actionPostData } from "../../actions/actions";
@@ -7,137 +7,193 @@ import NoState from "../others/NoState";
 import Loading from "../others/Loading";
 import PageTitle from "../others/PageTitle";
 import Status from "../others/Status";
+
+import { useReactTable, getCoreRowModel } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-import Pagination from "../others/Pagination";
+import PaginationDataTable from "../others/PaginationDataTable";
+import DataTable from "../others/DataTable";
 
 const AllPages = () => {
-    const { Auth } = useContext(AuthContext)
-    const perPage = 20;
-    const accessToken = Auth('accessToken');
+    const columns = useMemo(() => [
+        { accessorKey: "id", header: "Id" },
+        { accessorKey: "title", header: "Title" },
+        { accessorKey: "created_at", header: "Created At", enableSorting: false },
+        {
+            accessorKey: "status",
+            header: "Status",
+            enableSorting: false,
+            cell: ({ getValue }) => {
+                return <Status status={getValue()} />;
+            },
+        },
+        {
+            accessorKey: "action",
+            header: "Action",
+            enableSorting: false,
+            cell: ({ row }) => {
+                return (
+                    <div className="dropdown">
+                        <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            More Options
+                        </button>
+                        <ul className="dropdown-menu">
+                            <li>
+                                <Link className="dropdown-item" to={`/pages/edit-page/${row.original.id}`}>
+                                    Edit
+                                </Link>
+                            </li>
+                            <li>
+                                <button type="button" className="dropdown-item" onClick={() => changeStatus(row.original.id,row.original.status)}>
+                                    {row.original.status === 1 ? 'Inactive' : 'Active'}
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                );
+            },
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    ],[]);
 
-    const [pages, setPage] = useState([]);
-    const [pageNumber, setPageNumber] = useState(1);
-    const [pageCount, setPageCount] = useState(0);
+    const { Auth } = useContext(AuthContext);
+    const accessToken = Auth("accessToken");
+
+    const [pages, setPages] = useState([]);
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(20);
+    const [sorting, setSorting] = useState([]);
     const [isLoading, setLoading] = useState(true);
+    const [pageCount, setPageCount] = useState(0);
+    const [globalFilter, setGlobalFilter] = useState("");
 
-    //--Fetch Data
-    let finalUrl = `${API_URL}/pages?page=${pageNumber}&perPage=${perPage}`;
-    const fetchOffer = async () => {
-        let response = await actionFetchData(finalUrl, accessToken);
-        response = await response.json();
-        if (response.status) {
-            setPage(response.data.data);
-            setPageCount(response.totalPage);
+    const fetchPages = async () => {
+        setLoading(true);
+
+        const params = {
+            page: pageIndex + 1,
+            perPage: pageSize,
+        };
+
+        if (sorting.length > 0) {
+            params.sort = sorting[0].id;
+            params.order = sorting[0].desc ? "desc" : "asc";
         }
-        setLoading(false)
-    }
 
-    // Change Status
-    const changeStatus = async (id) => {
-        const toastId = toast.loading("Please wait...")
-
-        let findedIndex = pages.findIndex(item => item.id === id);
-        let status = (pages[findedIndex].status === 1) ? 0 : 1;
+        if (globalFilter !== "") {
+            params.search = globalFilter.trim();
+        }
 
         try {
-            const postData = { status };
-            let response = await actionPostData(`${API_URL}/pages/change-status/${id}`, accessToken, postData, 'PUT');
-            response = await response.json();
+            const response = await actionFetchData(
+                `${API_URL}/pages?${new URLSearchParams(params)}`,
+                accessToken
+            );
+            const data = await response.json();
+            if (data.status) {
+                setPages(data.data.data || []);
+                setPageCount(data.totalPage || 0);
+              
+            } else {
+                setPages([]);
+                setPageCount(0);
+            }
+        } catch (e) {
+            toast.error(`Failed to fetch pages: ${e}`);
+            setPages([]);
+            setPageCount(0);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-            if (response.status) {
-                pages[findedIndex].status = status;
-                setPage([...pages]);
-                toast.success(response.message, {
-                    id: toastId
-                });
+    const table = useReactTable({
+        data: pages,
+        columns,
+        pageCount,
+        globalFilter,
+        state: {
+            sorting,
+            pagination: { pageIndex, pageSize },
+        },
+        onSortingChange: setSorting,
+        onPaginationChange: ({ pageIndex, pageSize }) => {
+            setPageIndex(pageIndex);
+            setPageSize(pageSize);
+        },
+        manualSorting: true,
+        manualPagination: true,
+        getCoreRowModel: getCoreRowModel(),
+    });
+
+    const changeStatus = async (id,currentStatus) => {      
+
+        const status = currentStatus === 1 ? 0 : 1;
+
+        const toastId = toast.loading("Please wait...");
+        try {
+            const response = await actionPostData(
+                `${API_URL}/pages/change-status/${id}`,
+                accessToken,
+                { status },
+                "PUT"
+            );
+            const result = await response.json();
+
+            if (result.status) {              
+                toast.success(result.message, { id: toastId });
+                fetchPages();
             }
         } catch (error) {
-            toast.error(error)
+            toast.error("Failed to update status");
+        } finally {
+            toast.dismiss(toastId);
         }
-    }
+    };
 
     useEffect(() => {
-        fetchOffer();
-    }, [pageNumber])
+        fetchPages();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageIndex, pageSize, sorting, globalFilter]);
 
+    //console.log(pages);
     return (
         <div>
-            <PageTitle
-                title="All Pages"
-            />
-
+            <PageTitle title="All Pages" />
             <div className="row">
                 <div className="col-12">
-                    <div className="card">                        
-                        {isLoading &&
+                    <div className="card">
+                        <div className="my-4 d-flex justify-content-end gap-3">
+                            <div className="search-input-outer me-4">
+                                <input
+                                    placeholder="Search..."
+                                    value={globalFilter}
+                                    onChange={(e) => setGlobalFilter(e.target.value)}
+                                    className="form-control"
+                                    type="text"
+                                />
+                            </div>
+                        </div>
+
+                        {isLoading && 
                             <Loading />
                         }
-                        {!isLoading && pages.length === 0 &&
-                            <NoState
-                                message="No pages found."
-                            />
-                        }
+                        {!isLoading && pages.length === 0 && (
+                            <NoState message="No pages found." />
+                        )}
 
-                        {pages.length > 0 &&
-                            <table className="table table-striped table-hover mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Page ID</th>
-                                        <th>Title</th>
-                                        <th>Crated At</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {
-                                    pages.map(item => {
-                                        return (
-                                            <tr key={item.id}>
-                                                <td>{item.id}</td>
-                                                <td>{item.title}</td>
-                                                <td>{item.created_at}</td>
-                                                <td>
-                                                    <Status 
-                                                        status={item.status}
-                                                    />
-                                                </td>
-                                                <td>
-                                                    <div className="dropdown">
-                                                        <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            More Options
-                                                        </button>
-                                                        <ul className="dropdown-menu">
-                                                            <li>
-                                                                <Link className="dropdown-item" to={`/pages/edit-page/${item.id}`}>
-                                                                    Edit
-                                                                </Link>
-                                                            </li>
-                                                            <li>
-                                                                <button type="button" className="dropdown-item" onClick={() => changeStatus(item.id)}>
-                                                                    {item.status === 1 ? 'Inactive' : 'Active'}
-                                                                </button>
-                                                            </li>                                                            
-                                                        </ul>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
-                                }
-                                </tbody>
-                            </table>
-                        }
+                        {pages.length > 0 && (
+                            <DataTable table={table} columns={columns} />
+                        )}
                     </div>
 
-                    {pages.length > 0 &&
-                        <div className='d-flex  align-items-start justify-content-end'>
-                            <Pagination
-                                pageCount={pageCount}
-                                handlePageChange={(event) => setPageNumber(event.selected + 1)}
-                            />
-                        </div>
-                    }
+                    {pages.length > 0 && (
+                        <PaginationDataTable
+                            table={table}
+                            pageCount={pageCount}
+                            pageIndex={pageIndex}
+                            setPageIndex={setPageIndex}
+                        />
+                    )}
                 </div>
             </div>
         </div>

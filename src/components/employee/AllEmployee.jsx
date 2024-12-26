@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
 import Status from "../others/Status";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import AuthContext from "../../context/auth";
 import {
   actionDeleteData,
@@ -13,28 +13,180 @@ import toast from "react-hot-toast";
 import { API_URL } from "../../config";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import DataTable from "../others/DataTable";
+import PaginationDataTable from "../others/PaginationDataTable";
 
 const AllEmployee = () => {
+  const columns = useMemo(
+    () => [
+      {
+        header: "ID",
+        accessorKey: "id",
+      },
+      {
+        accessorKey: "image",
+        header: "Image",
+        enableSorting: false,
+        cell: ({ row }) => {
+          if (row.original.image) {
+            return (
+              <img
+                src={row.original.image_url}
+                className="rounded-circle me-3"
+                alt={row.original.name}
+                width={48}
+                height={48}
+                style={{ objectFit: "cover" }}
+              />
+            );
+          } else {
+            return (
+              <img
+                src={`https://ui-avatars.com/api/?name=${row.original.name}&background=212631&color=fff`}
+                className="rounded-circle me-3"
+                alt={row.original.name}
+                width={48}
+                height={48}
+                style={{ objectFit: "cover" }}
+              />
+            );
+          }
+        },
+      },
+      {
+        header: "Name",
+        accessorKey: "name",
+      },
+      {
+        header: "Email",
+        accessorKey: "email",
+      },
+      {
+        header: "Phone Number",
+        accessorKey: "phone",
+        cell: ({ row }) => (row.original.phone ? row.original.phone : "N/A"),
+      },
+      {
+        header: "User Type",
+        accessorKey: "role",
+        cell: ({ row }) => {
+          return (
+            <span className="badge bg-primary">{row.original.role.name}</span>
+          );
+        },
+      },
+      {
+        header: "Designation",
+        accessorKey: "designation",
+        cell: ({ row }) =>
+          row.original.designation ? row.original.designation : "N/A",
+      },
+      {
+        header: "Employee Code",
+        accessorKey: "employee_code",
+        cell: ({ row }) =>
+          row.original.employee_code ? row.original.employee_code : "N/A",
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        enableSorting: false,
+        cell: ({ getValue }) => {
+          return <Status status={getValue()} />;
+        },
+      },
+      {
+        accessorKey: "action",
+        header: "Action",
+        enableSorting: false,
+        cell: ({ row }) => {
+          return (
+            <div className="dropdown">
+              <button
+                className="btn btn-secondary dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                More Options
+              </button>
+              <ul className="dropdown-menu">
+                <li>
+                  <Link
+                    className="dropdown-item"
+                    to={`/employees/edit-employee/${row.original.id}`}
+                  >
+                    Edit
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    className="dropdown-item"
+                    onClick={() =>
+                      changeStatus(row.original.id, row.original.status)
+                    }
+                  >
+                    {row.original.status === 1 ? "Inactive" : "Active"}
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    className="dropdown-item"
+                    onClick={() => deleteEmployee(row.original.id)}
+                  >
+                    Delete
+                  </button>
+                </li>
+              </ul>
+            </div>
+          );
+        },
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
   const { Auth } = useContext(AuthContext);
-  const perPage = 20;
   const accessToken = Auth("accessToken");
   const [employees, setEmployees] = useState([]);
-  const [search, setSearchinput] = useState("");
 
-  const [pageNumber, setPageNumber] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [isLoading, setLoading] = useState(true);
 
+  const [sorting, setSorting] = useState([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+
   // Fetch Data
-  let finalUrl = `${API_URL}/employees?page=${pageNumber}&perPage=${perPage}`;
   const fetchData = async () => {
     setLoading(true);
+    const params = {
+      page: pageIndex + 1,
+      perPage: pageSize,
+    };
 
-    let response = await actionFetchData(finalUrl, accessToken);
+    if (sorting.length > 0) {
+      params.sort = sorting[0].id;
+      params.order = sorting[0].desc ? "desc" : "asc";
+    }
+
+    if (globalFilter !== "") {
+      params.search = globalFilter.trim();
+    }
+
+    let response = await actionFetchData(
+      `${API_URL}/employees?${new URLSearchParams(params)}`,
+      accessToken
+    );
     response = await response.json();
     if (response.status) {
-      setEmployees(response.data.data);
-      setPageCount(response.totalPage);
+      setEmployees(response.data.data || []);
+      setPageCount(response.totalPage || 0);
     }
     setLoading(false);
   };
@@ -42,6 +194,7 @@ const AllEmployee = () => {
   //--Delete api call
   const actionDelete = async (id) => {
     const toastId = toast.loading("Please wait...");
+    setLoading(true)
     try {
       let response = await actionDeleteData(
         `${API_URL}/employees/${id}`,
@@ -49,8 +202,7 @@ const AllEmployee = () => {
       );
       response = await response.json();
       if (response.status) {
-        const filteredData = employees.filter((item) => item.id !== id);
-        setEmployees(filteredData);
+        setEmployees(prevData => prevData.filter(row => row.id !== id));
 
         toast.success(response.message, {
           id: toastId,
@@ -59,6 +211,7 @@ const AllEmployee = () => {
     } catch (error) {
       toast.error(error);
     }
+    setLoading(false)
   };
 
   // -- Delete employee
@@ -78,19 +231,10 @@ const AllEmployee = () => {
     });
   };
 
-  const handlerSearch = () => {
-    if (search.trim() !== "") {
-      finalUrl += `&search=${search}`;
-      fetchData();
-    }
-  };
-
   // Change Status
-  const changeStatus = async (id) => {
+  const changeStatus = async (id,currentStatus) => {
     const toastId = toast.loading("Please wait...");
-
-    let findedIndex = employees.findIndex((item) => item.id === id);
-    let status = employees[findedIndex].status === 1 ? 0 : 1;
+    let status = currentStatus === 1 ? 0 : 1;
 
     try {
       const postData = { status };
@@ -103,8 +247,9 @@ const AllEmployee = () => {
       response = await response.json();
 
       if (response.status) {
-        employees[findedIndex].status = status;
-        setEmployees([...employees]);
+        setEmployees(prevData => 
+            prevData.map(row => row.id === id ? { ...row, status } : row)
+        );
         toast.success(response.message, {
           id: toastId,
         });
@@ -113,10 +258,30 @@ const AllEmployee = () => {
       toast.error(error);
     }
   };
+
+  const table = useReactTable({
+    data: employees,
+    columns,
+    pageCount,
+    globalFilter,
+    state: {
+      sorting,
+      pagination: { pageIndex, pageSize },
+    },
+    onSortingChange: setSorting,
+    onPaginationChange: ({ pageIndex, pageSize }) => {
+      setPageIndex(pageIndex);
+      setPageSize(pageSize);
+    },
+    manualSorting: true,
+    manualPagination: true,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageNumber]);
+  }, [pageIndex, pageSize, sorting, globalFilter]);
 
   return (
     <div>
@@ -129,128 +294,34 @@ const AllEmployee = () => {
         <div className="col-12">
           <div className="card">
             <div className="my-4 d-flex justify-content-end gap-3">
-              <div className="search-input-outer">
+              <div className="search-input-outer me-4">
                 <input
-                  onChange={(e) => {
-                    setSearchinput(e.target.value);
-                    if (e.target.value === "") {
-                      fetchData();
-                    }
-                  }}
+                  placeholder="Search..."
+                  value={globalFilter}
+                  onChange={(e) => setGlobalFilter(e.target.value)}
                   className="form-control"
                   type="text"
-                  placeholder="Search..."
                 />
-              </div>
-
-              <div>
-                <button
-                  type="button"
-                  className="btn btn-primary me-3"
-                  onClick={handlerSearch}
-                >
-                  Search
-                </button>
               </div>
             </div>
             {isLoading && <Loading />}
+            
             {!isLoading && employees.length === 0 && (
               <NoState message="No employees found." />
             )}
 
-            {!isLoading && employees.length > 0 && (
-              <table className="table table-striped table-hover mb-0">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Email</th>
-
-                    <th>Phone Number</th>
-                    <th>User Type</th>
-                    <th>Designation</th>
-                    <th>Employee Code</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {employees.map((item) => (
-                    <tr key={`employee-${item.id}`}>
-                      <td>{item.id}</td>
-                      <td>
-                        {item.image ? (
-                          <img
-                            src={item.image_url}
-                            className="rounded-circle me-3"
-                            alt={item.name}
-                            width={48}
-                            height={48}
-                            style={{ objectFit: "cover" }}
-                          />
-                        ) : (
-                          <img
-                            src={`https://ui-avatars.com/api/?name=${item.name}&background=212631&color=fff`}
-                            className="rounded-circle me-3"
-                            alt={item.name}
-                            width={48}
-                          />
-                        )}
-                      </td>
-                      <td>{item.name}</td>
-                      <td>{item.email}</td>
-                      <td>{item.phone}</td>
-                      <td>{item.role.name}</td>
-                      <td>{item.designation}</td>
-                      <td>{item.employee_code ? item.employee_code : "N/A"}</td>
-                      <td>
-                        <Status status={item.status} />
-                      </td>
-
-                      <td>
-                        <div className="dropdown">
-                          <button
-                            className="btn btn-secondary dropdown-toggle"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                          >
-                            More Options
-                          </button>
-                          <ul className="dropdown-menu">
-                            <li>
-                              <Link className="dropdown-item" to={`/employees/edit-employee/${item.id}`}>
-                                Edit
-                              </Link>
-                            </li>
-                            <li>
-                              <button
-                                type="button"
-                                className="dropdown-item"
-                                onClick={() => changeStatus(item.id)}
-                              >
-                                {item.status === 1 ? "Inactive" : "Active"}
-                              </button>
-                            </li>
-                            <li>
-                              <button
-                                type="button"
-                                className="dropdown-item"
-                                onClick={() => deleteEmployee(item.id)}
-                              >
-                                Delete
-                              </button>
-                            </li>
-                          </ul>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {employees.length > 0 && (
+              <DataTable table={table} columns={columns} />
             )}
           </div>
+          {employees.length > 0 && (
+            <PaginationDataTable
+              table={table}
+              pageCount={pageCount}
+              pageIndex={pageIndex}
+              setPageIndex={setPageIndex}
+            />
+          )}
         </div>
       </div>
     </div>
