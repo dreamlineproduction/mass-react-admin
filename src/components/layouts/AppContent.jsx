@@ -35,6 +35,7 @@ import AllPermission from '../permmision/AllPermission';
 import NewPermission from '../permmision/NewPermission';
 import EditPermission from '../permmision/EditPermission';
 import EditEmployee from '../employee/EditEmployee';
+import NotFoundPage from '../404/NotFoundPage';
 
 const AppContent = () => {
     const routes = [
@@ -76,7 +77,6 @@ const AppContent = () => {
       
     return (
         <Routes>
-            <Route path="/" element={<Navigate to="login" replace />} />
             {routes.map(({ path, element }) => (
                 <Route
                     key={path}
@@ -84,6 +84,7 @@ const AppContent = () => {
                     element={<ProtectRoute>{element}</ProtectRoute>}
                 />
             ))}
+           
         </Routes>        
     );
 };
