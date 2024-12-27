@@ -29,6 +29,7 @@ const AppHeader = () => {
             navigate('/login')
         },500)
     }
+    
     useEffect(()=>{
         getProfileImage();
 

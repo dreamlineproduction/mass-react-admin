@@ -35,9 +35,10 @@ import AllPermission from '../permmision/AllPermission';
 import NewPermission from '../permmision/NewPermission';
 import EditPermission from '../permmision/EditPermission';
 import EditEmployee from '../employee/EditEmployee';
-import NotFoundPage from '../404/NotFoundPage';
+import Unauthorized from '../404/Unauthorized';
 
 const AppContent = () => {
+
     const routes = [
         { path: '/dashboard', element: <Dashboard /> },
         { path: '/users/all-users', element: <AllUser /> },
@@ -83,8 +84,7 @@ const AppContent = () => {
                     path={path}
                     element={<ProtectRoute>{element}</ProtectRoute>}
                 />
-            ))}
-           
+            ))}           
         </Routes>        
     );
 };
