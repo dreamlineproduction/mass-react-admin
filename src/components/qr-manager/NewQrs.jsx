@@ -65,25 +65,25 @@ const NewQrs = () => {
 
     return (
         <div>
-             <PageTitle 
+            <PageTitle
                 title="Add New QR Code"
                 buttonLink="/qr-manager/all-qr"
                 buttonLabel="Back to List"
             />
             <div className="row">
                 <div className="col-12 col-xl-8">
-                    <div className="card">               
+                    <div className="card">
                         <div className="card-body">
                             {isLoading && <div className="cover-body"></div>}
-                            <form  onSubmit={handleSubmit(submitHandler)} method="post"> 
-                                <div className="mb-4">            
+                            <form onSubmit={handleSubmit(submitHandler)} method="post">
+                                <div className="mb-4">
                                     <label className="form-label">Select Product</label>
-                                    <select 
+                                    <select
                                         {...register("product_id", {
                                             required: "Please select product",
                                             validate: (value) => value > 0 || 'Quantity should be integer',
                                         })}
-                                        className={`form-select custom-input ${errors.quantity && `is-invalid`}` } 
+                                        className={`form-select custom-input ${errors.quantity && `is-invalid`}`}
                                         id="product_id"
                                         name="product_id"
                                     >
@@ -101,17 +101,31 @@ const NewQrs = () => {
                                 </div>
 
                                 <div className="mb-4">
+                                    <label className="form-label">Package Size</label>
+                                    <select className="form-select form-select custom-input" aria-label="Default select example">
+                                        <option selected disabled>Open this select menu</option>
+                                        <option value="1">250ml</option>
+                                        <option value="2">500ml</option>
+                                        <option value="3">1 Liter</option>
+                                        <option value="3">2 Liter</option>
+                                        <option value="3">2.5 Liter</option>
+                                        <option value="3">5 Liter</option>
+                                    </select>
+                                    <p className="invalid-feedback">{errors.product_id?.message}</p>
+                                </div>
+
+                                <div className="mb-4">
                                     <label className="form-label">QR Code <small>Quantity (Max 3000)</small></label>
-                                    <input 
-                                       {...register("quantity", {
+                                    <input
+                                        {...register("quantity", {
                                             required: "Please enter quantity",
                                             valueAsNumber: true,
                                             validate: (value) => {
-        
+
                                                 if (!Number.isInteger(value)) {
-                                                    return "Quantity should be an integer";                                        
+                                                    return "Quantity should be an integer";
                                                 }
-        
+
                                                 if (value <= 0) {
                                                     return "Quantity should be greater than 0";
                                                 }
@@ -121,7 +135,7 @@ const NewQrs = () => {
                                                 return true;
                                             },
                                         })}
-                                        className={`form-control custom-input ${errors.quantity && `is-invalid`}` } 
+                                        className={`form-control custom-input ${errors.quantity && `is-invalid`}`}
                                         type="text"
                                         id="quantity"
                                         name="quantity"
@@ -132,13 +146,13 @@ const NewQrs = () => {
 
                                 <div className="mb-4">
                                     <label className="form-label">XP per (QR) code</label>
-                                    <input 
+                                    <input
                                         {...register("xp_value", {
                                             required: "Please enter xp value",
                                             valueAsNumber: true,
                                             validate: (value) => value > 0 || 'Xp value should be integer',
                                         })}
-                                        className={`form-control custom-input ${errors.xp_value && `is-invalid`}` } 
+                                        className={`form-control custom-input ${errors.xp_value && `is-invalid`}`}
                                         type="text"
                                         id="xp_value"
                                         name="xp_value"
@@ -149,11 +163,11 @@ const NewQrs = () => {
 
                                 <div className="mb-4">
                                     <label className="form-label">Batch Number</label>
-                                    <input 
-                                        {...register("batch_number", { 
-                                            required: "Please enter batch number" 
+                                    <input
+                                        {...register("batch_number", {
+                                            required: "Please enter batch number"
                                         })}
-                                        className={`form-control custom-input ${errors.batch_number && `is-invalid`}` } 
+                                        className={`form-control custom-input ${errors.batch_number && `is-invalid`}`}
                                         type="text"
                                         id="batch_number"
                                         name="batch_number"
@@ -161,8 +175,8 @@ const NewQrs = () => {
                                     />
                                     <p className="invalid-feedback">{errors.batch_number?.message}</p>
                                 </div>
-                                
-                                {isSubmitting ? 
+
+                                {isSubmitting ?
                                     <LoadingButton />
                                     :
                                     <button type="submit" className="btn  btn-primary large-btn">
@@ -172,9 +186,9 @@ const NewQrs = () => {
                             </form>
                         </div>
                     </div>
-                </div>           
+                </div>
             </div>
-        </div> 
+        </div>
     );
 };
 

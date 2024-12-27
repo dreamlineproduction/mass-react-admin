@@ -15,6 +15,7 @@ const AllQrs = () => {
     const columns = useMemo(() => [
         { header: 'ID', accessorKey: 'id' },
         { header: 'Product Name', accessorKey: 'name' },       
+        { header: 'Package Size', accessorKey: 'package' },       
         { header: 'XP Required', accessorKey: 'xp_value' },
         { header: 'Batch Number', accessorKey: 'batch_number' },
         { header: 'Total Qr', accessorKey: 'qr_code_content_count',enableSorting: false  },
@@ -29,7 +30,7 @@ const AllQrs = () => {
                             target="_blank"
                             className="btn py-2 px-2 btn-outline-primary me-2"
                         >
-                            <DownloadCloud width={30} />
+                            <DownloadCloud width={16} height={16}/>
                         </Link>
 
                         <Link 
@@ -37,7 +38,7 @@ const AllQrs = () => {
                             target="_blank"
                                 className="btn py-2 px-2 btn-outline-primary me-2"
                             >
-                                <Search width={30} />
+                                <Search width={16} height={16} />
                         </Link>
                     </div>
                 )
