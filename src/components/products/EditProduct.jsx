@@ -152,7 +152,7 @@ const EditProduct = () => {
                 buttonLabel="Back to List"
             />
             <div className="row">
-                <div className="col-12 col-xl-8">
+                <div className="col-12 col-xl-12">
                     <div className="card">               
                         <div className="card-body">
                             {isLoading && <div className="cover-body"></div>}
