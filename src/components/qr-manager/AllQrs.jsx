@@ -1,32 +1,81 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import AuthContext from "../../context/auth";
 import { API_URL } from "../../config";
 import { actionFetchData } from "../../actions/actions";
 import PageTitle from "../others/PageTitle";
 import Loading from "../others/Loading";
 import { DownloadCloud, Search } from "react-feather";
-import Pagination from "../others/Pagination";
 import NoState from "../others/NoState";
 import { Link } from "react-router-dom";
+import { useReactTable,getCoreRowModel  } from "@tanstack/react-table";
+import PaginationDataTable from "../others/PaginationDataTable";
+import DataTable from "../others/DataTable";
 
 const AllQrs = () => {
+    const columns = useMemo(() => [
+        { header: 'ID', accessorKey: 'id' },
+        { header: 'Product Name', accessorKey: 'name' },       
+        { header: 'XP Required', accessorKey: 'xp_value' },
+        { header: 'Batch Number', accessorKey: 'batch_number' },
+        { header: 'Total Qr', accessorKey: 'qr_code_content_count',enableSorting: false  },
+        { header: 'Created At', accessorKey: 'created_at',enableSorting: false },
+        { header: 'Actions', 
+            accessorKey: 'actions',
+            cell: ({ row }) => {
+                return (
+                    <div>
+                        <Link 
+                            to={`https://massbackoffice.in/public/show-pdf?batchNumber=${row.original.batch_number}&productId=${row.original.product_id}`}  
+                            target="_blank"
+                            className="btn py-2 px-2 btn-outline-primary me-2"
+                        >
+                            <DownloadCloud width={30} />
+                        </Link>
+
+                        <Link 
+                            to={`/qr-manager/qr-details/${row.original.product_id}/${row.original.batch_number}`}
+                            target="_blank"
+                                className="btn py-2 px-2 btn-outline-primary me-2"
+                            >
+                                <Search width={30} />
+                        </Link>
+                    </div>
+                )
+            }
+        },
+    ], []);
     const { Auth } = useContext(AuthContext)
-    const perPage = 20;
+    
     const accessToken = Auth('accessToken');
 
     const [qrCodes, setQrCode] = useState([]);
-    const [search, setSearchinput] = useState('')
 
-    const [pageNumber, setPageNumber] = useState(1);
     const [pageCount, setPageCount] = useState(0);
     const [isLoading, setLoading] = useState(true);
 
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+    const [sorting, setSorting] = useState([]);
+    const [globalFilter, setGlobalFilter] = useState('');
+
     // Fetch data
-    let finalUrl = `${API_URL}/qr-codes?page=${pageNumber}&perPage=${perPage}`;
     const fetchData = async () => {
         setLoading(true); // Loading on
+        const params = {
+            page: pageIndex + 1,
+            perPage: pageSize,
+          };
+      
+          if (sorting.length > 0) {
+            params.sort = sorting[0].id;
+            params.order = sorting[0].desc ? "desc" : "asc";
+          }
+      
+          if (globalFilter !== "") {
+            params.search = globalFilter.trim();
+        }
 
-        let response = await actionFetchData(finalUrl, accessToken);
+        let response = await actionFetchData( `${API_URL}/qr-codes?${new URLSearchParams(params)}`, accessToken);
         response = await response.json();
         if (response.status) {
             setQrCode(response.data.data);
@@ -34,19 +83,31 @@ const AllQrs = () => {
         }
         setLoading(false);
     }
-
-
-    const handlerSearch = () => {
-        if (search.trim() !== '') {
-            finalUrl+=`&search=${search}`
-            fetchData();
-        }   
-    };
+    
+    const table = useReactTable({
+        data: qrCodes,
+        columns,
+        pageCount,
+        globalFilter,
+        state: {
+          sorting,
+          pagination: { pageIndex, pageSize },
+        },
+        onSortingChange: setSorting,
+        onPaginationChange: ({ pageIndex, pageSize }) => {
+          setPageIndex(pageIndex);
+          setPageSize(pageSize);
+        },
+        manualSorting: true,
+        manualPagination: true,
+        getCoreRowModel: getCoreRowModel(),
+    });
 
     //console.log(qrCodes);
     useEffect(() => {
         fetchData();
-    }, [pageNumber])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageIndex, pageSize, sorting, globalFilter]);
 
     return (
         <div>
@@ -60,99 +121,41 @@ const AllQrs = () => {
                 <div className="col-12">
                     <div className="card">
                         <div className="my-4 d-flex justify-content-end gap-3">
-                            <div className="search-input-outer">
+                            <div className="search-input-outer me-4">
                                 <input 
-                                    onChange={(e) => {
-                                        setSearchinput(e.target.value)
-                                        if(e.target.value === ''){
-                                            fetchData()
-                                        }
-                                    }}
-                                    value={search}
+                                    onChange={(e) => setGlobalFilter(e.target.value)}
+                                    value={globalFilter}
                                     className="form-control" 
                                     type="text"                                   
                                     placeholder="Search..." 
                                 />
-                            </div>
-
-                            <div>
-                                <button
-                                    type="button"
-                                    onClick={handlerSearch}
-                                    className="btn btn-primary me-3">
-                                    Search
-                                </button>
-                            </div>
+                            </div>                            
                         </div>
 
                         {isLoading &&
                             <Loading />
                         }
-                        {!isLoading && products.length === 0 &&
+                        {!isLoading && qrCodes.length === 0 &&
                             <NoState
                                 message="No qr found."
                             />
                         }
 
-                        {qrCodes.length > 0 &&
-                            <table className="table table-striped table-hover mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Product Name</th>
-                                        <th>Total Qr</th>
-                                        <th>XP Required</th>
-                                        <th>Batch Number</th>
-                                        <th>Created At</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        qrCodes.map(item => {
-                                            return (
-                                                <tr key={item.id} className="align-middle">
-                                                    <td>{item.id}</td>
-                                                    <td>{(item.name)}</td>
-                                                    <td>{item.qr_code_content_count || 0}</td>                                                    
-                                                    <td>{item.xp_value} XP</td>
-                                                    <td>{item.batch_number}</td>
-                                                    <td>{item.created_at}</td>
-                                                    <td>
-                                                        
-                                                        <Link 
-                                                            to={`https://massbackoffice.in/public/show-pdf?batchNumber=${item.batch_number}&productId=${item.product_id}`}  
-                                                            target="_blank"
-                                                            className="btn py-2 px-2 btn-outline-primary me-2"
-                                                        >
-                                                            <DownloadCloud width={30} />
-                                                        </Link>
-
-                                                        <Link 
-                                                            to={`/qr-manager/qr-details/${item.product_id}/${item.batch_number}`}
-                                                            target="_blank"
-                                                            className="btn py-2 px-2 btn-outline-primary me-2"
-                                                            >
-                                                                <Search width={30} />
-                                                        </Link>
-                                                    </td>
-                                                </tr>
-                                            )
-                                        })
-
-                                    }
-                                </tbody>
-                            </table>
+                        {qrCodes.length > 0 &&                            
+                            <DataTable
+                                table={table}
+                                columns={columns}
+                            /> 
                         }
                     </div>
 
                     {qrCodes.length > 0 &&
-                        <div className='d-flex  align-items-start justify-content-end'>
-                            <Pagination
-                                pageCount={pageCount}
-                                handlePageChange={(event) => setPageNumber(event.selected + 1)}
-                            />
-                        </div>
+                        <PaginationDataTable
+                            table={table}
+                            pageCount={pageCount}
+                            pageIndex={pageIndex}
+                            setPageIndex={setPageIndex}
+                        />
                     }
                 </div>
             </div>

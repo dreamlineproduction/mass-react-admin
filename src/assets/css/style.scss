@@ -208,3 +208,22 @@
         border-color: #1cbb8c;
     }
 }
+.is-invalid-select .react-select__control{
+    border-color: #dc3545 !important;
+}
+.is-invalid-select .react-select__input{
+    color: #dc3545 !important;
+}
+
+.error-page {
+    height: 100vh;
+    h1 {
+        font-size: 8rem;
+        font-weight: 700;
+        color: #dc3545;
+    }
+    p {
+        font-size: 1.25rem;
+        color: #6c757d;
+    }
+}

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import AuthContext from "../../context/auth";
 import { API_URL } from "../../config";
 import { actionDeleteData, actionFetchData, actionPostData } from "../../actions/actions";
@@ -10,25 +10,137 @@ import NoState from "../others/NoState";
 import Pagination from "../others/Pagination";
 import Status from "../others/Status";
 import { Link } from "react-router-dom";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import DataTable from "../others/DataTable";
+import PaginationDataTable from "../others/PaginationDataTable";
 
 const AllReward = () => {
+    const columns = useMemo(() => [
+        {
+            header: 'Id',
+            accessorKey: 'id',
+        },
+        {
+            header: 'Image',
+            accessorKey: 'image',
+            enableSorting: false,
+            cell: ({ row }) => {
+              if (row.original.image) {
+                return (
+                  <img
+                    src={row.original.image_url}
+                    className="rounded-circle me-3"
+                    alt={row.original.name}
+                    width={48}
+                    height={48}
+                    style={{ objectFit: "cover" }}
+                  />
+                );
+              } 
+            },
+        },
+        {
+            header: 'Title',
+            accessorKey: 'title',
+        },
+        {
+            header: 'XP Required',
+            accessorKey: 'xp_value',
+        },
+        {
+            header: 'Created At',
+            accessorKey: 'created_at',
+        },
+        {
+            header: 'Status',
+            accessorKey: 'status',
+            enableSorting: false,
+            cell: ({ getValue }) => {
+                return <Status status={getValue()} />;
+            },
+        },
+        {
+            accessorKey: "action",
+            header: "Action",
+            enableSorting: false,
+            cell: ({ row }) => {
+              return (
+                <div className="dropdown">
+                  <button
+                    className="btn btn-secondary dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    More Options
+                  </button>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <Link
+                        className="dropdown-item"
+                        to={`/rewards/edit-reward/${row.original.id}`}
+                      >
+                        Edit
+                      </Link>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        className="dropdown-item"
+                        onClick={() =>
+                          changeStatus(row.original.id, row.original.status)
+                        }
+                      >
+                        {row.original.status === 1 ? "Inactive" : "Active"}
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        className="dropdown-item"
+                        onClick={() => deleteReward(row.original.id)}
+                      >
+                        Delete
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              );
+            },
+        },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ], [])
 
     const { Auth } = useContext(AuthContext)
-    const perPage = 20;
     const accessToken = Auth('accessToken');
     const [rewards, setReward] = useState([])
-    const [search, setSearchinput] = useState('')
 
-    const [pageNumber, setPageNumber] = useState(1);
     const [pageCount, setPageCount] = useState(0);
     const [isLoading, setLoading] = useState(true);
+    const [sorting, setSorting] = useState([]);
+    const [globalFilter, setGlobalFilter] = useState("");
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
 
     // Fetch Data
-    let finalUrl = `${API_URL}/rewards?page=${pageNumber}&perPage=${perPage}`;
     const fetchData = async () => {
         setLoading(true);
 
-        let response = await actionFetchData(finalUrl, accessToken);
+        const params = {
+            page: pageIndex + 1,
+            perPage: pageSize,
+        };
+
+        if (sorting.length > 0) {
+            params.sort = sorting[0].id;
+            params.order = sorting[0].desc ? "desc" : "asc";
+          }
+      
+        if (globalFilter !== "") {
+            params.search = globalFilter.trim();
+        }   
+
+        let response = await actionFetchData( `${API_URL}/rewards?${new URLSearchParams(params)}`, accessToken);
         response = await response.json();
         if (response.status) {
             setReward(response.data.data);
@@ -40,13 +152,12 @@ const AllReward = () => {
     //--Delete api call
     const actionDelete = async (id) => {
         const toastId = toast.loading("Please wait...")
+        setLoading(true);
         try {
             let response = await actionDeleteData(`${API_URL}/rewards/${id}`, accessToken)
             response = await response.json();
             if (response.status) {
-                const filteredData = rewards.filter(item => item.id !== id);
-                setReward(filteredData);
-
+                setReward(rewards=>rewards.filter(item => item.id !== id));
                 toast.success(response.message, {
                     id: toastId
                 });
@@ -54,6 +165,7 @@ const AllReward = () => {
         } catch (error) {
             toast.error(error)
         }
+        setLoading(false);
     }
 
     // -- Delete reward
@@ -74,11 +186,9 @@ const AllReward = () => {
     }
 
     // -- Change status
-    const changeStatus = async (id) => {
-        const toastId = toast.loading("Please wait...")
-
-        let findedIndex = rewards.findIndex(item => item.id === id);
-        let status = (rewards[findedIndex].status === 1) ? 0 : 1;
+    const changeStatus = async (id,currentStatus) => {
+        const toastId = toast.loading("Please wait...")      
+        let status = (currentStatus === 1) ? 0 : 1;
 
         try {
             const postData = { status };
@@ -86,8 +196,7 @@ const AllReward = () => {
             response = await response.json();
 
             if (response.status) {
-                rewards[findedIndex].status = status;
-                setReward([...rewards]);
+                setReward(rewards=>rewards.map(item => item.id === id ? { ...item, status } : item));
                 toast.success(response.message, {
                     id: toastId
                 });
@@ -98,17 +207,29 @@ const AllReward = () => {
     }
 
 
-    const handlerSearch = () => {
-        if (search.trim() !== '') {
-            finalUrl += `&search=${search}`
-            fetchData();
-        }
-    };
-
-
+    const table = useReactTable({
+        data: rewards,
+        columns,
+        pageCount,
+        globalFilter,
+        state: {
+          sorting,
+          pagination: { pageIndex, pageSize },
+        },
+        onSortingChange: setSorting,
+        onPaginationChange: ({ pageIndex, pageSize }) => {
+          setPageIndex(pageIndex);
+          setPageSize(pageSize);
+        },
+        manualSorting: true,
+        manualPagination: true,
+        getCoreRowModel: getCoreRowModel(),
+    });
+    
     useEffect(() => {
         fetchData()
-    }, [pageNumber])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageIndex, pageSize, sorting, globalFilter])
 
     return (
         <div>
@@ -122,29 +243,15 @@ const AllReward = () => {
                 <div className="col-12">
                     <div className="card">
                         <div className="my-4 d-flex justify-content-end gap-3">
-                            <div className="search-input-outer">
+                            <div className="search-input-outer me-4">
                                 <input
-                                    onChange={(e) => {
-                                        setSearchinput(e.target.value)
-                                        if (e.target.value === '') {
-                                            fetchData()
-                                        }
-                                    }}
-                                    value={search}
+                                    onChange={(e) => setGlobalFilter(e.target.value)}
+                                    value={globalFilter}
                                     className="form-control"
                                     type="text"
                                     placeholder="Search..."
                                 />
-                            </div>
-
-                            <div>
-                                <button
-                                    type="button"
-                                    onClick={handlerSearch}
-                                    className="btn btn-primary me-3">
-                                    Search
-                                </button>
-                            </div>
+                            </div>                           
                         </div>
 
                         {isLoading &&
@@ -157,80 +264,12 @@ const AllReward = () => {
                         }
 
                         {rewards.length > 0 &&
-                            <table className="table table-striped table-hover mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Reward ID</th>
-                                        <th>Image</th>
-                                        <th>Title</th>
-                                        <th>XP Required</th>
-                                        <th>Created At</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {rewards.map(item => {
-                                        return (
-                                            <tr key={item.id}>
-                                                <td>{item.id}</td>
-                                                <td>
-                                                    {item.image &&
-                                                        <img
-                                                            src={item.image_url}
-                                                            className="rounded-circle"
-                                                            style={{ width: "70px", height: "70px", objectFit: "cover" }}
-                                                            alt="Description of image" width={"80"} height={'50'}
-                                                        />
-                                                    }
-                                                </td>
-                                                <td>{item.title}</td>
-                                                <td>{item.xp_value}</td>
-                                                <td>{item.created_at}</td>
-                                                <td>
-                                                    <Status
-                                                        status={item.status}
-                                                    />
-                                                </td>
-                                                <td>
-                                                    <div className="dropdown">
-                                                        <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            More Options
-                                                        </button>
-                                                        <ul className="dropdown-menu">
-                                                            <li>
-                                                                <Link className="dropdown-item" to={`/rewards/edit-reward/${item.id}`}>
-                                                                    Edit
-                                                                </Link>
-                                                            </li>
-                                                            <li>
-                                                                <button type="button" className="dropdown-item" onClick={() => changeStatus(item.id)}>
-                                                                    {item.status === 1 ? 'Inactive' : 'Active'}
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <button type="button" className="dropdown-item" onClick={() => deleteReward(item.id)}>
-                                                                    Delete
-                                                                </button>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
+                            <DataTable table={table} columns={columns} />
                         }
                     </div>
 
                     {rewards.length > 0 &&
-                        <div className='d-flex  align-items-start justify-content-end'>
-                            <Pagination
-                                pageCount={pageCount}
-                                handlePageChange={(event) => setPageNumber(event.selected + 1)}
-                            />
-                        </div>
+                       <PaginationDataTable table={table} pageCount={pageCount} pageIndex={pageIndex} setPageIndex={setPageIndex} />
                     }
                 </div>
             </div>

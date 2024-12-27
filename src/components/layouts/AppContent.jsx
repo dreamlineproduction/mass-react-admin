@@ -28,9 +28,17 @@ import NewNotification from '../notification/NewNotification';
 import AllNotification from '../notification/AllNotification';
 import AllEmployee from '../employee/AllEmployee';
 import NewEmployee from '../employee/NewEmployee';
-
+import AllRole from '../roles/AllRole';
+import NewRole from '../roles/NewRole';
+import EditRole from '../roles/EditRole';
+import AllPermission from '../permmision/AllPermission';
+import NewPermission from '../permmision/NewPermission';
+import EditPermission from '../permmision/EditPermission';
+import EditEmployee from '../employee/EditEmployee';
+import Unauthorized from '../404/Unauthorized';
 
 const AppContent = () => {
+
     const routes = [
         { path: '/dashboard', element: <Dashboard /> },
         { path: '/users/all-users', element: <AllUser /> },
@@ -59,18 +67,24 @@ const AppContent = () => {
         { path: '/notification/new-notification', element: <NewNotification /> },
         { path: '/employees/all-employee', element: <AllEmployee /> },
         { path: '/employees/add-employee', element: <NewEmployee /> },
+        { path: '/employees/edit-employee/:id', element: <EditEmployee /> },
+        { path: '/roles/all-role', element: <AllRole /> },
+        { path: '/roles/new-role', element: <NewRole /> },
+        { path: '/roles/edit-role/:id', element: <EditRole /> },
+        { path: '/permissions/all-permission', element: <AllPermission /> },
+        { path: '/permissions/new-permission', element: <NewPermission /> },
+        { path: '/permissions/edit-permission/:id', element: <EditPermission /> },
     ];
       
     return (
         <Routes>
-            <Route path="/" element={<Navigate to="login" replace />} />
             {routes.map(({ path, element }) => (
                 <Route
                     key={path}
                     path={path}
                     element={<ProtectRoute>{element}</ProtectRoute>}
                 />
-            ))}
+            ))}           
         </Routes>        
     );
 };

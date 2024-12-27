@@ -1,31 +1,22 @@
-import { useContext, useEffect, useState, useMemo } from "react";
-import AuthContext from "../../context/auth";
-import { API_URL } from "../../config";
-import { actionFetchData, actionPostData } from "../../actions/actions";
-import toast from "react-hot-toast";
-import NoState from "../others/NoState";
-import Loading from "../others/Loading";
+import { useContext, useEffect, useMemo, useState } from "react";
 import PageTitle from "../others/PageTitle";
-import Status from "../others/Status";
-
-import { useReactTable, getCoreRowModel } from "@tanstack/react-table";
+import { API_URL } from "../../config";
+import { actionDeleteData, actionFetchData } from "../../actions/actions";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
+import Loading from "../others/Loading";
+import NoState from "../others/NoState";
 import { Link } from "react-router-dom";
+import AuthContext from "../../context/auth";
+import { useReactTable,getCoreRowModel } from "@tanstack/react-table";
 import PaginationDataTable from "../others/PaginationDataTable";
 import DataTable from "../others/DataTable";
 
-const AllPages = () => {
+const AllPermission = () => {
     const columns = useMemo(() => [
         { accessorKey: "id", header: "Id" },
-        { accessorKey: "title", header: "Title" },
+        { accessorKey: "name", header: "Name" },
         { accessorKey: "created_at", header: "Created At", enableSorting: false },
-        {
-            accessorKey: "status",
-            header: "Status",
-            enableSorting: false,
-            cell: ({ getValue }) => {
-                return <Status status={getValue()} />;
-            },
-        },
         {
             accessorKey: "action",
             header: "Action",
@@ -38,13 +29,13 @@ const AllPages = () => {
                         </button>
                         <ul className="dropdown-menu">
                             <li>
-                                <Link className="dropdown-item" to={`/pages/edit-page/${row.original.id}`}>
+                                <Link className="dropdown-item" to={`/permissions/edit-permission/${row.original.id}`}>
                                     Edit
                                 </Link>
                             </li>
                             <li>
-                                <button type="button" className="dropdown-item" onClick={() => changeStatus(row.original.id,row.original.status)}>
-                                    {row.original.status === 1 ? 'Inactive' : 'Active'}
+                                <button type="button" className="dropdown-item" onClick={() => deletePermission(row.original.id)}>
+                                   Delete
                                 </button>
                             </li>
                         </ul>
@@ -52,23 +43,25 @@ const AllPages = () => {
                 );
             },
         },
+        
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ],[]);
 
-    const { Auth } = useContext(AuthContext);
-    const accessToken = Auth("accessToken");
+    const { Auth } = useContext(AuthContext)
+    const accessToken = Auth('accessToken');
+    const [permissions, setPermission] = useState([])
 
-    const [pages, setPages] = useState([]);
+    const [pageCount, setPageCount] = useState(0);
+    const [isLoading, setLoading] = useState(true);
+
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(20);
     const [sorting, setSorting] = useState([]);
-    const [isLoading, setLoading] = useState(true);
-    const [pageCount, setPageCount] = useState(0);
-    const [globalFilter, setGlobalFilter] = useState("");
+    const [globalFilter, setGlobalFilter] = useState('');
 
-    const fetchPages = async () => {
+    // Fetch Data
+    const fetchData = async () => {
         setLoading(true);
-
         const params = {
             page: pageIndex + 1,
             perPage: pageSize,
@@ -83,31 +76,53 @@ const AllPages = () => {
             params.search = globalFilter.trim();
         }
 
-        try {
-            const response = await actionFetchData(
-                `${API_URL}/pages?${new URLSearchParams(params)}`,
-                accessToken
-            );
-            const data = await response.json();
-            if (data.status) {
-                setPages(data.data.data || []);
-                setPageCount(data.totalPage || 0);
-              
-            } else {
-                setPages([]);
-                setPageCount(0);
-            }
-        } catch (e) {
-            toast.error(`Failed to fetch pages: ${e}`);
-            setPages([]);
-            setPageCount(0);
-        } finally {
-            setLoading(false);
+        let response = await actionFetchData(`${API_URL}/permissions?${new URLSearchParams(params)}`, accessToken);
+        response = await response.json();
+        if (response.status) {
+            setPermission(response.data.data);
+            setPageCount(response.totalPage);
         }
-    };
+        setLoading(false);
+    }
+
+    //--Delete api call
+    const actionDelete = async (id) => {
+        const toastId = toast.loading("Please wait...")
+        try {
+            let response = await actionDeleteData(`${API_URL}/permissions/${id}`, accessToken)
+            response = await response.json();
+            if (response.status) {        
+                setPermission(prevData => prevData.filter(row => row.id !== id));
+                toast.success(response.message, {
+                    id: toastId
+                });
+            }
+        } catch (error) {
+            toast.error(error)
+        }
+    }
+
+    // -- Delete reward
+    const deletePermission = (id) => {
+        Swal.fire({
+            title: "Delete Confirmation",
+            text: "Are you sure you want to delete this?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                actionDelete(id)
+            }
+        });
+    }
+
+
 
     const table = useReactTable({
-        data: pages,
+        data: permissions,
         columns,
         pageCount,
         globalFilter,
@@ -125,40 +140,19 @@ const AllPages = () => {
         getCoreRowModel: getCoreRowModel(),
     });
 
-    const changeStatus = async (id,currentStatus) => {      
-
-        const status = currentStatus === 1 ? 0 : 1;
-
-        const toastId = toast.loading("Please wait...");
-        try {
-            const response = await actionPostData(
-                `${API_URL}/pages/change-status/${id}`,
-                accessToken,
-                { status },
-                "PUT"
-            );
-            const result = await response.json();
-
-            if (result.status) {              
-                toast.success(result.message, { id: toastId });
-                fetchPages();
-            }
-        } catch (error) {
-            toast.error("Failed to update status");
-        } finally {
-            toast.dismiss(toastId);
-        }
-    };
-
     useEffect(() => {
-        fetchPages();
+        fetchData()
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageIndex, pageSize, sorting, globalFilter]);
 
-    //console.log(pages);
     return (
         <div>
-            <PageTitle title="All Pages" />
+            <PageTitle
+                title="All Permissions"
+                buttonLink="/permissions/new-permission"
+                buttonLabel="Add New Permission"
+            />
             <div className="row">
                 <div className="col-12">
                     <div className="card">
@@ -171,33 +165,38 @@ const AllPages = () => {
                                     className="form-control"
                                     type="text"
                                 />
-                            </div>
+                            </div>                            
                         </div>
 
-                        {isLoading && 
+                        {isLoading &&
                             <Loading />
                         }
-                        {!isLoading && pages.length === 0 && (
-                            <NoState message="No pages found." />
-                        )}
+                        {!isLoading && permissions.length === 0 &&
+                            <NoState
+                                message="No permissions found."
+                            />
+                        }
 
-                        {pages.length > 0 && (
-                            <DataTable table={table} columns={columns} />
-                        )}
+                        {permissions.length > 0 &&
+                            <DataTable
+                                table={table}
+                                columns={columns}
+                            />
+                        }
                     </div>
 
-                    {pages.length > 0 && (
+                    {permissions.length > 0 &&
                         <PaginationDataTable
                             table={table}
                             pageCount={pageCount}
                             pageIndex={pageIndex}
                             setPageIndex={setPageIndex}
                         />
-                    )}
+                    }
                 </div>
             </div>
         </div>
     );
 };
 
-export default AllPages;
+export default AllPermission;

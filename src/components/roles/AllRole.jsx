@@ -1,51 +1,22 @@
-import { Link } from "react-router-dom";
+import { useContext, useEffect, useMemo, useState } from "react";
 import PageTitle from "../others/PageTitle";
-import { useContext, useEffect,  useMemo,  useState } from "react";
-import { actionDeleteData, actionFetchData, actionPostData } from "../../actions/actions";
-import { API_URL } from "../../config";
 import AuthContext from "../../context/auth";
-import Loading from "../others/Loading";
-import NoState from "../others/NoState";
-import Status from "../others/Status";
-import Pagination from "../others/Pagination";
+import { API_URL } from "../../config";
+import { actionDeleteData, actionFetchData } from "../../actions/actions";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import Loading from "../others/Loading";
+import NoState from "../others/NoState";
+import { Link } from "react-router-dom";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
 
-const AllProduct = () => {
+const AllRole = () => {
     const columns = useMemo(() => [
-        {
-            accessorKey: "image",
-            header: "Image",
-            enableSorting: false,
-            cell: ({ row }) => {
-              if (row.original.image) {
-                return (
-                  <img
-                    src={row.original.image_url}
-                    className="rounded-circle me-3"
-                    alt={row.original.name}
-                    width={48}
-                    height={48}
-                    style={{ objectFit: "cover" }}
-                  />
-                );
-              } 
-            },
-        },
-        { accessorKey: "unique_id", header: "Product ID" },
-        { accessorKey: "name", header: "Product Name" },
-        { accessorKey: "created_at", header: "Created At", enableSorting: false },
-        {
-            accessorKey: "status",
-            header: "Status",
-            enableSorting: false,
-            cell: ({ getValue }) => {
-                return <Status status={getValue()} />;
-            },
-        },
+        { accessorKey: "id", header: "Id" },
+        { accessorKey: "name", header: "Name" },
+        { accessorKey: "permissionNames", header: "Permissions", enableSorting: false },
         {
             accessorKey: "action",
             header: "Action",
@@ -58,78 +29,72 @@ const AllProduct = () => {
                         </button>
                         <ul className="dropdown-menu">
                             <li>
-                                <Link className="dropdown-item" to={`/products/edit-product/${row.original.id}`}>
+                                <Link className="dropdown-item" to={`/roles/edit-role/${row.original.id}`}>
                                     Edit
                                 </Link>
                             </li>
+                            
+                            {![1,5,6,7].includes(row.original.id) &&                                                       
                             <li>
-                                <button type="button" className="dropdown-item" onClick={() => changeStatus(row.original.id,row.original.status)}>
-                                    {row.original.status === 1 ? 'Inactive' : 'Active'}
-                                </button>
-                            </li>
-                            <li>
-                                <button type="button" className="dropdown-item" onClick={() => deleteProduct(row.original.id)}>
+                                <button type="button" className="dropdown-item" onClick={() => deleteRole(row.original.id)}>
                                     Delete
                                 </button>
                             </li>
+                            }
                         </ul>
                     </div>
                 );
             },
         },
+        
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ],[]);
 
     const { Auth } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
-    const [products, setProduct] = useState([])
+    const [roles, setRole] = useState([])
 
     const [pageCount, setPageCount] = useState(0);
     const [isLoading, setLoading] = useState(true);
 
-    const [globalFilter, setGlobalFilter] = useState('');
-    const [sorting, setSorting] = useState([]);
     const [pageIndex, setPageIndex] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
+    const [sorting, setSorting] = useState([]);
+    const [globalFilter, setGlobalFilter] = useState('');
 
-    // Fetch data
-    const fetchProduct = async () => {
-
+    // Fetch Data
+    const fetchData = async () => {
         setLoading(true);
-
         const params = {
             page: pageIndex + 1,
             perPage: pageSize,
-          };
-      
-          if (sorting.length > 0) {
+        };
+        if (sorting.length > 0) {
             params.sort = sorting[0].id;
             params.order = sorting[0].desc ? "desc" : "asc";
-          }
-      
+        }
         if (globalFilter !== "") {
             params.search = globalFilter.trim();
         }
 
-        let response = await actionFetchData(`${API_URL}/products?${new URLSearchParams(params)}`,accessToken);
+        let response = await actionFetchData(`${API_URL}/roles?${new URLSearchParams(params)}`, accessToken);
         response = await response.json();
         if (response.status) {
-            setProduct(response.data.data || []);
+            setRole(response.data.data);
             setPageCount(response.totalPage);
         }
-        setLoading(false)
+        setLoading(false);
     }
 
-    // Delete Data
+    //--Delete api call
     const actionDelete = async (id) => {
         const toastId = toast.loading("Please wait...")
-        setLoading(true)
         try {
-            let response = await actionDeleteData(`${API_URL}/products/${id}`, accessToken);
+            let response = await actionDeleteData(`${API_URL}/roles/${id}`, accessToken)
             response = await response.json();
-
             if (response.status) {
-                setProduct(prevProducts => prevProducts.filter(item => item.id !== id));
+                setRole(prevData => prevData.filter(row => row.id !== id));
+
                 toast.success(response.message, {
                     id: toastId
                 });
@@ -137,10 +102,10 @@ const AllProduct = () => {
         } catch (error) {
             toast.error(error)
         }
-        setLoading(false)
     }
 
-    const deleteProduct = (id) => {
+    // -- Delete reward
+    const deleteRole = (id) => {
         Swal.fire({
             title: "Delete Confirmation",
             text: "Are you sure you want to delete this?",
@@ -156,32 +121,9 @@ const AllProduct = () => {
         });
     }
 
-    // Change Status
-    const changeStatus = async (id,currentStatus) => {
-        const toastId = toast.loading("Please wait...")
-
-        let status = (currentStatus === 1) ? 0 : 1;
-
-        try {
-            const postData = { status };
-            let response = await actionPostData(`${API_URL}/products/change-status/${id}`, accessToken, postData, 'PUT');
-            response = await response.json();
-
-            if (response.status) {
-                setProduct(prevProducts => 
-                    prevProducts.map(product => product.id === id ? { ...product, status } : product)
-                );
-                toast.success(response.message, {
-                    id: toastId
-                });
-            }
-        } catch (error) {
-            toast.error(error)
-        }
-    }
 
     const table = useReactTable({
-        data: products,
+        data: roles,
         columns,
         pageCount,
         globalFilter,
@@ -200,49 +142,47 @@ const AllProduct = () => {
     });
 
     useEffect(() => {
-        fetchProduct()
-
+        fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageIndex, pageSize, sorting, globalFilter]);
 
     return (
         <div>
             <PageTitle
-                title="All Products"
-                buttonLink="/products/add-product"
-                buttonLabel="Add New Product"
+                title="All Roles"
+                buttonLink="/roles/new-role"
+                buttonLabel="Add New Role"
             />
-
-            <div className="row">
+             <div className="row">
                 <div className="col-12">
                     <div className="card">
                         <div className="my-4 d-flex justify-content-end gap-3">
                             <div className="search-input-outer me-4">
                                 <input
-                                placeholder="Search..."
-                                value={globalFilter}
-                                onChange={(e) => setGlobalFilter(e.target.value)}
-                                className="form-control"
-                                type="text"
+                                    placeholder="Search..."     
+                                    value={globalFilter}
+                                    onChange={(e) => setGlobalFilter(e.target.value)}
+                                    className="form-control"
+                                    type="text"
                                 />
-                            </div>
+                            </div>                            
                         </div>
 
                         {isLoading &&
                             <Loading />
                         }
-                        {!isLoading && products.length === 0 &&
+                        {!isLoading && roles.length === 0 &&
                             <NoState
-                                message="No products found."
+                                message="No roles found."
                             />
                         }
 
-                        {products.length > 0 &&
+                        {roles.length > 0 &&
                             <DataTable table={table} columns={columns} />
                         }
                     </div>
 
-                    {products.length > 0 &&
+                    {roles.length > 0 &&
                         <PaginationDataTable
                             table={table}
                             pageCount={pageCount}
@@ -256,4 +196,4 @@ const AllProduct = () => {
     );
 };
 
-export default AllProduct;
+export default AllRole;

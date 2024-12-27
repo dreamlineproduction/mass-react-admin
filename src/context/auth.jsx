@@ -1,10 +1,13 @@
-import { createContext,useState } from "react";
+import { createContext,useState,useContext } from "react";
+import { rolesPermissions } from '../rolesPermissions';
 
 export const  AuthContext = createContext(null);
 
 export const AuthProvider = ({children}) => {
     const userInfo = localStorage.getItem('user-info');
     const [user,setUser] = useState(userInfo)
+
+
 
 
     const login = (user) => {
@@ -18,14 +21,14 @@ export const AuthProvider = ({children}) => {
 
     const AuthCheck = () => {
         const user = localStorage.getItem('user-info');
-        return (user === '' || user === null)? false: true;        
+        return user ? true : false;      
     }
 
     const Auth = (value = '') => {
         const userInfo = localStorage.getItem('user-info');
         const authUser = JSON.parse(userInfo)
 
-        if(value){
+        if(value.length > 0){
             return authUser[value];
         }
         return authUser
@@ -46,6 +49,8 @@ export const AuthProvider = ({children}) => {
         </AuthContext.Provider>
     )
 }
+
+
 
 export default AuthContext;
 
