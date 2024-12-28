@@ -6,14 +6,16 @@ import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import Status from "../others/Status";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useReactTable,getCoreRowModel  } from "@tanstack/react-table";
 import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
 
 const AllOffers = () => {
+    const { Auth,hasPermission } = useContext(AuthContext)
+
     const columns = useMemo(() => [
         { header: 'Id', accessorKey: 'id' },
         { header: 'Image', accessorKey: 'image', enableSorting: false, cell: ({ row }) => {
@@ -47,14 +49,17 @@ const AllOffers = () => {
               return (
                 <div className="dropdown">
                   <button
-                    className="btn btn-secondary dropdown-toggle"
+                    className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_OFFER) && !hasPermission(configPermission.DELETE_OFFER)) ? 'disabled' : ''}`}
                     type="button"
+                    disabled={(!hasPermission(configPermission.EDIT_OFFER) && !hasPermission(configPermission.DELETE_OFFER))}
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
                     More Options
                   </button>
+                  {((hasPermission(configPermission.EDIT_OFFER) || hasPermission(configPermission.DELETE_OFFER))) &&
                   <ul className="dropdown-menu">
+                    {hasPermission(configPermission.EDIT_OFFER) &&
                     <li>
                       <Link
                         className="dropdown-item"
@@ -63,6 +68,8 @@ const AllOffers = () => {
                         Edit
                       </Link>
                     </li>
+                    }
+                    {hasPermission(configPermission.EDIT_OFFER) &&
                     <li>
                       <button
                         type="button"
@@ -74,6 +81,8 @@ const AllOffers = () => {
                         {row.original.status === 1 ? "Inactive" : "Active"}
                       </button>
                     </li>
+                    }
+                    {hasPermission(configPermission.DELETE_OFFER) &&
                     <li>
                       <button
                         type="button"
@@ -83,7 +92,9 @@ const AllOffers = () => {
                         Delete
                       </button>
                     </li>
+                    }
                   </ul>
+                  }
                 </div>
               );
             },
@@ -91,7 +102,8 @@ const AllOffers = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     ], [])
 
-    const { Auth } = useContext(AuthContext)
+    
+    const navigate = useNavigate();
     const accessToken = Auth('accessToken');
 
     const [offers, setOffer] = useState([]);
@@ -190,9 +202,6 @@ const AllOffers = () => {
         }
     }
 
-
-    
-
     const table = useReactTable({
         data: offers,
         columns,
@@ -213,6 +222,9 @@ const AllOffers = () => {
     });
 
     useEffect(() => {
+        if(!hasPermission(configPermission.VIEW_OFFER)){
+            navigate('/403')
+        }
         fetchOffer();
     }, [pageIndex, pageSize, sorting, globalFilter])
 
@@ -220,8 +232,8 @@ const AllOffers = () => {
         <div>
             <PageTitle
                 title="All Offers"
-                buttonLink="/offers/add-offer"
-                buttonLabel="Add New Offer"
+                buttonLink={hasPermission(configPermission.ADD_OFFER) ? '/offers/add-offer' : null}
+                buttonLabel={hasPermission(configPermission.ADD_OFFER) ? 'Add New Offer' : null}
             />
 
             <div className="row">

@@ -1,17 +1,19 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import AuthContext from "../../context/auth";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import { actionFetchData } from "../../actions/actions";
 import PageTitle from "../others/PageTitle";
 import Loading from "../others/Loading";
 import { DownloadCloud, Search } from "react-feather";
 import NoState from "../others/NoState";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useReactTable,getCoreRowModel  } from "@tanstack/react-table";
 import PaginationDataTable from "../others/PaginationDataTable";
 import DataTable from "../others/DataTable";
 
 const AllQrs = () => {
+    const { Auth,hasPermission } = useContext(AuthContext)
+    const navigate = useNavigate();
     const columns = useMemo(() => [
         { header: 'ID', accessorKey: 'id' },
         { header: 'Product Name', accessorKey: 'name' },       
@@ -32,20 +34,20 @@ const AllQrs = () => {
                         >
                             <DownloadCloud width={16} height={16}/>
                         </Link>
-
+                        {hasPermission(configPermission.VIEW_QR_DETAIL) &&
                         <Link 
                             to={`/qr-manager/qr-details/${row.original.product_id}/${row.original.batch_number}`}
-                            target="_blank"
-                                className="btn py-2 px-2 btn-outline-primary me-2"
+                            className="btn py-2 px-2 btn-outline-primary me-2"
                             >
                                 <Search width={16} height={16} />
-                        </Link>
+                            </Link>
+                        }
                     </div>
                 )
             }
         },
     ], []);
-    const { Auth } = useContext(AuthContext)
+    
     
     const accessToken = Auth('accessToken');
 
@@ -104,8 +106,10 @@ const AllQrs = () => {
         getCoreRowModel: getCoreRowModel(),
     });
 
-    //console.log(qrCodes);
     useEffect(() => {
+        if(!hasPermission(configPermission.VIEW_QR)){
+            navigate('/403')
+        }
         fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageIndex, pageSize, sorting, globalFilter]);
@@ -114,8 +118,8 @@ const AllQrs = () => {
         <div>
             <PageTitle
                 title="All QR Codes"
-                buttonLink="/qr-manager/generate-qr"
-                buttonLabel="Add New QR"
+                buttonLink={hasPermission(configPermission.ADD_QR) ? '/qr-manager/generate-qr' : null}
+                buttonLabel={hasPermission(configPermission.ADD_QR) ? 'Add New QR' : null}
             />
 
             <div className="row">

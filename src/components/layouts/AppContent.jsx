@@ -35,6 +35,7 @@ import AllPermission from '../permmision/AllPermission';
 import NewPermission from '../permmision/NewPermission';
 import EditPermission from '../permmision/EditPermission';
 import EditEmployee from '../employee/EditEmployee';
+import Unauthorized from '../404/Unauthorized';
 
 const AppContent = () => {
 
@@ -73,6 +74,7 @@ const AppContent = () => {
         { path: '/permissions/all-permission', element: <AllPermission /> },
         { path: '/permissions/new-permission', element: <NewPermission /> },
         { path: '/permissions/edit-permission/:id', element: <EditPermission /> },
+        { path: '/403', element: <Unauthorized /> },
     ];
       
     return (

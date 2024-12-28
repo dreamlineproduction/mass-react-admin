@@ -1,5 +1,8 @@
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
+import CryptoJS from 'crypto-js';
+
+const SECRET_KEY = 'MASS$2y$12$JVTN0.SWAn7yrpcSeqc8M.HSMOagYZ0lhu9ia5CKCOqiiy7OtxG5WADMIN'; 
 
 export const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -37,4 +40,65 @@ export const exportToExcel = (data = []) => {
 
     const fileName = getRandomInt(1, 99999);
     saveAs(file, `${fileName}-data.xlsx`);
+}
+
+export const encryptData =(data)=> {
+    return CryptoJS.AES.encrypt(JSON.stringify(data), SECRET_KEY).toString();
+}
+
+export const decryptData = (data) => {
+    const decrypted = CryptoJS.AES.decrypt(data, SECRET_KEY).toString(CryptoJS.enc.Utf8);
+    return JSON.parse(decrypted);
+  }
+
+export const configPermission = {
+    'VIEW_USER': 'View User',
+    'ADD_USER': 'Add User',
+    'EDIT_USER': 'Edit User',
+    'DELETE_USER': 'Delete User',
+    'VIEW_EMPLOYEE': 'View Employee',
+    'ADD_EMPLOYEE': 'Add Employee',
+    'EDIT_EMPLOYEE': 'Edit Employee',
+    'DELETE_EMPLOYEE': 'Delete Employee',
+    'VIEW_ROLE': 'View Role',
+    'ADD_ROLE': 'Add Role',
+    'EDIT_ROLE': 'Edit Role',
+    'DELETE_ROLE': 'Delete Role',
+    'VIEW_PERMISSION': 'View Permission',
+    'ADD_PERMISSION': 'Add Permission',
+    'EDIT_PERMISSION': 'Edit Permission',
+    'DELETE_PERMISSION': 'Delete Permission',
+    'VIEW_PAGE': 'View Page',
+    'ADD_PAGE': 'Add Page',
+    'EDIT_PAGE': 'Edit Page',
+    'DELETE_PAGE': 'Delete Page',
+    'VIEW_PRODUCT': 'View Product',
+    'ADD_PRODUCT': 'Add Product',
+    'EDIT_PRODUCT': 'Edit Product',
+    'DELETE_PRODUCT': 'Delete Product',
+    'VIEW_REWARD': 'View Reward',
+    'ADD_REWARD': 'Add Reward',
+    'EDIT_REWARD': 'Edit Reward',
+    'DELETE_REWARD': 'Delete Reward',
+    'VIEW_OFFER': 'View Offer',
+    'ADD_OFFER': 'Add Offer',
+    'EDIT_OFFER': 'Edit Offer',
+    'DELETE_OFFER': 'Delete Offer',
+    'VIEW_QR': 'View QR',
+    'ADD_QR': 'Add QR',
+    // 'EDIT_QR': 'Edit QR',
+    // 'DELETE_QR': 'Delete QR',
+    'VIEW_QR_DETAIL': 'View QR Detail',
+    // 'VIEW_REDEMPTION': 'View Redemption',
+    // 'ADD_REDEMPTION': 'Add Redemption',
+    // 'EDIT_REDEMPTION': 'Edit Redemption',
+    // 'DELETE_REDEMPTION': 'Delete Redemption',
+    // 'VIEW_REFERRAL': 'View Referral',
+    // 'ADD_REFERRAL': 'Add Referral',
+    // 'EDIT_REFERRAL': 'Edit Referral',
+    // 'DELETE_REFERRAL': 'Delete Referral',
+    'VIEW_NOTIFICATION': 'View Notification',
+    'ADD_NOTIFICATION': 'Add Notification',
+    'EDIT_NOTIFICATION': 'Edit Notification',
+    'DELETE_NOTIFICATION': 'Delete Notification', 
 }

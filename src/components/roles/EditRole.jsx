@@ -3,14 +3,14 @@ import AuthContext from "../../context/auth";
 import PageTitle from "../others/PageTitle";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import { actionFetchData, actionPostData } from "../../actions/actions";
 import toast from "react-hot-toast";
 import Select from "react-select";
 import LoadingButton from "../others/LoadingButton";
 
 const EditRole = () => {
-  const { Auth } = useContext(AuthContext);
+  const { Auth,hasPermission } = useContext(AuthContext);
   const params = useParams();
   const accessToken = Auth("accessToken");
   const navigate = useNavigate();
@@ -111,6 +111,9 @@ const EditRole = () => {
   };
 
   useEffect(() => {
+    if(!hasPermission(configPermission.EDIT_ROLE)){
+        navigate('/403')
+    }
     fetchPermissionData();
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps

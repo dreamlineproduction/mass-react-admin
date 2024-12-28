@@ -1,15 +1,15 @@
-import { useCallback, useContext, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import LoadingButton from "../others/LoadingButton";
 import AuthContext from "../../context/auth";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import PageTitle from "../others/PageTitle";
-import { API_URL, createSlug } from "../../config";
+import { API_URL, configPermission, createSlug } from "../../config";
 import toast from "react-hot-toast";
 import { actionImageUpload, actionPostData } from "../../actions/actions";
 
 const NewReward = () => {
-    const { Auth } = useContext(AuthContext)
+    const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
 
@@ -99,6 +99,14 @@ const NewReward = () => {
             toast.error(error)
         }
     })
+
+    useEffect(() => {
+        if(!hasPermission(configPermission.ADD_REWARD)){
+            navigate('/403')
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     return (
         <div>
             <PageTitle

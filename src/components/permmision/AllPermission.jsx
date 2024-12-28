@@ -1,18 +1,19 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import PageTitle from "../others/PageTitle";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import { actionDeleteData, actionFetchData } from "../../actions/actions";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../../context/auth";
 import { useReactTable,getCoreRowModel } from "@tanstack/react-table";
 import PaginationDataTable from "../others/PaginationDataTable";
 import DataTable from "../others/DataTable";
 
 const AllPermission = () => {
+    const { Auth,hasPermission } = useContext(AuthContext)
     const columns = useMemo(() => [
         { accessorKey: "id", header: "Id" },
         { accessorKey: "name", header: "Name" },
@@ -24,21 +25,33 @@ const AllPermission = () => {
             cell: ({ row }) => {
                 return (
                     <div className="dropdown">
-                        <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button 
+                            className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_PERMISSION) || !hasPermission(configPermission.DELETE_PERMISSION)) ? 'disabled' : ''}`} 
+                            type="button" 
+                            disabled={(!hasPermission(configPermission.EDIT_PERMISSION) || !hasPermission(configPermission.DELETE_PERMISSION))}
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false"
+                        >
                             More Options
                         </button>
+                        {(hasPermission(configPermission.EDIT_PERMISSION) || hasPermission(configPermission.DELETE_PERMISSION)) &&
                         <ul className="dropdown-menu">
+                            {hasPermission(configPermission.EDIT_PERMISSION) &&
                             <li>
                                 <Link className="dropdown-item" to={`/permissions/edit-permission/${row.original.id}`}>
                                     Edit
                                 </Link>
                             </li>
+                            }
+                            {hasPermission(configPermission.DELETE_PERMISSION) &&
                             <li>
                                 <button type="button" className="dropdown-item" onClick={() => deletePermission(row.original.id)}>
                                    Delete
                                 </button>
                             </li>
+                            }
                         </ul>
+                        }   
                     </div>
                 );
             },
@@ -47,8 +60,9 @@ const AllPermission = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ],[]);
 
-    const { Auth } = useContext(AuthContext)
+   
     const accessToken = Auth('accessToken');
+    const navigate = useNavigate();
     const [permissions, setPermission] = useState([])
 
     const [pageCount, setPageCount] = useState(0);
@@ -141,6 +155,9 @@ const AllPermission = () => {
     });
 
     useEffect(() => {
+        if(!hasPermission(configPermission.VIEW_PERMISSION)){
+            navigate('/403')
+        }
         fetchData()
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -150,8 +167,8 @@ const AllPermission = () => {
         <div>
             <PageTitle
                 title="All Permissions"
-                buttonLink="/permissions/new-permission"
-                buttonLabel="Add New Permission"
+                buttonLink={hasPermission(configPermission.ADD_PERMISSION) ? '/permissions/new-permission' : null}
+                buttonLabel={hasPermission(configPermission.ADD_PERMISSION) ? 'Add New Permission' : null}
             />
             <div className="row">
                 <div className="col-12">

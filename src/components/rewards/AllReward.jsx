@@ -1,20 +1,22 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import AuthContext from "../../context/auth";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import { actionDeleteData, actionFetchData, actionPostData } from "../../actions/actions";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import Loading from "../others/Loading";
 import PageTitle from "../others/PageTitle";
 import NoState from "../others/NoState";
-import Pagination from "../others/Pagination";
 import Status from "../others/Status";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
 
 const AllReward = () => {
+    const { Auth,hasPermission } = useContext(AuthContext)
+    const navigate = useNavigate();
+
     const columns = useMemo(() => [
         {
             header: 'Id',
@@ -67,14 +69,17 @@ const AllReward = () => {
               return (
                 <div className="dropdown">
                   <button
-                    className="btn btn-secondary dropdown-toggle"
+                    className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_REWARD) && !hasPermission(configPermission.DELETE_REWARD)) ? 'disabled' : ''}`}
                     type="button"
+                    disabled={(!hasPermission(configPermission.EDIT_REWARD) && !hasPermission(configPermission.DELETE_REWARD))}
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
                     More Options
                   </button>
+                  {(hasPermission(configPermission.EDIT_REWARD) || hasPermission(configPermission.DELETE_REWARD)) &&
                   <ul className="dropdown-menu">
+                    {hasPermission(configPermission.EDIT_REWARD) &&
                     <li>
                       <Link
                         className="dropdown-item"
@@ -83,6 +88,8 @@ const AllReward = () => {
                         Edit
                       </Link>
                     </li>
+                    }
+                    {hasPermission(configPermission.EDIT_REWARD) &&
                     <li>
                       <button
                         type="button"
@@ -94,6 +101,8 @@ const AllReward = () => {
                         {row.original.status === 1 ? "Inactive" : "Active"}
                       </button>
                     </li>
+                    }
+                    {hasPermission(configPermission.DELETE_REWARD) &&
                     <li>
                       <button
                         type="button"
@@ -103,7 +112,9 @@ const AllReward = () => {
                         Delete
                       </button>
                     </li>
+                    }
                   </ul>
+                  }
                 </div>
               );
             },
@@ -111,7 +122,7 @@ const AllReward = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     ], [])
 
-    const { Auth } = useContext(AuthContext)
+   
     const accessToken = Auth('accessToken');
     const [rewards, setReward] = useState([])
 
@@ -226,7 +237,10 @@ const AllReward = () => {
         getCoreRowModel: getCoreRowModel(),
     });
     
-    useEffect(() => {
+    useEffect(() => {      
+        if(!hasPermission(configPermission.VIEW_REWARD)){
+            navigate('/403')
+        }
         fetchData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageIndex, pageSize, sorting, globalFilter])
@@ -235,8 +249,8 @@ const AllReward = () => {
         <div>
             <PageTitle
                 title="All Rewards"
-                buttonLink="/rewards/add-reward"
-                buttonLabel="Add New Reward"
+                buttonLink={hasPermission(configPermission.ADD_REWARD) ? '/rewards/add-reward' : null}
+                buttonLabel={hasPermission(configPermission.ADD_REWARD) ? 'Add New Reward' : null}
             />
 
             <div className="row">

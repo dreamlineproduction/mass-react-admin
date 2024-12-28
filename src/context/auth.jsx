@@ -1,11 +1,14 @@
 import { createContext,useState} from "react";
-import { rolesPermissions } from "../rolesPermissions";
+import { API_URL, decryptData } from "../config";
+import { actionFetchData } from "../actions/actions";
 export const  AuthContext = createContext(null);
 
 export const AuthProvider = ({children}) => {
     const userInfo = localStorage.getItem('user-info');
     const [user,setUser] = useState(userInfo)
-    const [permissions, setPermission] = useState([]);
+
+    const permissionsArray = localStorage.getItem('permissions') ? decryptData(localStorage.getItem('permissions')) : [];
+    const [permissions, setPermission] = useState(permissionsArray);
 
 
     const login = (user) => {
@@ -14,7 +17,9 @@ export const AuthProvider = ({children}) => {
 
     const logout = () => {
         localStorage.removeItem('user-info');
-        setUser(null)
+        localStorage.removeItem('permissions');
+        setUser(null)   
+        setPermission([])
     }
 
     const AuthCheck = () => {
@@ -32,16 +37,29 @@ export const AuthProvider = ({children}) => {
         return authUser
     }
 
-    const hasPermission = (permission = '') => {
-    
-        return permissions.includes(permission);
+    const fetchCurrentUser = async () => {
+        const accessToken = Auth('accessToken');
+        let url = `${API_URL}/admin-user`;
+        let response = await actionFetchData(url, accessToken);
+        response = await response.json();
+
+        if (response.status) {
+            setPermission(response.permissions)
+            setUser(response.data)
+        }
+    }
+
+    const hasPermission = (permission = '') => {   
+        if(permissions.length > 0){
+            return permissions.includes(permission);
+        }
+        return false;
     }
 
     return (
         <AuthContext.Provider 
             value={{
-                permissions,
-                setPermission,
+                fetchCurrentUser,
                 hasPermission,
                 user,
                 AuthCheck,

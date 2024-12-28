@@ -1,9 +1,9 @@
 import  { useContext, useEffect, useState } from 'react';
 import Loading from '../others/Loading';
 import AuthContext from '../../context/auth';
-import { API_URL } from '../../config';
+import { API_URL, configPermission } from '../../config';
 import { actionFetchData } from '../../actions/actions';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import NoState from '../others/NoState';
 import { useReactTable, getCoreRowModel } from '@tanstack/react-table';
 import DataTable from '../others/DataTable';
@@ -20,8 +20,9 @@ const QrsDetail = () => {
     ];
 
 
-    const { Auth } =  useContext(AuthContext)
+    const { Auth,hasPermission } =  useContext(AuthContext)
     const accessToken = Auth('accessToken');
+    const navigate = useNavigate();
 
     const {productId, batchNumber} =  useParams();
     const [pageCount, setPageCount] = useState(0);
@@ -84,6 +85,9 @@ const QrsDetail = () => {
     });
 
     useEffect(() =>{
+        if(!hasPermission(configPermission.VIEW_QR_DETAIL)){
+            navigate('/403')
+        }
         fetchData()
     }, [pageIndex, pageSize, sorting, globalFilter]);
 

@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import LoadingButton from '../others/LoadingButton';
 
 import { actionFetchData, actionFetchState, actionPostData } from "../../actions/actions";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import AllTransaction from "./AllTransaction";
 import AllOrder from "./AllOrder";
 
@@ -15,7 +15,7 @@ const EditUser = () => {
 
     const params = useParams();
     const defaultAvtar = 'AV';    
-    const { Auth } = useContext(AuthContext)
+    const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
 
     const userAvtar = useRef(null);
@@ -99,9 +99,12 @@ const EditUser = () => {
     }
 
     useEffect(() => {
+        if(!hasPermission(configPermission.EDIT_USER)){
+            navigate('/403')
+        }
         fetchState()
-        fetchUser();          
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        fetchUser();       
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (

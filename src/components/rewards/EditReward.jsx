@@ -4,7 +4,7 @@ import AuthContext from "../../context/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import PageTitle from "../others/PageTitle";
-import { API_URL, createSlug } from "../../config";
+import { API_URL, configPermission, createSlug } from "../../config";
 import toast from "react-hot-toast";
 import { actionFetchData, actionImageUpload, actionPostData } from "../../actions/actions";
 
@@ -12,7 +12,7 @@ import { actionFetchData, actionImageUpload, actionPostData } from "../../action
 const EditReward = () => {
     const params = useParams()
 
-    const { Auth } = useContext(AuthContext)
+    const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
 
@@ -107,6 +107,9 @@ const EditReward = () => {
     }
 
     useEffect(() => {
+        if(!hasPermission(configPermission.EDIT_REWARD)){
+            navigate('/403')
+        }
         fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
