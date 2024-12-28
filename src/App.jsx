@@ -6,6 +6,7 @@ import NotFoundPage from './components/404/NotFoundPage';
 import DefaultLayout from './components/layouts/DefaultLayout';
 import { useContext } from 'react';
 import AuthContext from './context/auth';
+import ProtectRoute from './components/ProtectRoute';
 
 
 function App() {
@@ -17,11 +18,9 @@ function App() {
             <Routes>
                 <Route path="/" element={<Navigate to="login" replace />} /> 
                 <Route exact path="/login" name="Login Page" element={<Login />} />
-                {
-                    isAuthenticated ? 
-                    <Route path="*" name="Home" element={<DefaultLayout />} /> : 
-                    <Route exact path="*" name="404" element={<NotFoundPage />} />
-                }
+               
+                <Route path="*" element={<ProtectRoute><DefaultLayout /></ProtectRoute>} /> 
+            
             </Routes>
         </BrowserRouter>     
     )

@@ -9,7 +9,7 @@ import { actionPostData } from "../../actions/actions";
 
 const Login = () => {
 
-    const { AuthCheck, login } = useContext(AuthContext)
+    const { AuthCheck, login,setPermission } = useContext(AuthContext)
     const navigate = useNavigate()
     const location = useLocation()
     const redirectPath = location.state?.path || '/dashboard';
@@ -43,6 +43,9 @@ const Login = () => {
                 }
 
                 localStorage.setItem('user-info', JSON.stringify(userInfo));
+
+                // Save permissions
+                setPermission(response.permissions)
                 login(userInfo)
                 reset();
                 navigate(redirectPath, { replace: true });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import {Route, Routes } from 'react-router-dom';
 import Dashboard from '../dashboard/Dashboard';
 import ProtectRoute from '../ProtectRoute';
 import AllUser from '../users/AllUser';
@@ -35,7 +35,6 @@ import AllPermission from '../permmision/AllPermission';
 import NewPermission from '../permmision/NewPermission';
 import EditPermission from '../permmision/EditPermission';
 import EditEmployee from '../employee/EditEmployee';
-import Unauthorized from '../404/Unauthorized';
 
 const AppContent = () => {
 

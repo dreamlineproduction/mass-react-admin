@@ -1,13 +1,11 @@
-import { createContext,useState,useContext } from "react";
-import { rolesPermissions } from '../rolesPermissions';
-
+import { createContext,useState} from "react";
+import { rolesPermissions } from "../rolesPermissions";
 export const  AuthContext = createContext(null);
 
 export const AuthProvider = ({children}) => {
     const userInfo = localStorage.getItem('user-info');
     const [user,setUser] = useState(userInfo)
-
-
+    const [permissions, setPermission] = useState([]);
 
 
     const login = (user) => {
@@ -34,11 +32,17 @@ export const AuthProvider = ({children}) => {
         return authUser
     }
 
+    const hasPermission = (permission = '') => {
     
+        return permissions.includes(permission);
+    }
 
     return (
         <AuthContext.Provider 
             value={{
+                permissions,
+                setPermission,
+                hasPermission,
                 user,
                 AuthCheck,
                 Auth,
@@ -53,4 +57,7 @@ export const AuthProvider = ({children}) => {
 
 
 export default AuthContext;
+
+
+
 

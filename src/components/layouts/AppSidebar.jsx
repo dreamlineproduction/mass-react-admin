@@ -11,9 +11,13 @@ import { IoMdNotificationsOutline } from 'react-icons/io';
 import { LuClipboardList, LuUserCog } from 'react-icons/lu';
 import { CiLock } from 'react-icons/ci';
 import { RiAdminLine } from 'react-icons/ri';
+import { useContext } from 'react';
+import AuthContext from '../../context/auth';
 
 
 const AppSidebar = () => {
+    const { hasPermission } = useContext(AuthContext)
+    
     return (
         <nav className='sidebar'>
             <SimpleBar forceVisible="y">
@@ -31,7 +35,8 @@ const AppSidebar = () => {
                                 <span className="align-middle">Dashboard</span>
                             </NavLink>
                         </li>
-                       
+                        
+                        {hasPermission('View User') && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#users" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                
                                 <FiUsers  style={{height:"20px",width:"30px"}} />
@@ -44,6 +49,9 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        )}
+
+                        {hasPermission('View Employee') && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#employee" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                
                                 <LuUserCog    style={{height:"20px",width:"30px"}} />
@@ -56,6 +64,9 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        )}
+                        
+                        {hasPermission('View Product') && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#products" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                
                                 <FiShoppingBag  style={{height:"20px",width:"30px"}} />
@@ -68,7 +79,9 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        )}
 
+                        {hasPermission('View Reward') && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#rewards" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                
                                 <IoDiamondOutline style={{height:"20px",width:"30px"}} />
@@ -82,7 +95,9 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        )}
 
+                        {hasPermission('View Offer') && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#offers" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
                                 <IoGiftOutline  style={{height:"20px",width:"30px"}} />
@@ -96,7 +111,9 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        )}
 
+                        {hasPermission('View QR') && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#qrmanager" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
                                 <BsQrCodeScan  style={{height:"20px",width:"30px"}} />
@@ -110,7 +127,9 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        )}
 
+                        {hasPermission('View Redemption') && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#redemptions" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
                                 <PiShareFat   style={{height:"20px",width:"30px"}} />
@@ -125,6 +144,9 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        )}
+
+                        {hasPermission('View Referral') && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#referrals" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
                                 <MdOutlineAccountBalance style={{height:"20px",width:"30px"}} />
@@ -138,9 +160,15 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        )}
+
+                        {hasPermission('View Role') &&  hasPermission('View Permission') &&(
                         <li className="sidebar-header">
                             Roles & Permissions
                         </li>
+                        )}
+
+                        {hasPermission('View Role') && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#roles" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
                                 <RiAdminLine  style={{height:"20px",width:"30px"}} />
@@ -155,6 +183,9 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        )}
+
+                        {hasPermission('View Permission') && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#permission" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
                                 <CiLock   style={{height:"20px",width:"30px"}} />
@@ -169,6 +200,8 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        )}
+
                         <li className="sidebar-header">
                             Others
                         </li>
@@ -185,6 +218,8 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+
+                        {hasPermission('View Page') && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#pages" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
                                 <LuClipboardList  style={{height:"20px",width:"30px"}} />
@@ -198,7 +233,7 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
-                        
+                        )}
                         
                     </ul>                    
                 </div>
