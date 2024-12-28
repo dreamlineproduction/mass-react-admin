@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import AuthContext from "../../context/auth";
 import PageTitle from "../others/PageTitle";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import { actionFetchData, actionPostData } from "../../actions/actions";
 import LoadingButton from "../others/LoadingButton";
 import Select from "react-select";
@@ -10,7 +10,7 @@ import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
 
 const NewRole = () => {
-  const { Auth } = useContext(AuthContext);
+  const { Auth,hasPermission } = useContext(AuthContext);
   const accessToken = Auth("accessToken");
   const navigate = useNavigate();
 
@@ -77,6 +77,9 @@ const NewRole = () => {
   };
 
   useEffect(() => {
+    if(!hasPermission(configPermission.ADD_ROLE)){
+        navigate('/403')
+    }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -85,8 +88,8 @@ const NewRole = () => {
     <div>
       <PageTitle
         title="Add New Role"
-        buttonLink="/roles/all-role"
-        buttonLabel="Back to List"
+        buttonLink={'/roles/all-role'}
+        buttonLabel={'Back to List'}
       />
       <div className="row">
         <div className="col-12 col-xl-8">

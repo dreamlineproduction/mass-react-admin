@@ -7,18 +7,17 @@ import DefaultLayout from './components/layouts/DefaultLayout';
 import { useContext } from 'react';
 import AuthContext from './context/auth';
 import ProtectRoute from './components/ProtectRoute';
+import Unauthorized from './components/404/Unauthorized';
 
 
 function App() {
     const { AuthCheck } = useContext(AuthContext)
-    const isAuthenticated = AuthCheck();
     
     return (     
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Navigate to="login" replace />} /> 
                 <Route exact path="/login" name="Login Page" element={<Login />} />
-               
                 <Route path="*" element={<ProtectRoute><DefaultLayout /></ProtectRoute>} /> 
             
             </Routes>

@@ -7,11 +7,11 @@ import { useForm } from "react-hook-form";
 import LoadingButton from '../others/LoadingButton';
 
 import { actionPostData } from "../../actions/actions";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 
 const NewUser = () => {
 
-    const { Auth } =  useContext(AuthContext)
+    const { Auth,hasPermission } =  useContext(AuthContext)
     const accessToken = Auth('accessToken');
 
     const userAvtar = useRef(null);
@@ -74,7 +74,11 @@ const NewUser = () => {
     }
 
     useEffect(() => {
+        if(!hasPermission(configPermission.ADD_USER)){
+            navigate('/403')
+        }
         fetchState()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     return (

@@ -4,14 +4,14 @@ import AuthContext from "../../context/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import PageTitle from "../others/PageTitle";
-import { API_URL, createSlug } from "../../config";
+import { API_URL, configPermission, createSlug } from "../../config";
 import toast from "react-hot-toast";
 import { actionFetchData, actionImageUpload, actionPostData } from "../../actions/actions";
 
 const EditOffer = () => {
 
     const params = useParams()
-    const { Auth } =  useContext(AuthContext)
+    const { Auth,hasPermission } =  useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
 
@@ -33,9 +33,7 @@ const EditOffer = () => {
 
     const chooseImage =  () => {
         fileInput.current.click();                
-    }
-
-   
+    }   
 
     const onSelectFile = async (event) => {
         const toastId = toast.loading("Please wait...")
@@ -109,6 +107,9 @@ const EditOffer = () => {
     }
 
     useEffect(() => {
+        if(!hasPermission(configPermission.EDIT_OFFER)){
+            navigate('/403')
+        }
         fetchOffer();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])

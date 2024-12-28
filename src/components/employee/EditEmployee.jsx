@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import { actionFetchData, actionPostData } from "../../actions/actions";
 import { useForm } from "react-hook-form";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
@@ -10,7 +10,7 @@ import LoadingButton from "../others/LoadingButton";
 
 const EditEmployee = () => {
     const defaultAvtar = 'AV';   
-    const { Auth } = useContext(AuthContext)
+    const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
     const params = useParams();
@@ -92,6 +92,9 @@ const EditEmployee = () => {
     }
 
     useEffect(() => {
+        if(!hasPermission(configPermission.EDIT_EMPLOYEE)){
+            navigate('/403')
+        }
         fetchRoles();
         fetchData();          
     // eslint-disable-next-line react-hooks/exhaustive-deps

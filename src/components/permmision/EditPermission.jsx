@@ -4,12 +4,12 @@ import LoadingButton from "../others/LoadingButton";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AuthContext from "../../context/auth";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import { actionFetchData, actionPostData } from "../../actions/actions";
 import toast from "react-hot-toast";
 
 const EditPermission = () => {
-    const { Auth } = useContext(AuthContext)    
+    const { Auth,hasPermission } = useContext(AuthContext)    
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
 
@@ -61,6 +61,9 @@ const EditPermission = () => {
     }
 
     useEffect(() => {
+        if(!hasPermission(configPermission.EDIT_PERMISSION)){
+            navigate('/403')
+        }
         fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])

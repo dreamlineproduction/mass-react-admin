@@ -8,7 +8,7 @@ import { actionFetchData } from "../../actions/actions";
 
 const AppHeader = () => {
     const navigate = useNavigate();
-    const {Auth,logout}  = useContext(AuthContext);
+    const {Auth,logout,fetchCurrentUser}  = useContext(AuthContext);
     const [userInfo,setUserInfo] = useState({image_url:'',name:'Admin User'})
 
     const getProfileImage = async () => {
@@ -31,9 +31,10 @@ const AppHeader = () => {
     }
     
     useEffect(()=>{
-        getProfileImage();
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+        fetchCurrentUser();
+        getProfileImage();        
+        
+        // eslint-disable-next-line react-hooks/exhaustive-deps
       },[])
     return (
         <nav className="navbar navbar-expand navbar-light navbar-bg">

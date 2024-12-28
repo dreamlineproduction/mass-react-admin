@@ -1,18 +1,19 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import PageTitle from "../others/PageTitle";
 import AuthContext from "../../context/auth";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import { actionDeleteData, actionFetchData } from "../../actions/actions";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
 
 const AllRole = () => {
+    const navigate = useNavigate();
     const columns = useMemo(() => [
         { accessorKey: "id", header: "Id" },
         { accessorKey: "name", header: "Name" },
@@ -24,17 +25,26 @@ const AllRole = () => {
             cell: ({ row }) => {
                 return (
                     <div className="dropdown">
-                        <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button 
+                            className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_ROLE) || !hasPermission(configPermission.DELETE_ROLE)) ? 'disabled' : ''}`} 
+                            type="button" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false"
+                            disabled={(!hasPermission(configPermission.EDIT_ROLE) || !hasPermission(configPermission.DELETE_ROLE))}
+                        >
                             More Options
                         </button>
+                        {(hasPermission(configPermission.EDIT_ROLE) || hasPermission(configPermission.DELETE_ROLE)) &&
                         <ul className="dropdown-menu">
+                            {hasPermission(configPermission.EDIT_ROLE) &&
                             <li>
                                 <Link className="dropdown-item" to={`/roles/edit-role/${row.original.id}`}>
                                     Edit
                                 </Link>
                             </li>
+                            }
                             
-                            {![1,5,6,7].includes(row.original.id) &&                                                       
+                            { hasPermission(configPermission.DELETE_ROLE) && ![1,5,6,7].includes(row.original.id) &&                                                       
                             <li>
                                 <button type="button" className="dropdown-item" onClick={() => deleteRole(row.original.id)}>
                                     Delete
@@ -42,6 +52,7 @@ const AllRole = () => {
                             </li>
                             }
                         </ul>
+                        }
                     </div>
                 );
             },
@@ -50,7 +61,7 @@ const AllRole = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ],[]);
 
-    const { Auth } = useContext(AuthContext)
+    const { Auth,hasPermission, } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const [roles, setRole] = useState([])
 
@@ -141,7 +152,11 @@ const AllRole = () => {
         getCoreRowModel: getCoreRowModel(),
     });
 
+
     useEffect(() => {
+        if(!hasPermission(configPermission.VIEW_ROLE)){
+            navigate('/403')
+        }
         fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageIndex, pageSize, sorting, globalFilter]);
@@ -150,8 +165,8 @@ const AllRole = () => {
         <div>
             <PageTitle
                 title="All Roles"
-                buttonLink="/roles/new-role"
-                buttonLabel="Add New Role"
+                buttonLink={hasPermission(configPermission.ADD_ROLE) ? '/roles/new-role' : null}
+                buttonLabel={hasPermission(configPermission.ADD_ROLE) ? 'Add New Role' : null}
             />
              <div className="row">
                 <div className="col-12">

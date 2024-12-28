@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, useMemo } from "react";
 import AuthContext from "../../context/auth";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import { actionFetchData, actionPostData } from "../../actions/actions";
 import toast from "react-hot-toast";
 import NoState from "../others/NoState";
@@ -9,11 +9,13 @@ import PageTitle from "../others/PageTitle";
 import Status from "../others/Status";
 
 import { useReactTable, getCoreRowModel } from "@tanstack/react-table";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PaginationDataTable from "../others/PaginationDataTable";
 import DataTable from "../others/DataTable";
 
 const AllPages = () => {
+    const { Auth,hasPermission } = useContext(AuthContext);
+    const navigate = useNavigate();
     const columns = useMemo(() => [
         { accessorKey: "id", header: "Id" },
         { accessorKey: "title", header: "Title" },
@@ -33,21 +35,33 @@ const AllPages = () => {
             cell: ({ row }) => {
                 return (
                     <div className="dropdown">
-                        <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button 
+                            className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_PAGE) || !hasPermission(configPermission.DELETE_PAGE)) ? 'disabled' : ''}`} 
+                            type="button" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false"
+                            disabled={(!hasPermission(configPermission.EDIT_PAGE) || !hasPermission(configPermission.DELETE_PAGE))}
+                        >
                             More Options
                         </button>
+                        {(hasPermission(configPermission.EDIT_PAGE) || hasPermission(configPermission.DELETE_PAGE)) &&
                         <ul className="dropdown-menu">
+                            {hasPermission(configPermission.EDIT_PAGE) &&
                             <li>
                                 <Link className="dropdown-item" to={`/pages/edit-page/${row.original.id}`}>
                                     Edit
                                 </Link>
                             </li>
+                            }
+                            {hasPermission(configPermission.DELETE_PAGE) &&
                             <li>
                                 <button type="button" className="dropdown-item" onClick={() => changeStatus(row.original.id,row.original.status)}>
                                     {row.original.status === 1 ? 'Inactive' : 'Active'}
                                 </button>
                             </li>
+                            }
                         </ul>
+                        }
                     </div>
                 );
             },
@@ -55,7 +69,7 @@ const AllPages = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ],[]);
 
-    const { Auth } = useContext(AuthContext);
+  
     const accessToken = Auth("accessToken");
 
     const [pages, setPages] = useState([]);
@@ -151,6 +165,9 @@ const AllPages = () => {
     };
 
     useEffect(() => {
+        if(!hasPermission(configPermission.VIEW_PAGE)){
+            navigate('/403')
+        }
         fetchPages();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageIndex, pageSize, sorting, globalFilter]);

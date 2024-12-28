@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef,useState,useCallback } from 'react
 import { useNavigate, useParams } from 'react-router-dom';
 import AuthContext from '../../context/auth';
 import { Controller, useForm } from 'react-hook-form';
-import { API_URL, createSlug } from '../../config';
+import { API_URL, configPermission, createSlug } from '../../config';
 import { actionFetchData, actionPostData } from '../../actions/actions';
 import toast from 'react-hot-toast';
 import PageTitle from '../others/PageTitle';
@@ -12,7 +12,7 @@ import LoadingButton from '../others/LoadingButton';
 
 const EditPage = () => {
     const params = useParams()
-    const { Auth } = useContext(AuthContext)
+    const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
 
@@ -85,7 +85,11 @@ const EditPage = () => {
    
 
     useEffect(() => {
+        if(!hasPermission(configPermission.EDIT_PAGE)){
+            navigate('/403')
+        }
         fetchPage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (

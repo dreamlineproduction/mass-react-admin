@@ -3,13 +3,13 @@ import AuthContext from "../../context/auth";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import { actionFetchData, actionPostData } from "../../actions/actions";
 import PageTitle from "../others/PageTitle";
 import LoadingButton from "../others/LoadingButton";
 
 const NewQrs = () => {
-    const { Auth } = useContext(AuthContext)
+    const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
 
@@ -60,7 +60,11 @@ const NewQrs = () => {
     }
 
     useEffect(() => {
+        if(!hasPermission(configPermission.ADD_QR)){
+            navigate('/403')
+        }
         fetchProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (

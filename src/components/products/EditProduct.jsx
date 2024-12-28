@@ -6,14 +6,14 @@ import { Controller, useForm } from "react-hook-form";
 import PageTitle from "../others/PageTitle";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
-import { API_URL, createSlug } from "../../config";
+import { API_URL, configPermission, createSlug } from "../../config";
 import toast from "react-hot-toast";
 import { actionFetchData, actionImageUpload, actionPostData } from "../../actions/actions";
 
 const EditProduct = () => {
     const params = useParams()
 
-    const { Auth } = useContext(AuthContext)
+    const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
 
@@ -140,7 +140,11 @@ const EditProduct = () => {
     }
 
     useEffect(() => {
+        if(!hasPermission(configPermission.EDIT_PRODUCT)){
+            navigate('/403')
+        }
         fetchProduct()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 

@@ -1,6 +1,6 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { actionPostData } from "../../actions/actions";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import LoadingButton from "../others/LoadingButton";
 import PageTitle from "../others/PageTitle";
 import { useForm } from "react-hook-form";
@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const NewPermission = () => {
-    const { Auth } = useContext(AuthContext)
+    const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm();
@@ -41,6 +41,12 @@ const NewPermission = () => {
         }
     }
     
+    useEffect(() => {
+        if(!hasPermission(configPermission.ADD_PERMISSION)){
+            navigate('/403')
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     
     return (
         <div>

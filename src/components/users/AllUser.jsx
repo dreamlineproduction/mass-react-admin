@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { actionDeleteData, actionFetchData, actionPostData } from "../../actions/actions";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import AuthContext from "../../context/auth";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
@@ -12,9 +12,13 @@ import Swal from "sweetalert2";
 import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { use } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AllUser = () => {
+    const navigate = useNavigate();
+    const { Auth,hasPermission } = useContext(AuthContext)
+    const accessToken = Auth('accessToken');
+
     const columns = useMemo(() => [
         { accessorKey: "id", header: "Id" },
         { 
@@ -113,26 +117,39 @@ const AllUser = () => {
             cell: ({ row }) => {
                 return (
                     <div className="dropdown">
-                        <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button 
+                            className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_USER) && !hasPermission(configPermission.DELETE_USER)) ? 'disabled' : ''}`} 
+                            type="button" 
+                            disabled={(!hasPermission(configPermission.EDIT_USER) && !hasPermission(configPermission.DELETE_USER))}
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false">
                             More Options
                         </button>
+                        {(hasPermission(configPermission.EDIT_USER) || hasPermission(configPermission.DELETE_USER)) &&
                         <ul className="dropdown-menu">
+                            {hasPermission(configPermission.EDIT_USER) &&
                             <li>
                                 <Link className="dropdown-item" to={`/users/edit-user/${row.original.id}`}>
                                     Edit
                                 </Link>
                             </li>
+                            }
+                            {hasPermission(configPermission.EDIT_USER) &&
                             <li>
                                 <button type="button" className="dropdown-item" onClick={() => changeStatus(row.original.id,row.original.status)}>
                                     {row.original.status === 1 ? 'Inactive' : 'Active'}
                                 </button>
                             </li>
+                            }
+                            {hasPermission(configPermission.DELETE_USER) &&
                             <li>
                                 <button type="button" className="dropdown-item" onClick={() => deleteUser(row.original.id)}>
                                     Delete
                                 </button>
                             </li>
+                            }
                         </ul>
+                        }
                     </div>
                 );
             },
@@ -140,11 +157,10 @@ const AllUser = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ],[]);
 
-    const { Auth } = useContext(AuthContext)
-    const accessToken = Auth('accessToken');
+    
     const [users, setUsers] = useState([])
     const [userCount, setUserCount] = useState('');
-
+   
 
     const [pageCount, setPageCount] = useState(0);
     const [isLoading, setLoading] = useState(true);
@@ -220,6 +236,7 @@ const AllUser = () => {
         });
     }
 
+   
     const changeStatus = async (id,currentStatus) => {
         const toastId = toast.loading("Please wait...");      
         let status = currentStatus === 1 ? 0 : 1;
@@ -248,9 +265,7 @@ const AllUser = () => {
             console.error(error);
         }
     };
-    
-
-   
+       
 
     // Fetch Data user count
     const fetchUserCount = async () => {
@@ -279,27 +294,33 @@ const AllUser = () => {
         manualPagination: true,
         getCoreRowModel: getCoreRowModel(),
     });
-   
+    
+  
 
     useEffect(() => {
         fetchUserCount();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    useEffect(() => {
-        fetchData()
 
+    useEffect(() => {
+        if(!hasPermission(configPermission.VIEW_USER) && !isLoading){
+            navigate('/403')
+         }
+        fetchData()            
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageIndex, pageSize, sorting, globalFilter]);
 
+   
+    
     return (
         <div>
-           
             <PageTitle 
                 title="All Users"
-                buttonLink="/users/add-user"
-                buttonLabel="Add New User"
+                buttonLink={hasPermission(configPermission.ADD_USER) ? "/users/add-user" : null}
+                buttonLabel={hasPermission(configPermission.ADD_USER) ? "Add New User" : null}
             />
+
             {Object.keys(userCount).length > 0 &&
             <div className="row">
                 <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
@@ -448,6 +469,8 @@ const AllUser = () => {
           
         </div>
     );
+
+    
 };
 
 export default AllUser;

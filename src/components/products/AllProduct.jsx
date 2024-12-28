@@ -1,13 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
 import { useContext, useEffect,  useMemo,  useState } from "react";
 import { actionDeleteData, actionFetchData, actionPostData } from "../../actions/actions";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import AuthContext from "../../context/auth";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
 import Status from "../others/Status";
-import Pagination from "../others/Pagination";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -15,6 +14,9 @@ import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
 
 const AllProduct = () => {
+    const { Auth,hasPermission } = useContext(AuthContext)
+    const navigate = useNavigate();
+
     const columns = useMemo(() => [
         {
             accessorKey: "image",
@@ -53,26 +55,40 @@ const AllProduct = () => {
             cell: ({ row }) => {
                 return (
                     <div className="dropdown">
-                        <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button 
+                            className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_PRODUCT) && !hasPermission(configPermission.DELETE_PRODUCT)) ? 'disabled' : ''}`}
+                            type="button" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false"
+                            disabled={(!hasPermission(configPermission.EDIT_PRODUCT) && !hasPermission(configPermission.DELETE_PRODUCT))}
+                        >
                             More Options
                         </button>
+                        {((hasPermission(configPermission.EDIT_PRODUCT) || hasPermission(configPermission.DELETE_PRODUCT))) &&
                         <ul className="dropdown-menu">
+                            {hasPermission(configPermission.EDIT_PRODUCT) &&
                             <li>
                                 <Link className="dropdown-item" to={`/products/edit-product/${row.original.id}`}>
                                     Edit
                                 </Link>
                             </li>
+                            }
+                            {hasPermission(configPermission.EDIT_PRODUCT) &&
                             <li>
                                 <button type="button" className="dropdown-item" onClick={() => changeStatus(row.original.id,row.original.status)}>
                                     {row.original.status === 1 ? 'Inactive' : 'Active'}
                                 </button>
                             </li>
+                            }
+                            {hasPermission(configPermission.DELETE_PRODUCT) &&
                             <li>
                                 <button type="button" className="dropdown-item" onClick={() => deleteProduct(row.original.id)}>
                                     Delete
                                 </button>
                             </li>
+                            }
                         </ul>
+                        }
                     </div>
                 );
             },
@@ -80,7 +96,7 @@ const AllProduct = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ],[]);
 
-    const { Auth } = useContext(AuthContext)
+    
     const accessToken = Auth('accessToken');
     const [products, setProduct] = useState([])
 
@@ -200,6 +216,9 @@ const AllProduct = () => {
     });
 
     useEffect(() => {
+        if(!hasPermission(configPermission.VIEW_PRODUCT)){
+            navigate('/403')
+        }
         fetchProduct()
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -209,8 +228,8 @@ const AllProduct = () => {
         <div>
             <PageTitle
                 title="All Products"
-                buttonLink="/products/add-product"
-                buttonLabel="Add New Product"
+                buttonLink={hasPermission(configPermission.ADD_PRODUCT) ? '/products/add-product' : null}
+                buttonLabel={hasPermission(configPermission.ADD_PRODUCT) ? 'Add New Product' : null}
             />
 
             <div className="row">

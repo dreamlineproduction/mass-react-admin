@@ -1,5 +1,6 @@
 import { createContext,useState} from "react";
-import { rolesPermissions } from "../rolesPermissions";
+import { API_URL } from "../config";
+import { actionFetchData } from "../actions/actions";
 export const  AuthContext = createContext(null);
 
 export const AuthProvider = ({children}) => {
@@ -32,16 +33,31 @@ export const AuthProvider = ({children}) => {
         return authUser
     }
 
+    const fetchCurrentUser = async () => {
+        const accessToken = Auth('accessToken');
+        let url = `${API_URL}/admin-user`;
+        let response = await actionFetchData(url, accessToken);
+        response = await response.json();
+
+        if (response.status) {
+            setPermission(response.permissions)
+        }
+    }
+
     const hasPermission = (permission = '') => {
-    
-        return permissions.includes(permission);
+        
+
+        if(permissions.length > 0){
+            return permissions.includes(permission);
+        }
+        return false;
     }
 
     return (
         <AuthContext.Provider 
             value={{
                 permissions,
-                setPermission,
+                fetchCurrentUser,
                 hasPermission,
                 user,
                 AuthCheck,

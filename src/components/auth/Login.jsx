@@ -45,7 +45,6 @@ const Login = () => {
                 localStorage.setItem('user-info', JSON.stringify(userInfo));
 
                 // Save permissions
-                setPermission(response.permissions)
                 login(userInfo)
                 reset();
                 navigate(redirectPath, { replace: true });

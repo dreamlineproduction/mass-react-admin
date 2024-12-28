@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
 import Status from "../others/Status";
 import { useContext, useEffect, useMemo, useState } from "react";
@@ -10,7 +10,7 @@ import {
 } from "../../actions/actions";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -18,6 +18,9 @@ import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
 
 const AllEmployee = () => {
+  const { Auth,hasPermission } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const columns = useMemo(
     () => [
       {
@@ -104,14 +107,17 @@ const AllEmployee = () => {
           return (
             <div className="dropdown">
               <button
-                className="btn btn-secondary dropdown-toggle"
+                className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_EMPLOYEE) && !hasPermission(configPermission.DELETE_EMPLOYEE)) ? 'disabled' : ''}`}
                 type="button"
+                disabled={(!hasPermission(configPermission.EDIT_EMPLOYEE) && !hasPermission(configPermission.DELETE_EMPLOYEE))} 
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
                 More Options
               </button>
+              {(hasPermission(configPermission.EDIT_EMPLOYEE) || hasPermission(configPermission.DELETE_EMPLOYEE)) &&
               <ul className="dropdown-menu">
+                {hasPermission(configPermission.EDIT_EMPLOYEE) &&
                 <li>
                   <Link
                     className="dropdown-item"
@@ -120,6 +126,8 @@ const AllEmployee = () => {
                     Edit
                   </Link>
                 </li>
+                }
+                {hasPermission(configPermission.EDIT_EMPLOYEE) &&
                 <li>
                   <button
                     type="button"
@@ -131,6 +139,8 @@ const AllEmployee = () => {
                     {row.original.status === 1 ? "Inactive" : "Active"}
                   </button>
                 </li>
+                }
+                {hasPermission(configPermission.DELETE_EMPLOYEE) &&
                 <li>
                   <button
                     type="button"
@@ -140,7 +150,9 @@ const AllEmployee = () => {
                     Delete
                   </button>
                 </li>
+                }
               </ul>
+              }
             </div>
           );
         },
@@ -150,7 +162,7 @@ const AllEmployee = () => {
     []
   );
 
-  const { Auth } = useContext(AuthContext);
+ 
   const accessToken = Auth("accessToken");
   const [employees, setEmployees] = useState([]);
 
@@ -278,7 +290,11 @@ const AllEmployee = () => {
     getCoreRowModel: getCoreRowModel(),
   });
 
+
   useEffect(() => {
+    if(!hasPermission(configPermission.VIEW_EMPLOYEE)){
+        navigate('/403')
+    }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize, sorting, globalFilter]);
@@ -287,8 +303,8 @@ const AllEmployee = () => {
     <div>
       <PageTitle
         title="All Employees"
-        buttonLink="/employees/add-employee"
-        buttonLabel="Add New Employee"
+        buttonLink={hasPermission(configPermission.ADD_EMPLOYEE) ? '/employees/add-employee' : null}
+        buttonLabel={hasPermission(configPermission.ADD_EMPLOYEE) ? 'Add New Employee' : null}
       />
       <div className="row">
         <div className="col-12">

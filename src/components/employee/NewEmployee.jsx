@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
-import { API_URL } from "../../config";
+import { API_URL, configPermission } from "../../config";
 import { actionFetchData, actionPostData } from "../../actions/actions";
 import toast from "react-hot-toast";
 import AuthContext from "../../context/auth";
@@ -10,7 +10,7 @@ import LoadingButton from "../others/LoadingButton";
 
 
 const NewEmployee = () => {
-    const { Auth } = useContext(AuthContext)
+    const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const navigate = useNavigate();
     const userAvtar = useRef(null);
@@ -80,6 +80,9 @@ const NewEmployee = () => {
     }
 
     useEffect(() => {
+        if(!hasPermission(configPermission.ADD_EMPLOYEE)){
+            navigate('/403')
+        }
         fetchRoles();        
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
