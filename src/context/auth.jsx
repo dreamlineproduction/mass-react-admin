@@ -45,6 +45,7 @@ export const AuthProvider = ({children}) => {
 
         if (response.status) {
             setPermission(response.permissions)
+            setUser(response.data)
         }
     }
 
@@ -58,7 +59,6 @@ export const AuthProvider = ({children}) => {
     return (
         <AuthContext.Provider 
             value={{
-                permissions,
                 fetchCurrentUser,
                 hasPermission,
                 user,
