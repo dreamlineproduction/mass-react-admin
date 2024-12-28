@@ -2,12 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate, } from 'react-router-dom';
 import Login from './components/auth/Login';
 import './assets/js/app';
 import './assets/css/style.scss'
-import NotFoundPage from './components/404/NotFoundPage';
 import DefaultLayout from './components/layouts/DefaultLayout';
 import { useContext } from 'react';
 import AuthContext from './context/auth';
 import ProtectRoute from './components/ProtectRoute';
-import Unauthorized from './components/404/Unauthorized';
 
 
 function App() {

@@ -1,12 +1,14 @@
 import { createContext,useState} from "react";
-import { API_URL } from "../config";
+import { API_URL, decryptData } from "../config";
 import { actionFetchData } from "../actions/actions";
 export const  AuthContext = createContext(null);
 
 export const AuthProvider = ({children}) => {
     const userInfo = localStorage.getItem('user-info');
     const [user,setUser] = useState(userInfo)
-    const [permissions, setPermission] = useState([]);
+
+    const permissionsArray = localStorage.getItem('permissions') ? decryptData(localStorage.getItem('permissions')) : [];
+    const [permissions, setPermission] = useState(permissionsArray);
 
 
     const login = (user) => {
@@ -15,7 +17,9 @@ export const AuthProvider = ({children}) => {
 
     const logout = () => {
         localStorage.removeItem('user-info');
-        setUser(null)
+        localStorage.removeItem('permissions');
+        setUser(null)   
+        setPermission([])
     }
 
     const AuthCheck = () => {
@@ -44,9 +48,7 @@ export const AuthProvider = ({children}) => {
         }
     }
 
-    const hasPermission = (permission = '') => {
-        
-
+    const hasPermission = (permission = '') => {   
         if(permissions.length > 0){
             return permissions.includes(permission);
         }

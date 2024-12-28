@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthContext from "../../context/auth";
-import { API_URL } from "../../config";
+import { API_URL, encryptData } from "../../config";
 import LoadingButton from "../others/LoadingButton";
 import { actionPostData } from "../../actions/actions";
 
@@ -43,8 +43,10 @@ const Login = () => {
                 }
 
                 localStorage.setItem('user-info', JSON.stringify(userInfo));
-
                 // Save permissions
+                const encryptedPermissions = encryptData(response.permissions)
+                localStorage.setItem('permissions', encryptedPermissions)
+
                 login(userInfo)
                 reset();
                 navigate(redirectPath, { replace: true });

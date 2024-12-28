@@ -1,5 +1,8 @@
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
+import CryptoJS from 'crypto-js';
+
+const SECRET_KEY = 'MASS$2y$12$JVTN0.SWAn7yrpcSeqc8M.HSMOagYZ0lhu9ia5CKCOqiiy7OtxG5WADMIN'; 
 
 export const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -38,6 +41,15 @@ export const exportToExcel = (data = []) => {
     const fileName = getRandomInt(1, 99999);
     saveAs(file, `${fileName}-data.xlsx`);
 }
+
+export const encryptData =(data)=> {
+    return CryptoJS.AES.encrypt(JSON.stringify(data), SECRET_KEY).toString();
+}
+
+export const decryptData = (data) => {
+    const decrypted = CryptoJS.AES.decrypt(data, SECRET_KEY).toString(CryptoJS.enc.Utf8);
+    return JSON.parse(decrypted);
+  }
 
 export const configPermission = {
     'VIEW_USER': 'View User',
