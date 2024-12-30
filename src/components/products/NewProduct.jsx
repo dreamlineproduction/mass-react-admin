@@ -2,13 +2,14 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import LoadingButton from "../others/LoadingButton";
 import AuthContext from "../../context/auth";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm,Controller } from "react-hook-form";
 import PageTitle from "../others/PageTitle";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import { API_URL, configPermission, createSlug } from "../../config";
 import toast from "react-hot-toast";
-import { actionImageUpload, actionPostData } from "../../actions/actions";
+import { actionFetchData, actionImageUpload, actionPostData } from "../../actions/actions";
+import { IoWarningOutline } from "react-icons/io5";
 
 
 const NewProduct = () => {
@@ -19,18 +20,23 @@ const NewProduct = () => {
     const slugRef = useRef(null);
     const fileInput = useRef(null);
     const [imageData, setImage] = useState('');
-    const [imageId, setImageId] = useState(null);
     const [imageError, setImageError] = useState('');
     const [previewVideo, setPreviewVideo] = useState(null);
+
+    const [sizes,setSize]  = useState([]);
+    const [isLoading,setLoading] = useState(true);
 
     const {
         register,
         handleSubmit,
-        setValue,
         reset,
+        control,
+        setValue,
+        getValues,
         formState: {
             errors,
             isSubmitting,
+            isSubmitted,
         }
     } = useForm({
         defaultValues: {
@@ -43,40 +49,44 @@ const NewProduct = () => {
         fileInput.current.click();
     }
 
-    const handleDescriptionChange = (value) => {
-        setValue("description", value, { shouldValidate: true });
-    };
-
-    const handleInstructionChange = (value) => {
-        setValue("instruction", value, { shouldValidate: true });
-    };
-
 
     const removeImage = (e) => {
         e.stopPropagation();
         setImage('')
     }
 
-    const onSelectFile = async (event) => {
-        const toastId = toast.loading("Please wait...")
-        const file = event.target.files[0]
-        if (file) {
-            let response = await actionImageUpload(file, accessToken);
-            response = await response.json();
-            if (response.status) {
-                setImageId(response.image_id)
-                toast.success(response.message, {
-                    id: toastId
-                });
+    const onSelectFile = useCallback(async (event) => {
+        const toastId = toast.loading("Please wait...");
+        const file = event.target.files[0];
 
-                const reader = new FileReader()
-                reader.onload = (e) => {
-                    setImage(e.target.result)
+        if (file) {
+            try {
+                const response = await actionImageUpload(file, accessToken);
+                const data = await response.json();
+
+                if (data.status) {
+                    console.log(data.image_id);
+                    setValue('image',data.image_id);
+
+                    //setImageId(prevData => prevData || data.image_id);
+
+                    toast.success(data.message, { id: toastId });
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        setImage(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    toast.error("Upload failed.", { id: toastId });
                 }
-                reader.readAsDataURL(file)
+            } catch (error) {
+                toast.error("An error occurred during upload.", { id: toastId });
             }
+        } else {
+            toast.error("No file selected.", { id: toastId });
         }
-    }
+    }, [accessToken, actionImageUpload]);
 
     const updateVideoPreview = (event) => {
         const input = event.target.value
@@ -96,15 +106,39 @@ const NewProduct = () => {
             slugRef.current.value = '';
     };
 
+
+    const copyContent = (lang) => {
+        const name = getValues('name')
+        const description = getValues('description')
+        const instruction = getValues('instruction')
+
+        if(lang === 'HI'){
+          setValue('name_hi',name)
+          setValue('description_hi',description)
+          setValue('instruction_hi',instruction)
+        }
+        if(lang === 'BA'){
+            setValue('name_ba',name)
+            setValue('description_ba',description)
+            setValue('instruction_ba',instruction)
+        }
+        if(lang === 'OD'){
+            setValue('name_od',name)
+            setValue('description_od',description)
+            setValue('instruction_od',instruction)
+        }
+    }
+
     // Create product
     const submitHandler = useCallback(async (data) => {
         const slug = slugRef.current.value;
-        if (imageId === null) {
+        if (!getValues('image')) {
             setImageError('Please select image.')
             return;
         }
 
-        let postData = { ...data, image: imageId, slug };
+        let postData = { ...data,slug };
+
         const toastId = toast.loading("Please wait...")
         try {
             let response = await actionPostData(`${API_URL}/products`, accessToken, postData);
@@ -125,12 +159,25 @@ const NewProduct = () => {
         } catch (error) {
             toast.error(error)
         }
-    })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
+
+    const fetchProductSize = async () => {
+
+        let response = await actionFetchData(`${API_URL}/product/sizes`, accessToken);
+        response = await response.json();
+        if (response.status) {
+            setSize(response.data);
+        }
+        setLoading(false);
+    }
 
     useEffect(() => {
         if(!hasPermission(configPermission.ADD_PRODUCT)){
             navigate('/403')
         }
+        fetchProductSize();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -142,10 +189,16 @@ const NewProduct = () => {
                 buttonLabel="Back to List"
             />
             <div className="row">
-
                 <div className="col-12 col-xl-12">
+                    {isSubmitted && Object.keys(errors).length > 0 && (
+                        <div className="alert alert-danger fade show d-flex align-items-center" role="alert">
+                            <IoWarningOutline className="me-2" size={30} />
+                            Please check the form carefully.
+                        </div>
+                    )}
                     <div className="card">
                         <div className="card-body">
+                            {isLoading && <div className="cover-body"></div>}
                             <ul className="nav nav-tabs" id="myTab" role="tablist">
                                 <li className="nav-item" role="presentation">
                                     <button className="nav-link active" id="english-tab" data-bs-toggle="tab" data-bs-target="#english-tab-pane" type="button" role="tab" aria-controls="english-tab-pane" aria-selected="true">English</button>
@@ -161,9 +214,10 @@ const NewProduct = () => {
                                     <button className="nav-link" id="odia-tab" data-bs-toggle="tab" data-bs-target="#odia-tab-pane" type="button" role="tab" aria-controls="odia-tab-pane" aria-selected="false">Odia</button>
                                 </li>
                             </ul>
-                            <div className="tab-content" id="myTabContent">
-                                <div className="tab-pane fade show active" id="english-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabIndex="0">
-                                    <form onSubmit={handleSubmit(submitHandler)} method="post" className="mt-4">
+                            <form onSubmit={handleSubmit(submitHandler)} method="post" className="mt-4">
+                                <div className="tab-content" id="myTabContent">
+                                    {/* English */}
+                                    <div className="tab-pane fade show active" id="english-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabIndex="0">
                                         <div className="mb-4">
                                             <label className="form-label">Product Name</label>
                                             <input
@@ -183,6 +237,7 @@ const NewProduct = () => {
                                             />
                                             <p className="invalid-feedback">{errors.name?.message}</p>
                                         </div>
+
                                         <div className="mb-4">
                                             <label className="form-label">Product Slug</label>
                                             <input
@@ -198,81 +253,39 @@ const NewProduct = () => {
                                         </div>
 
                                         <div className="mb-4">
+
                                             <label className="form-label">Packaging Size</label>
-                                            <div className="form-check form-check-inline ms-2">
-                                                <input
-                                                    className="form-check-input"
-                                                    type="checkbox"
-                                                    id="checkbox250ml"
-                                                    value="250ml"
-                                                />
-                                                <label className="form-check-label" htmlFor="checkbox250ml">
-                                                    250ml
-                                                </label>
-                                            </div>
-                                            <div className="form-check form-check-inline ms-2">
-                                                <input
-                                                    className="form-check-input"
-                                                    type="checkbox"
-                                                    id="checkbox500ml"
-                                                    value="500ml"
-                                                />
-                                                <label className="form-check-label" htmlFor="checkbox500ml">
-                                                    500ml
-                                                </label>
-                                            </div>
-                                            <div className="form-check form-check-inline ms-2">
-                                                <input
-                                                    className="form-check-input"
-                                                    type="checkbox"
-                                                    id="checkbox1liter"
-                                                    value="1liter"
-                                                />
-                                                <label className="form-check-label" htmlFor="checkbox1liter">
-                                                    1 Liter
-                                                </label>
-                                            </div>
-                                            <div className="form-check form-check-inline ms-2">
-                                                <input
-                                                    className="form-check-input"
-                                                    type="checkbox"
-                                                    id="checkbox2liter"
-                                                    value="2liter"
-                                                />
-                                                <label className="form-check-label" htmlFor="checkbox2liter">
-                                                    2 Liter
-                                                </label>
-                                            </div>
-                                            <div className="form-check form-check-inline ms-2">
-                                                <input
-                                                    className="form-check-input"
-                                                    type="checkbox"
-                                                    id="checkbox2.5liter"
-                                                    value="2.5liter"
-                                                />
-                                                <label className="form-check-label" htmlFor="checkbox2.5liter">
-                                                    2.5 Liter
-                                                </label>
-                                            </div>
-                                            <div className="form-check form-check-inline ms-2">
-                                                <input
-                                                    className="form-check-input"
-                                                    type="checkbox"
-                                                    id="checkbox5liter"
-                                                    value="5liter"
-                                                />
-                                                <label className="form-check-label" htmlFor="checkbox5liter">
-                                                    5 Liter
-                                                </label>
-                                            </div>
+                                            {sizes.length > 0 && sizes.map((item) => {
+                                                return (
+                                                    <div className="form-check form-check-inline ms-2" key={item.id}>
+                                                        <input
+                                                            className={`form-check-input ${errors.sizes && 'is-invalid'}`}
+                                                            type="checkbox"
+                                                            id={`size-${item.id}`}
+                                                            value={item.id}
+                                                            {...register("sizes", { 
+                                                                required: "At least one size must be selected." 
+                                                            })}
+                                                        />
+                                                        <label className="form-check-label" htmlFor={`size-${item.id}`}>
+                                                            {item.size}{item.size_in}
+                                                        </label>
+                                                    </div>
+                                                )
+                                            })                                            
+                                            }
+                                            {errors.sizes && (
+                                                <p className="invalid-feedback d-block">{errors.sizes.message}</p>
+                                            )}
                                         </div>
+
                                         <div className="mb-4">
                                             <div className="d-flex justify-content-between mb-3">
                                                 <div>
                                                     <label className="form-label">Product Description</label>
                                                 </div>
 
-                                                <div>
+                                                {/* <div>
                                                     <div className="btn-group">
                                                         <div className="btn-group">
                                                             <button type="button" className="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -286,20 +299,31 @@ const NewProduct = () => {
                                                             </ul>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> */}
                                             </div>
 
-                                            <div style={{ height: '350px', marginBottom: "60px" }}>
-                                                <ReactQuill
-                                                    theme="snow"
-                                                    onChange={handleDescriptionChange}
-                                                    placeholder="Enter product description"
-                                                    style={{ height: '100%', }}
-                                                    modules={{
-                                                        toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
-                                                    }}
-                                                />
-                                            </div>
+                                            <Controller
+                                                name="description"
+                                                control={control}
+                                                defaultValue=""
+                                                rules={{ required: "Description is required" }}
+                                                render={({ field,fieldState  }) => (
+                                                    <div>
+                                                        <ReactQuill
+                                                            className={fieldState.error && 'error-editor'}
+                                                            theme="snow"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            onBlur={field.onBlur}
+                                                            style={{ height: '350px', marginBottom: "45px" }}
+                                                            modules={{
+                                                                toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                                                            }}
+                                                        />
+                                                       <p className="invalid-feedback d-block">{fieldState?.error?.message}</p>
+                                                    </div>
+                                                )}
+                                            />
                                         </div>
 
                                         <div className="mb-4">
@@ -308,7 +332,7 @@ const NewProduct = () => {
                                                     <label className="form-label">Product Instruction</label>
                                                 </div>
 
-                                                <div>
+                                                {/* <div>
                                                     <div className="btn-group">
                                                         <div className="btn-group">
                                                             <button type="button" className="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -322,21 +346,34 @@ const NewProduct = () => {
                                                             </ul>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> */}
                                             </div>
 
-                                            <div style={{ height: '350px', marginBottom: "60px" }}>
-                                                <ReactQuill
-                                                    theme="snow"
-                                                    onChange={handleInstructionChange}
-                                                    placeholder="Enter product instruction"
-                                                    style={{ height: '100%' }}
-                                                    modules={{
-                                                        toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
-                                                    }}
-                                                />
-                                            </div>
+                                            <Controller
+                                                name="instruction"
+                                                control={control}
+                                                defaultValue=""
+                                                rules={{ required: "Instruction is required" }}
+                                                render={({ field,fieldState}) => (
+                                                    <div>
+                                                        <ReactQuill
+                                                            className={fieldState.error && 'error-editor'}
+                                                            theme="snow"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            onBlur={field.onBlur}
+                                                            style={{ height: '350px', marginBottom: "45px",borderColor:"red" }}
+                                                            modules={{
+                                                                toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                                                            }}
+                                                        />
+                                                        <div className="invalid-feedback d-block">{fieldState?.error?.message}</div>
+                                                    </div>
+                                                )}
+                                            />
+
                                         </div>
+
                                         <div className="mb-4">
                                             <label className="mb-3">Product Image* <small>(Recommended Size 500 X 500 Pixel)</small></label>
                                             <div
@@ -369,6 +406,7 @@ const NewProduct = () => {
                                                 <p className="invalid-feedback d-block">{imageError}</p>
                                             }
                                         </div>
+
                                         <div className="mb-4">
                                             <label className="form-label">Product Video Link <small>(Only Youtube)</small></label>
                                             <input
@@ -392,23 +430,252 @@ const NewProduct = () => {
                                                     </div>
                                                 </div>
                                             }
+                                        </div>                                       
+                                    </div>
+
+                                    {/* Hindi */}
+                                    <div className="tab-pane fade" id="hindi-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabIndex="0">
+                                        <div className="d-flex justify-content-end">
+                                            <button type="button" className="btn btn-primary" onClick={() => copyContent('HI')}>Copy Content</button>
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="form-label">Product Name</label>
+                                            <input
+                                                {...register("name_hi", {                                                
+                                                })}
+                                                className={`form-control custom-input`}
+                                                type="text"
+                                                id="name_hi"
+                                                name="name_hi"
+                                                placeholder="Enter product name"
+                                            />
                                         </div>
 
-                                        {isSubmitting ?
-                                            <LoadingButton />
-                                            :
-                                            <button type="submit" className="btn  btn-primary large-btn">
-                                                Add Product
-                                            </button>
-                                        }
-                                    </form>
+                                        <div className="mb-4">
+                                            <div className="d-flex justify-content-between mb-3">
+                                                <div>
+                                                    <label className="form-label">Product Description</label>
+                                                </div>                                                
+                                            </div>
+
+                                            <Controller                                            
+                                                name="description_hi"
+                                                control={control}
+                                                defaultValue=""
+                                                rules={{ required: false }}
+                                                render={({ field }) => (
+                                                    <div>
+                                                        <ReactQuill
+                                                            placeholder="Enter description"
+                                                            theme="snow"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            onBlur={field.onBlur}
+                                                            style={{ height: '350px', marginBottom: "60px" }}
+                                                            modules={{
+                                                                toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <div className="d-flex justify-content-between mb-3">
+                                                <div>
+                                                    <label className="form-label">Product Instruction</label>
+                                                </div>                                               
+                                            </div>
+
+                                            <Controller
+                                                name="instruction_hi"
+                                                control={control}
+                                                defaultValue=""
+                                                rules={{ required: false }}
+                                                render={({ field  }) => (
+                                                    <div>
+                                                        <ReactQuill
+                                                            placeholder="Enter instruction"
+                                                            theme="snow"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            onBlur={field.onBlur}
+                                                            style={{ height: '350px', marginBottom: "60px" }}
+                                                            modules={{
+                                                                toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Bangla */}
+                                    <div className="tab-pane fade" id="bangla-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabIndex="0">
+                                        <div className="d-flex justify-content-end">
+                                            <button type="button" className="btn btn-primary" onClick={() => copyContent('BA')}>Copy Content</button>
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="form-label">Product Name</label>
+                                            <input
+                                                {...register("name_ba", {                                                
+                                                })}
+                                                className={`form-control custom-input`}
+                                                type="text"
+                                                id="name_ba"
+                                                name="name_ba"
+                                                placeholder="Enter product name*"
+                                            />
+                                        </div>                                    
+                                        <div className="mb-4">
+                                            <div className="d-flex justify-content-between mb-3">
+                                                <div>
+                                                    <label className="form-label">Product Description</label>
+                                                </div>                                                
+                                            </div>
+
+                                            <Controller                                            
+                                                name="description_ba"
+                                                control={control}
+                                                defaultValue=""
+                                                rules={{ required: false }}
+                                                render={({ field }) => (
+                                                    <div>
+                                                        <ReactQuill
+                                                            placeholder="Enter description"
+                                                            theme="snow"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            onBlur={field.onBlur}
+                                                            style={{ height: '350px', marginBottom: "60px" }}
+                                                            modules={{
+                                                                toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
+                                            />
+                                        </div>
+                                        <div className="mb-4">
+                                            <div className="d-flex justify-content-between mb-3">
+                                                <div>
+                                                    <label className="form-label">Product Instruction</label>
+                                                </div>                                               
+                                            </div>
+
+                                            <Controller
+                                                name="instruction_ba"
+                                                control={control}
+                                                defaultValue=""
+                                                rules={{ required: false }}
+                                                render={({ field  }) => (
+                                                    <div>
+                                                        <ReactQuill
+                                                            placeholder="Enter Instruction"
+                                                            theme="snow"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            onBlur={field.onBlur}
+                                                            style={{ height: '350px', marginBottom: "60px" }}
+                                                            modules={{
+                                                                toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Odia  */}
+                                    <div className="tab-pane fade" id="odia-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabIndex="0">
+                                        <div className="d-flex justify-content-end">
+                                            <button type="button" className="btn btn-primary" onClick={() => copyContent('OD')}>Copy Content</button>
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="form-label">Product Name</label>
+                                            <input
+                                                {...register("name_od", {                                                
+                                                })}
+                                                className={`form-control custom-input`}
+                                                type="text"
+                                                id="name_od"
+                                                name="name_od"
+                                                placeholder="Enter product name"
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <div className="d-flex justify-content-between mb-3">
+                                                <div>
+                                                    <label className="form-label">Product Description</label>
+                                                </div>                                                
+                                            </div>
+
+                                            <Controller                                            
+                                                name="description_od"
+                                                control={control}
+                                                defaultValue=""
+                                                rules={{ required: false }}
+                                                render={({ field }) => (
+                                                    <div>
+                                                        <ReactQuill
+                                                            placeholder="Enter description"
+                                                            theme="snow"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            onBlur={field.onBlur}
+                                                            style={{ height: '350px', marginBottom: "60px" }}
+                                                            modules={{
+                                                                toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <div className="d-flex justify-content-between mb-3">
+                                                <div>
+                                                    <label className="form-label">Product Instruction</label>
+                                                </div>                                               
+                                            </div>
+
+                                            <Controller
+                                                name="instruction_od"
+                                                control={control}
+                                                defaultValue=""
+                                                rules={{ required: false }}
+                                                render={({ field  }) => (
+                                                    <div>
+                                                        <ReactQuill
+                                                            placeholder="Enter instruction"
+                                                            theme="snow"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            onBlur={field.onBlur}
+                                                            style={{ height: '350px', marginBottom: "60px" }}
+                                                            modules={{
+                                                                toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="tab-pane fade" id="hindi-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabIndex="0">
-                                        
-                                </div>
-                                <div className="tab-pane fade" id="bangla-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabIndex="0">...</div>
-                                <div className="tab-pane fade" id="odia-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabIndex="0">...</div>
-                            </div>
+                                {isSubmitting ?
+                                    <LoadingButton />
+                                    :
+                                    <button type="submit" className="btn  btn-primary large-btn">
+                                        Add Product
+                                    </button>
+                                }
+                            </form>
                         </div>
                     </div>
                 </div>

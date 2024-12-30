@@ -216,6 +216,13 @@
     color: #dc3545 !important;
 }
 
+.error-editor{
+    .ql-container, 
+    .ql-toolbar.ql-snow{
+        border-color: #dc3545 !important;
+    }
+    
+}
 .error-page {
     height: 100vh;
     h1 {
