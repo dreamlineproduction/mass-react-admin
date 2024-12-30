@@ -146,11 +146,6 @@ const NewProduct = () => {
                 <div className="col-12 col-xl-12">
                     <div className="card">
                         <div className="card-body">
-
-
-
-
-
                             <ul className="nav nav-tabs" id="myTab" role="tablist">
                                 <li className="nav-item" role="presentation">
                                     <button className="nav-link active" id="english-tab" data-bs-toggle="tab" data-bs-target="#english-tab-pane" type="button" role="tab" aria-controls="english-tab-pane" aria-selected="true">English</button>
@@ -165,13 +160,10 @@ const NewProduct = () => {
                                 <li className="nav-item" role="presentation">
                                     <button className="nav-link" id="odia-tab" data-bs-toggle="tab" data-bs-target="#odia-tab-pane" type="button" role="tab" aria-controls="odia-tab-pane" aria-selected="false">Odia</button>
                                 </li>
-
                             </ul>
                             <div className="tab-content" id="myTabContent">
-                                <div className="tab-pane fade show active" id="english-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-
+                                <div className="tab-pane fade show active" id="english-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabIndex="0">
                                     <form onSubmit={handleSubmit(submitHandler)} method="post" className="mt-4">
-
                                         <div className="mb-4">
                                             <label className="form-label">Product Name</label>
                                             <input
@@ -410,32 +402,13 @@ const NewProduct = () => {
                                             </button>
                                         }
                                     </form>
-
-
-
-
                                 </div>
-                                <div className="tab-pane fade" id="hindi-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">...</div>
-                                <div className="tab-pane fade" id="bangla-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">...</div>
-                                <div className="tab-pane fade" id="odia-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">...</div>
-
+                                <div className="tab-pane fade" id="hindi-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabIndex="0">
+                                        
+                                </div>
+                                <div className="tab-pane fade" id="bangla-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabIndex="0">...</div>
+                                <div className="tab-pane fade" id="odia-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabIndex="0">...</div>
                             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                         </div>
                     </div>
                 </div>
