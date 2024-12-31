@@ -8,7 +8,7 @@ import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import { API_URL, configPermission, createSlug } from "../../config";
 import toast from "react-hot-toast";
-import { actionFetchData, actionImageUpload, actionPostData } from "../../actions/actions";
+import { actionFetchData, actionImageUpload, actionPostData, translateText } from "../../actions/actions";
 import { IoWarningOutline } from "react-icons/io5";
 
 
@@ -127,6 +127,58 @@ const NewProduct = () => {
             setValue('description_od',description)
             setValue('instruction_od',instruction)
         }
+    }
+
+    const translate = async (lang) => {
+        switch(lang){
+            case 'HI':
+                if(getValues('name_hi')) {
+                    const result =  await translateText(getValues('name_hi'),'hi')    
+                    setValue('name_hi',result)    
+                }
+                if(getValues('description_hi')){
+                    const result  =  await translateText(getValues('description_hi'),'hi')
+                    console.log(result);
+
+                    setValue('description_hi',result)
+                }
+                if(getValues('instruction_hi')){
+                    const result = await translateText(getValues('instruction_hi'),'hi')
+                    setValue('instruction_hi',result)
+                } 
+            return;
+            case 'BA' :
+                if(getValues('name_ba')) {
+                    const result =  await translateText(getValues('name_ba'),'bn')    
+                    setValue('name_ba',result)
+
+                }
+                if(getValues('description_ba')){
+                    const result  =  await translateText(getValues('description_ba'),'bn')
+                    setValue('description_ba',result)
+                }
+                if(getValues('instruction_ba')){
+                    const result = await translateText(getValues('instruction_ba'),'bn')
+                    setValue('instruction_ba',result)
+                } 
+            return;
+
+            case 'OD' :
+                if(getValues('name_od')) {
+                    const result =  await translateText(getValues('name_od'),'or')    
+                    setValue('name_od',result)
+
+                }
+                if(getValues('description_od')){
+                    const result  =  await translateText(getValues('description_od'),'or')
+                    setValue('description_od',result)
+                }
+                if(getValues('instruction_od')){
+                    const result = await translateText(getValues('instruction_od'),'or')
+                    setValue('instruction_od',result)
+                } 
+            return;            
+        } 
     }
 
     // Create product
@@ -436,7 +488,8 @@ const NewProduct = () => {
                                     {/* Hindi */}
                                     <div className="tab-pane fade" id="hindi-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabIndex="0">
                                         <div className="d-flex justify-content-end">
-                                            <button type="button" className="btn btn-primary" onClick={() => copyContent('HI')}>Copy Content</button>
+                                            <button type="button" className="btn btn-primary me-2" onClick={() => copyContent('HI')}>Copy Content</button>
+                                            <button type="button" className="btn btn-primary text-end" onClick={() => translate('HI')}>Translate</button>
                                         </div>
                                         <div className="mb-4">
                                             <label className="form-label">Product Name</label>
@@ -457,7 +510,7 @@ const NewProduct = () => {
                                                     <label className="form-label">Product Description</label>
                                                 </div>                                                
                                             </div>
-
+                                                
                                             <Controller                                            
                                                 name="description_hi"
                                                 control={control}
@@ -515,7 +568,8 @@ const NewProduct = () => {
                                     {/* Bangla */}
                                     <div className="tab-pane fade" id="bangla-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabIndex="0">
                                         <div className="d-flex justify-content-end">
-                                            <button type="button" className="btn btn-primary" onClick={() => copyContent('BA')}>Copy Content</button>
+                                            <button type="button" className="btn btn-primary me-2" onClick={() => copyContent('BA')}>Copy Content</button>
+                                            <button type="button" className="btn btn-primary text-end" onClick={() => translate('BA')}>Translate</button>
                                         </div>
                                         <div className="mb-4">
                                             <label className="form-label">Product Name</label>
@@ -592,7 +646,8 @@ const NewProduct = () => {
                                     {/* Odia  */}
                                     <div className="tab-pane fade" id="odia-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabIndex="0">
                                         <div className="d-flex justify-content-end">
-                                            <button type="button" className="btn btn-primary" onClick={() => copyContent('OD')}>Copy Content</button>
+                                            <button type="button" className="btn btn-primary me-2" onClick={() => copyContent('OD')}>Copy Content</button>
+                                            <button type="button" className="btn btn-primary text-end" onClick={() => translate('OD')}>Translate</button>
                                         </div>
                                         <div className="mb-4">
                                             <label className="form-label">Product Name</label>

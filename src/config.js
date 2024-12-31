@@ -5,6 +5,7 @@ import CryptoJS from 'crypto-js';
 const SECRET_KEY = 'MASS$2y$12$JVTN0.SWAn7yrpcSeqc8M.HSMOagYZ0lhu9ia5CKCOqiiy7OtxG5WADMIN'; 
 
 export const API_URL = import.meta.env.VITE_APP_API_URL;
+export const GOOGLE_TRANSLATE_API_KEY = import.meta.env.VITE_GOOGLE_TRANSLATE_API_KEY;
 
 export const createSlug = (text = '') => {
     if (text) {
