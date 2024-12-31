@@ -1,4 +1,4 @@
-import { API_URL } from "../config";
+import { API_URL,GOOGLE_TRANSLATE_API_KEY } from "../config";
 
 export const actionFetchState = async () => {
 	try {
@@ -173,4 +173,33 @@ export const actionImageUpload = async (file, accessToken) => {
 	} catch (error) {
 		console.error('Failed to upload image:', error.message || error);
 	}
+}
+
+
+export const translateText = async (text, targetLanguage) => {
+	try {
+		const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`,
+		  {
+			method: 'POST',
+			headers: {
+			  'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+			  q: text,
+			  target: targetLanguage,
+			}),
+		  }
+		);
+	
+		if (!response.ok) {
+		  const errorData = await response.json();
+		  throw new Error(errorData.error.message || 'Translation API request failed');
+		}
+	
+		const data = await response.json();
+		return data.data.translations[0].translatedText;
+	  } catch (error) {
+		console.error('Error translating text:', error.message);
+		throw error;
+	  }
 }
