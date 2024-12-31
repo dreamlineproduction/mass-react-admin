@@ -103,3 +103,14 @@ export const configPermission = {
     'EDIT_NOTIFICATION': 'Edit Notification',
     'DELETE_NOTIFICATION': 'Delete Notification', 
 }
+
+export const getValueOrDefault = (value, defaultValue = "N/A") => {
+    if (value && typeof value === "object") {
+        if (Array.isArray(value)) {
+          return value.length > 0 ? value : defaultValue; 
+        }
+        return Object.keys(value).length > 0 ? value : defaultValue; 
+    }
+    return value ? value : defaultValue;
+
+}

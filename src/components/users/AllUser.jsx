@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { actionDeleteData, actionFetchData, actionPostData } from "../../actions/actions";
-import { API_URL, configPermission } from "../../config";
+import { API_URL, configPermission, exportToExcel, getValueOrDefault } from "../../config";
 import AuthContext from "../../context/auth";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
@@ -13,11 +13,16 @@ import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
+import { BiCloudDownload } from "react-icons/bi";
 
 const AllUser = () => {
     const navigate = useNavigate();
     const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
+    const [date,setDate] = useState({
+        startDate:null,
+        endDate:null
+    })
 
     const columns = useMemo(() => [
         { accessorKey: "id", header: "Id" },
@@ -99,7 +104,14 @@ const AllUser = () => {
         },
         
         { accessorKey: "scan_product_count", header: "Total Product Scanned", enableSorting: false },
-        { accessorKey: "total_xp", header: "Total XP", enableSorting: false },
+        { 
+            accessorKey: "total_xp", 
+            header: "Total XP", 
+            enableSorting: false,
+            cell:({row}) =>{
+                getValueOrDefault(row.original.total_xp,0) 
+            } 
+        },
         { accessorKey: "balance_xp", header: "Current XP Balance", enableSorting: false },
         { accessorKey: "order_count", header: "Total Redeemed", enableSorting: false },
         {
@@ -163,7 +175,9 @@ const AllUser = () => {
    
 
     const [pageCount, setPageCount] = useState(0);
-    const [isLoading, setLoading] = useState(true);
+    const [isLoading, setLoading] = useState(false);
+    const [selectedValue, setSelectedValue] = useState('');
+
 
     const [sorting, setSorting] = useState([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -187,6 +201,18 @@ const AllUser = () => {
             params.search = globalFilter.trim();
         }
 
+        if(selectedValue !== ""){
+            params.filter = selectedValue
+        }
+
+        if(date.startDate !== null){
+            params.start_date = date.startDate
+        }
+        if(date.endDate !== null){
+            params.end_date = date.endDate
+        }
+
+        setLoading(true)
         try {
             let response = await actionFetchData(`${API_URL}/users?${new URLSearchParams(params)}`, accessToken);
             response = await response.json();
@@ -197,6 +223,7 @@ const AllUser = () => {
             setLoading(false)            
         } catch (error) {
             toast.error(error)
+            setLoading(false)
         }
     }
 
@@ -266,7 +293,48 @@ const AllUser = () => {
         }
     };
        
+   
+    const exportTransactionToExcel = () => {
 
+        let data = users.map(item => {
+            return {
+                "#":getValueOrDefault(item.id),
+                "Name":getValueOrDefault(item.name),
+                "Age":getValueOrDefault(item.age), 
+                "Gender":getValueOrDefault(item.gender),
+                "Role":getValueOrDefault(item.role.name),
+                "Phone":getValueOrDefault(item.phone),
+                "City":getValueOrDefault(item.city),
+                "State":getValueOrDefault(item.state_str),
+                "Area":getValueOrDefault(item.area),
+                "Joined Date":getValueOrDefault(item.created_at),
+                "Source":getValueOrDefault(item.source),
+                "Referral Code":getValueOrDefault(item.referral_code),
+                "Employee Code":getValueOrDefault(item.employee_code),
+                "Scaned Product Count":getValueOrDefault(item.scan_product_count),
+                "Total Xp":getValueOrDefault(item.total_xp,0),
+                "Current XP Balance":getValueOrDefault(item.balance_xp,0),
+                "Total Redeemed":getValueOrDefault(item.order_count,0),
+                "Status":(item.status === 1) ? 'Active': 'Inactive',
+            }
+        })
+
+        exportToExcel(data);
+    };
+
+    const fiterViaDate = () => {                
+        if(date.startDate && date.endDate){
+            const start = new Date(date.startDate);
+            const end = new Date(date.endDate);
+            if(end > start){
+                fetchData() 
+            } else {
+                toast.error("End date must be greater than start date.");
+            }
+        } else {
+            toast.error("Please select both start and end dates.");
+        }
+    }
     // Fetch Data user count
     const fetchUserCount = async () => {
         let response = await actionFetchData(`${API_URL}/users/roles/count`, accessToken);
@@ -294,8 +362,7 @@ const AllUser = () => {
         manualPagination: true,
         getCoreRowModel: getCoreRowModel(),
     });
-    
-  
+      
 
     useEffect(() => {
         fetchUserCount();
@@ -309,17 +376,25 @@ const AllUser = () => {
          }
         fetchData()            
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageIndex, pageSize, sorting, globalFilter]);
+    }, [pageIndex, pageSize, sorting, globalFilter,selectedValue]);
 
    
     
     return (
-        <div>
+        <div className="position-relative">
             <PageTitle 
                 title="All Users"
                 buttonLink={hasPermission(configPermission.ADD_USER) ? "/users/add-user" : null}
                 buttonLabel={hasPermission(configPermission.ADD_USER) ? "Add New User" : null}
             />
+             <div>
+                <button
+                    style={{top:"0px",right:"140px"}}
+                    onClick={exportTransactionToExcel}
+                    className="btn btn-outline-primary position-absolute">    
+                    <BiCloudDownload /> Export as Excel
+                </button>
+            </div>
 
             {Object.keys(userCount).length > 0 &&
             <div className="row">
@@ -428,8 +503,41 @@ const AllUser = () => {
             <div className="row">
                 <div className="col-12">
                     <div className="card">
-                        <div className="my-4 d-flex justify-content-end gap-3">
-                            <div className="search-input-outer me-4">
+                        <div className="my-4 d-flex justify-content-end gap-3">   
+                            <div>
+                                <input 
+                                    type="date" 
+                                    className="form-control" 
+                                    name="start_date"
+                                    id="start_date"
+                                    onChange={(e) => setDate({...date,startDate:e.target.value})} 
+                                />
+                            </div>  
+                            <div>
+                                <input 
+                                    type="date" 
+                                    className="form-control" 
+                                    name="end_date"
+                                    id="end_date"
+                                    onChange={(e) => setDate({...date,endDate:e.target.value})} 
+                                />
+                            </div> 
+                            <div>
+                                <button 
+                                    disabled={(date.startDate === null || date.endDate === null) }
+                                    className="btn btn-primary" 
+                                    onClick={fiterViaDate}>Filter By Date</button>
+                            </div>                        
+                            <div>
+                                <select className="form-select"  defaultValue={selectedValue} onChange={(e) => setSelectedValue(e.target.value)}>
+                                    <option disabled value={''} >Select Date</option>
+                                    <option value="7_days">7 Days</option>
+                                    <option value="15_days">15 Days</option>
+                                    <option value="30_days">30 Days</option>
+                                </select>
+                            </div>  
+
+                            <div className="search-input-outer me-3">
                                 <input
                                     onChange={(e) => setGlobalFilter(e.target.value)}
                                     value={globalFilter}
