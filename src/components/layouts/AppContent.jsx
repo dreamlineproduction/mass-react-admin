@@ -3,6 +3,7 @@ import {Route, Routes } from 'react-router-dom';
 import Dashboard from '../dashboard/Dashboard';
 import ProtectRoute from '../ProtectRoute';
 import AllUser from '../users/AllUser';
+import TopFifty from '../users/TopFifty';
 import NewUser from '../users/NewUser';
 import EditUser from '../users/EditUser';
 import AllProduct from '../products/AllProduct';
@@ -42,6 +43,7 @@ const AppContent = () => {
     const routes = [
         { path: '/dashboard', element: <Dashboard /> },
         { path: '/users/all-users', element: <AllUser /> },
+        { path: '/users/top-fifty', element: <TopFifty /> },
         { path: '/users/add-user', element: <NewUser /> },
         { path: '/users/edit-user/:id', element: <EditUser /> },
         { path: '/users/city-users/:city', element: <CityUser /> },

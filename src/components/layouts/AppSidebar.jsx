@@ -23,7 +23,7 @@ const AppSidebar = () => {
             <SimpleBar forceVisible="y">
                 <div className="sidebar-content">
                     <Link className="sidebar-brand" to="/dashboard">
-                        <span className="align-middle">AdminKit</span>
+                        <span className="align-middle">MassAdmin</span>
                     </Link>
                     <ul className="sidebar-nav" id='sidebar'> 
                         <li className="sidebar-header">
@@ -46,8 +46,12 @@ const AppSidebar = () => {
                             <ul id="users" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                                 <li className="sidebar-item">
                                     <NavLink className="sidebar-link" to="/users/all-users">All User</NavLink>
-                                </li>                               
+                                </li> 
+                                <li className="sidebar-item">
+                                    <NavLink className="sidebar-link" to="/users/top-fifty">Top 50</NavLink>
+                                </li>                                
                             </ul>
+                            
                         </li>
                         )}
 
