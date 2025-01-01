@@ -610,7 +610,12 @@ const AllUser = () => {
 
                             <div className="btn-group">
                                 <button className="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                                    Select Date Range
+                                {date[0]?.startFilter  ? (
+                                `${format(date[0]?.startDate, 'dd-MM-yyyy')} - ${format(date[0]?.endDate, 'dd-MM-yyyy')}`
+                                ) : (
+                                'Select date range'
+                                )}
+
                                 </button>
                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     <DateRange
