@@ -24,7 +24,7 @@ import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
 import { BiCloudDownload } from "react-icons/bi";
 import { DateRange } from "react-date-range";
-import { format,addDays } from "date-fns";
+import { format, addDays } from "date-fns";
 
 import "react-date-range/dist/styles.css"; // Main style file
 import "react-date-range/dist/theme/default.css"; // Theme CSS file
@@ -175,9 +175,9 @@ const AllUser = () => {
                         <div className="dropdown">
                             <button
                                 className={`btn btn-secondary dropdown-toggle ${!hasPermission(configPermission.EDIT_USER) &&
-                                        !hasPermission(configPermission.DELETE_USER)
-                                        ? "disabled"
-                                        : ""
+                                    !hasPermission(configPermission.DELETE_USER)
+                                    ? "disabled"
+                                    : ""
                                     }`}
                                 type="button"
                                 disabled={
@@ -251,10 +251,10 @@ const AllUser = () => {
 
     const [date, setDate] = useState([
         {
-          startDate: new Date(),
-          endDate: new Date(),
-          key: 'selection',
-          startFilter:false
+            startDate: new Date(),
+            endDate: new Date(),
+            key: 'selection',
+            startFilter: false
         }
     ]);
 
@@ -280,11 +280,11 @@ const AllUser = () => {
             params.filter = selectedValue;
         }
 
-        if(date[0].startFilter === true){
+        if (date[0].startFilter === true) {
             params.start_date = format(date[0].startDate, "yyyy-MM-dd");
             params.end_date = format(date[0].endDate, "yyyy-MM-dd");
         }
-       
+
 
         setLoading(true);
         try {
@@ -452,7 +452,7 @@ const AllUser = () => {
 
     useEffect(() => {
         fetchUserCount();
-       
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -592,111 +592,8 @@ const AllUser = () => {
                 <div className="col-12">
                     <div className="card">
                         <div className="my-4 d-flex justify-content-end gap-3">
-                           
-                            <div className="dropdown">
-                                <a className="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Dropdown link
-                                </a>
-                                    <div  className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                    <DateRange
-                                        onChange={item => setDate([{...item.selection,startFilter:true}])}
-                                        showSelectionPreview={true}
-                                        months={2}
-                                        ranges={date}
-                                        direction="horizontal"
-                                    />
 
-<div>
-                                <button
-                                    disabled={!date[0].startFilter }
-                                    className="btn btn-primary"
-                                    onClick={fiterViaDate}
-                                >
-                                    Filter By Date
-                                </button>
-                            </div>
-                                </div>
-                                
-                              
-                            </div>
-                            
-                            
-
-                            {/* <div>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    onChange={()=>{
-                                        setShowCalendar({...showCalendar,startDate: false})
-                                        setDate({...date,startDate:null})
-                                    }}
-                                    value={
-                                        date.startDate !== null
-                                            ? format(date.startDate, "dd-MM-yyyy")
-                                            : ""
-                                    }
-                                    onClick={() =>
-                                        setShowCalendar({ ...showCalendar, startDate: true })
-                                    }
-                                    placeholder="DD/MM/YYYY"
-                                />
-                                {showCalendar.startDate && (
-                                    <div>
-                                        <Calendar
-                                            className="position-absolute"
-                                            color="#4caf50"
-                                            onChange={(startDate) => {
-                                                setDate({ ...date, startDate });
-                                                setShowCalendar({ ...showCalendar, startDate: false });
-                                            }}
-                                            date={new Date()}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                            <div>                                
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    onChange={()=>{
-                                        setShowCalendar({...showCalendar,endDate: false})
-                                        setDate({...date,endDate:null})
-                                    }}
-                                    value={
-                                        date.endDate !== null
-                                            ? format(date.endDate, "dd-MM-yyyy")
-                                            : ""
-                                    }
-                                    onClick={() =>
-                                        setShowCalendar({ ...showCalendar, endDate: true })
-                                    }
-                                    placeholder="DD/MM/YYYY"
-                                />
-                                {showCalendar.endDate && (
-                                    <div>
-                                        <Calendar
-                                            className="position-absolute"
-                                            color="#4caf50"
-                                            onChange={(endDate) => {
-                                                setDate({ ...date, endDate });
-                                                setShowCalendar({ ...showCalendar, endDate: false });
-                                            }}
-                                            date={new Date()}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-
-                            <div>
-                                <button
-                                    // disabled={(date.startDate === null || date.endDate === null) }
-                                    className="btn btn-primary"
-                                    onClick={fiterViaDate}
-                                >
-                                    Filter By Date
-                                </button>
-                            </div> */}
-                            <div>
+                        <div>
                                 <select
                                     className="form-select"
                                     defaultValue={selectedValue}
@@ -710,6 +607,36 @@ const AllUser = () => {
                                     <option value="30_days">30 Days</option>
                                 </select>
                             </div>
+
+                            <div className="btn-group">
+                                <button className="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                    Select Date Range
+                                </button>
+                                <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <DateRange
+                                        onChange={item => setDate([{ ...item.selection, startFilter: true }])}
+                                        showSelectionPreview={true}
+                                        months={2}
+                                        ranges={date}
+                                        direction="horizontal"
+                                    />
+
+
+                                </div>
+                            </div>
+
+                            <div>
+                                <button
+                                    disabled={!date[0].startFilter}
+                                    className="btn btn-primary"
+                                    onClick={fiterViaDate}
+                                >
+                                    Filter By Date
+                                </button>
+                            </div>
+
+                           
+                         
 
                             <div className="search-input-outer">
                                 <input
