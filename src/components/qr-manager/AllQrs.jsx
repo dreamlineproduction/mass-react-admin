@@ -17,7 +17,14 @@ const AllQrs = () => {
     const columns = useMemo(() => [
         { header: 'ID', accessorKey: 'id' },
         { header: 'Product Name', accessorKey: 'name' },       
-        { header: 'Package Size', accessorKey: 'package' },       
+        { 
+            header: 'Package Size', 
+            accessorKey: 'package',
+            enableSorting:false,
+            cell:({row}) => {
+                return row.original.size ? row.original.size.size_custom +' '+row.original.size.size_in : 'N/A'
+            } 
+        },       
         { header: 'XP Required', accessorKey: 'xp_value' },
         { header: 'Batch Number', accessorKey: 'batch_number' },
         { header: 'Total Qr', accessorKey: 'qr_code_content_count',enableSorting: false  },
@@ -46,6 +53,8 @@ const AllQrs = () => {
                 )
             }
         },
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     ], []);
     
     

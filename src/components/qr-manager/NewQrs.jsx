@@ -15,6 +15,7 @@ const NewQrs = () => {
 
     const [products, setProduct] = useState([]);
     const [isLoading, setLoading] = useState(true);
+    const [sizes,setSize]  = useState([]);
 
     const {
         register,
@@ -46,7 +47,9 @@ const NewQrs = () => {
         } catch (error) {
             toast.error(error)
         }
-    })
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
 
 
     const fetchProduct = async () => {
@@ -57,6 +60,21 @@ const NewQrs = () => {
             setProduct(response.data.data);
         }
         setLoading(false)
+    }
+
+    const fetchProductSize = async (productId = 0) => {
+
+        if(productId > 0){
+            setLoading(true);
+            let response = await actionFetchData(`${API_URL}/products/${productId}`, accessToken);
+            response = await response.json();
+            if (response.status) {
+                setSize(response.data.product_size);
+            }
+            setLoading(false);
+        }
+
+       
     }
 
     useEffect(() => {
@@ -90,6 +108,7 @@ const NewQrs = () => {
                                         className={`form-select custom-input ${errors.quantity && `is-invalid`}`}
                                         id="product_id"
                                         name="product_id"
+                                        onClick={(e) => fetchProductSize(e.target.value)}
                                     >
                                         <option value={''}>Select product</option>
                                         {products &&
@@ -106,16 +125,24 @@ const NewQrs = () => {
 
                                 <div className="mb-4">
                                     <label className="form-label">Package Size</label>
-                                    <select className="form-select form-select custom-input" aria-label="Default select example">
-                                        <option selected disabled>Open this select menu</option>
-                                        <option value="1">250ml</option>
-                                        <option value="2">500ml</option>
-                                        <option value="3">1 Liter</option>
-                                        <option value="3">2 Liter</option>
-                                        <option value="3">2.5 Liter</option>
-                                        <option value="3">5 Liter</option>
+                                    <select
+                                        className={`form-select custom-input ${errors.size && `is-invalid`}`}
+                                        defaultValue=""
+                                        {...register('size', { required: 'Package size is required' })}
+                                    >
+                                        <option disabled value="">
+                                            Open this select size
+                                        </option>
+                                        {sizes.length > 0 &&
+                                            sizes.map((item) => (
+                                                <option key={item.id} value={item.id}>
+                                                    {item.size} {item.size_in}
+                                                </option>
+                                            ))}
                                     </select>
-                                    <p className="invalid-feedback">{errors.product_id?.message}</p>
+                                    {errors.size && (
+                                        <p className="invalid-feedback">{errors.size.message}</p>
+                                    )}
                                 </div>
 
                                 <div className="mb-4">
