@@ -112,5 +112,4 @@ export const getValueOrDefault = (value, defaultValue = "N/A") => {
         return Object.keys(value).length > 0 ? value : defaultValue; 
     }
     return value ? value : defaultValue;
-
 }

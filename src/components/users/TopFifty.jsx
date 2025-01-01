@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { actionDeleteData, actionFetchData, actionPostData } from "../../actions/actions";
-import { API_URL, configPermission } from "../../config";
+import { API_URL, configPermission, getValueOrDefault } from "../../config";
 import AuthContext from "../../context/auth";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
@@ -13,6 +13,7 @@ import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
+import { BiCloudDownload } from "react-icons/bi";
 
 const TopFifty = () => {
     const navigate = useNavigate();
@@ -20,7 +21,7 @@ const TopFifty = () => {
     const accessToken = Auth('accessToken');
 
     const columns = useMemo(() => [
-        { accessorKey: "id", header: "Id" },
+        { accessorKey: "id", header: "Id",enableSorting: false },
         { 
             accessorKey: "image", 
             header: "Image",
@@ -51,7 +52,7 @@ const TopFifty = () => {
                 }
             },
         },
-        { accessorKey: "name", header: "Full Name" },
+        { accessorKey: "name", header: "Full Name",enableSorting: false },
         { accessorKey: "age", header: "Age", enableSorting: false,
             cell: ({ row }) => row.original.age ? row.original.age : 'N/A' 
         },
@@ -66,7 +67,7 @@ const TopFifty = () => {
                 return <span className="badge bg-primary">{row.original.role.name}</span>;
             },
         },
-        { accessorKey: "phone", header: "Phone" },
+        { accessorKey: "phone", header: "Phone",enableSorting: false },
         { 
             accessorKey: "city", 
             header: "City", 
@@ -90,11 +91,13 @@ const TopFifty = () => {
         { 
             accessorKey: "referral_code", 
             header: "Referral Code", 
+            enableSorting: false,
             cell: ({ row }) => row.original.referral_code ? row.original.referral_code : 'N/A' 
         },
         { 
             accessorKey: "employee_code", 
             header: "Employee Code", 
+            enableSorting: false,
             cell: ({ row }) => row.original.employee_code ? row.original.employee_code : 'N/A' 
         },
         
@@ -159,17 +162,18 @@ const TopFifty = () => {
 
     
     const [users, setUsers] = useState([])
-    const [userCount, setUserCount] = useState('');
    
 
     const [pageCount, setPageCount] = useState(0);
     const [isLoading, setLoading] = useState(true);
+    const [selectedValue, setSelectedValue] = useState(1);
 
     const [sorting, setSorting] = useState([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
-    
+   
+
     // Fetch data
     const fetchData = async () => {
 
@@ -178,26 +182,25 @@ const TopFifty = () => {
             perPage: pageSize,
         };
 
-        if (sorting.length > 0) {
-            params.sort = sorting[0].id;
-            params.order = sorting[0].desc ? "desc" : "asc";
+
+
+        if (selectedValue !== "") {
+            params.filter = selectedValue;
         }
 
-        if (globalFilter !== "") {
-            params.search = globalFilter.trim();
-        }
-
+        setLoading(true);
         try {
-            let response = await actionFetchData(`${API_URL}/users?${new URLSearchParams(params)}`, accessToken);
+            let response = await actionFetchData(`${API_URL}/users/50/top?${new URLSearchParams(params)}`, accessToken);
             response = await response.json();
             if (response.status) {
                 setUsers(response.data.data);
-                setPageCount(response.data.totalPage);
+                setPageCount(response.totalPage);
             }
-            setLoading(false)            
         } catch (error) {
             toast.error(error)
         }
+        setLoading(false);
+
     }
 
     // Delete Data
@@ -236,7 +239,35 @@ const TopFifty = () => {
         });
     }
 
-   
+    const exportTransactionToExcel = () => {
+        let data = users.map((item) => {
+            return {
+                "#": getValueOrDefault(item.id),
+                Name: getValueOrDefault(item.name),
+                Age: getValueOrDefault(item.age),
+                Gender: getValueOrDefault(item.gender),
+                Role: getValueOrDefault(item.role.name),
+                Phone: getValueOrDefault(item.phone),
+                City: getValueOrDefault(item.city),
+                State: getValueOrDefault(item.state_str),
+                Area: getValueOrDefault(item.area),
+                "Joined Date": getValueOrDefault(item.created_at),
+                Source: getValueOrDefault(item.source),
+                "Referral Code": getValueOrDefault(item.referral_code),
+                "Employee Code": getValueOrDefault(item.employee_code),
+                "Scaned Product Count": getValueOrDefault(item.scan_product_count),
+                "Total Xp": getValueOrDefault(item.total_xp, 0),
+                "Current XP Balance": getValueOrDefault(item.balance_xp, 0),
+                "Total Redeemed": getValueOrDefault(item.order_count, 0),
+                Status: item.status === 1 ? "Active" : "Inactive",
+            };
+        });
+
+        exportToExcel(data);
+    };
+
+  
+
     const changeStatus = async (id,currentStatus) => {
         const toastId = toast.loading("Please wait...");      
         let status = currentStatus === 1 ? 0 : 1;
@@ -267,14 +298,7 @@ const TopFifty = () => {
     };
        
 
-    // Fetch Data user count
-    const fetchUserCount = async () => {
-        let response = await actionFetchData(`${API_URL}/users/roles/count`, accessToken);
-        response = await response.json();
-        if (response.status === 200) {
-            setUserCount(response);
-        }
-    }
+   
 
     const table = useReactTable({
         data: users,
@@ -297,11 +321,7 @@ const TopFifty = () => {
     
   
 
-    useEffect(() => {
-        fetchUserCount();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
+    
 
     useEffect(() => {
         if(!hasPermission(configPermission.VIEW_USER) && !isLoading){
@@ -309,10 +329,9 @@ const TopFifty = () => {
          }
         fetchData()            
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageIndex, pageSize, sorting, globalFilter]);
+    }, [pageIndex, pageSize, sorting, globalFilter,selectedValue]);
 
    
-    
     return (
         <div>
             <PageTitle 
@@ -320,51 +339,56 @@ const TopFifty = () => {
                 buttonLink={hasPermission(configPermission.ADD_USER) ? "/users/all-users" : null}
                 buttonLabel={hasPermission(configPermission.ADD_USER) ? "Back to list" : null}
             />
-
-          
-           
             <div className="row">
                 <div className="col-12">
                     <div className="card">
-                        <div className="my-4 d-flex justify-content-end gap-3">
-                            <div className="search-input-outer me-4">
-                                <input
-                                    onChange={(e) => setGlobalFilter(e.target.value)}
-                                    value={globalFilter}
-                                    className="form-control"
-                                    type="text"
-                                    placeholder="Search..."
-                                />
-                            </div>                            
+                        <div className="my-4 d-flex justify-content-end gap-3">                           
+                            <div>
+                                <select
+                                    className="form-select"
+                                    defaultValue={selectedValue}
+                                    onChange={(e) => setSelectedValue(e.target.value)}
+                                >                                    
+                                    <option value="1">Total Product Scanned</option>
+                                    <option value="2">Total XP</option>
+                                </select>
+                            </div>
+
+                            <div className="me-3">
+                                <button
+                                    onClick={exportTransactionToExcel}
+                                    className="btn btn-outline-primary"
+                                >
+                                    <BiCloudDownload /> Export as Excel
+                                </button>
+                            </div>                           
                         </div>
-                        
-                        {isLoading &&
-                            <Loading />
-                        }
-                        {!isLoading && users.length === 0 &&
-                            <NoState
-                                message="No users found."
-                            />
-                        }
-                        
-                        {users.length > 0 &&
-                        <div className="table-responsive">
-                            <DataTable table={table} columns={columns} />                  
-                        </div>                                  
-                        }
+
+                        {isLoading && <Loading />}
+                        {!isLoading && users.length === 0 && (
+                            <NoState message="No users found." />
+                        )}
+
+                        {users.length > 0 && (
+                            <div className="table-responsive">
+                                <DataTable table={table} columns={columns} />
+                            </div>
+                        )}
                     </div>
 
-                    {users.length > 0 &&
-                       <PaginationDataTable
-                            table={table}
-                            pageCount={pageCount}
-                            pageIndex={pageIndex}
-                            setPageIndex={setPageIndex}
-                       />
-                    }
+                    {users.length > 0 && (
+                        <PaginationDataTable 
+                            table={table} 
+                            pageCount={pageCount} 
+                            pageIndex={pageIndex} 
+                            setPageIndex={setPageIndex} 
+                        />
+                    )}
                 </div>
             </div>
           
+           
+           
         </div>
     );
 
