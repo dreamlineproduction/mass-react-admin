@@ -676,7 +676,7 @@ const AllUser = () => {
                         )}
 
                         {users.length > 0 && (
-                            <div className="table-responsive">
+                            <div className="table-responsive p-3">
                                 <DataTable table={table} columns={columns} />
                             </div>
                         )}
