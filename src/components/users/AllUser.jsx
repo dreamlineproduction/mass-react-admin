@@ -613,7 +613,7 @@ const AllUser = () => {
                                 {date[0]?.startFilter  ? (
                                 `${format(date[0]?.startDate, 'dd-MM-yyyy')} - ${format(date[0]?.endDate, 'dd-MM-yyyy')}`
                                 ) : (
-                                'Select date range'
+                                'Select Custom Date'
                                 )}
 
                                 </button>
