@@ -25,6 +25,12 @@ const NewProduct = () => {
 
     const [sizes,setSize]  = useState([]);
     const [isLoading,setLoading] = useState(true);
+    const [tabs,setTab] = useState({
+        hindiTab:false,
+        banglaTab:false,
+        odiaTab:false,
+        englishTab:true,
+    });
 
     const {
         register,
@@ -33,6 +39,7 @@ const NewProduct = () => {
         control,
         setValue,
         getValues,
+        trigger,
         formState: {
             errors,
             isSubmitting,
@@ -65,7 +72,6 @@ const NewProduct = () => {
                 const data = await response.json();
 
                 if (data.status) {
-                    console.log(data.image_id);
                     setValue('image',data.image_id);
 
                     //setImageId(prevData => prevData || data.image_id);
@@ -138,7 +144,6 @@ const NewProduct = () => {
                 }
                 if(getValues('description_hi')){
                     const result  =  await translateText(getValues('description_hi'),'hi')
-                    console.log(result);
 
                     setValue('description_hi',result)
                 }
@@ -181,12 +186,67 @@ const NewProduct = () => {
         } 
     }
 
+    const handleTab = (activeTabName) => {
+        if(activeTabName === 'EN'){
+            setTab({
+                hindiTab:false,
+                banglaTab:false,
+                odiaTab:false,
+                englishTab:true,
+            })
+        }
+        if(activeTabName === 'HI'){
+            setTab({
+                hindiTab:true,
+                banglaTab:false,
+                odiaTab:false,
+                englishTab:false,
+            })
+        }
+        if(activeTabName === 'BA'){
+            setTab({
+                hindiTab:false,
+                banglaTab:true,
+                odiaTab:false,
+                englishTab:false,
+            })
+        }
+        if(activeTabName === 'OD'){
+            setTab({
+                hindiTab:false,
+                banglaTab:false,
+                odiaTab:true,
+                englishTab:false,
+            })
+        }      
+    }
+
+    const handleValidation = async () => {
+        if (!getValues('image')) {
+            setImageError('Please select image.')
+        } else {
+            setImageError('')
+        }
+
+        const isValid = await trigger();
+
+        if (isValid) {
+            console.log("No Validation errors", errors);
+            handleTab('HI')
+        } else {
+          console.log("Validation errors", errors);
+        }
+    };
+
+
     // Create product
     const submitHandler = useCallback(async (data) => {
         const slug = slugRef.current.value;
         if (!getValues('image')) {
             setImageError('Please select image.')
             return;
+        } else {
+            setImageError('')
         }
 
         let postData = { ...data,slug };
@@ -253,23 +313,51 @@ const NewProduct = () => {
                             {isLoading && <div className="cover-body"></div>}
                             <ul className="nav nav-tabs" id="myTab" role="tablist">
                                 <li className="nav-item" role="presentation">
-                                    <button className="nav-link active" id="english-tab" data-bs-toggle="tab" data-bs-target="#english-tab-pane" type="button" role="tab" aria-controls="english-tab-pane" aria-selected="true">English</button>
+                                    <button 
+                                        onClick={() => handleTab('EN')}
+                                        className={`nav-link ${tabs.englishTab ? 'active' : ''}`} 
+                                        id="english-tab"  
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="english-tab-pane" 
+                                        aria-selected={tabs.hindiTab ? 'true':'false'}>English</button>
                                 </li>
                                 <li className="nav-item" role="presentation">
-                                    <button className="nav-link" id="hindi-tab" data-bs-toggle="tab" data-bs-target="#hindi-tab-pane" type="button" role="tab" aria-controls="hindi-tab-pane" aria-selected="false">Hindi</button>
+                                    <button 
+                                        onClick={() => handleTab('HI')}
+                                        className={`nav-link ${tabs.hindiTab ? 'active' : ''}`} 
+                                        id="hindi-tab"  
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="hindi-tab-pane" 
+                                        aria-selected={tabs.hindiTab ? 'true':'false'}>Hindi</button>
                                 </li>
                                 <li className="nav-item" role="presentation">
-                                    <button className="nav-link" id="bangla-tab" data-bs-toggle="tab" data-bs-target="#bangla-tab-pane" type="button" role="tab" aria-controls="bangla-tab-pane" aria-selected="false">Bangla</button>
+                                    <button 
+                                        onClick={() => handleTab('BA')}
+                                        className={`nav-link ${tabs.banglaTab ? 'active' : ''}`} 
+                                        id="bangla-tab" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="bangla-tab-pane" 
+                                        aria-selected={tabs.banglaTab ? 'true':'false'}>Bangla</button>
                                 </li>
 
                                 <li className="nav-item" role="presentation">
-                                    <button className="nav-link" id="odia-tab" data-bs-toggle="tab" data-bs-target="#odia-tab-pane" type="button" role="tab" aria-controls="odia-tab-pane" aria-selected="false">Odia</button>
+                                    <button 
+                                        onClick={() => handleTab('OD')}
+                                        className={`nav-link ${tabs.odiaTab ? 'active' : ''}`} 
+                                        id="odia-tab" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="odia-tab-pane" 
+                                        aria-selected={tabs.odiaTab ? 'true':'false'}>Odia</button>
                                 </li>
                             </ul>
                             <form onSubmit={handleSubmit(submitHandler)} method="post" className="mt-4">
                                 <div className="tab-content" id="myTabContent">
                                     {/* English */}
-                                    <div className="tab-pane fade show active" id="english-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabIndex="0">
+                                    <div className={`tab-pane fade ${tabs.englishTab ? 'show active' : ''}`} id="english-tab-pane" role="tabpanel">
                                         <div className="mb-4">
                                             <label className="form-label">Product Name</label>
                                             <input
@@ -320,7 +408,7 @@ const NewProduct = () => {
                                                             })}
                                                         />
                                                         <label className="form-check-label" htmlFor={`size-${item.id}`}>
-                                                            {item.size}{item.size_in}
+                                                            {item.size_custom}{item.size_in}
                                                         </label>
                                                     </div>
                                                 )
@@ -482,11 +570,15 @@ const NewProduct = () => {
                                                     </div>
                                                 </div>
                                             }
-                                        </div>                                       
+                                        </div>  
+
+                                        <div>
+                                            <button onClick={()=>handleValidation('hindiTab')} type="button" className="btn btn-primary" >Save & Next</button>
+                                        </div>                                     
                                     </div>
 
                                     {/* Hindi */}
-                                    <div className="tab-pane fade" id="hindi-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabIndex="0">
+                                    <div className={`tab-pane fade ${tabs.hindiTab ? 'show active' : ''}`} id="hindi-tab-pane" role="tabpanel">
                                         <div className="d-flex justify-content-end">
                                             <button type="button" className="btn btn-primary me-2" onClick={() => copyContent('HI')}>Copy Content</button>
                                             <button type="button" className="btn btn-primary text-end" onClick={() => translate('HI')}>Translate</button>
@@ -563,10 +655,13 @@ const NewProduct = () => {
                                                 )}
                                             />
                                         </div>
+                                        <div>
+                                            <button onClick={()=>handleTab('BA')} type="button" className="btn btn-primary" >Save & Next</button>
+                                        </div>  
                                     </div>
 
                                     {/* Bangla */}
-                                    <div className="tab-pane fade" id="bangla-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabIndex="0">
+                                    <div className={`tab-pane fade ${tabs.banglaTab ? 'show active' : ''}`} id="bangla-tab-pane" role="tabpanel">
                                         <div className="d-flex justify-content-end">
                                             <button type="button" className="btn btn-primary me-2" onClick={() => copyContent('BA')}>Copy Content</button>
                                             <button type="button" className="btn btn-primary text-end" onClick={() => translate('BA')}>Translate</button>
@@ -580,7 +675,7 @@ const NewProduct = () => {
                                                 type="text"
                                                 id="name_ba"
                                                 name="name_ba"
-                                                placeholder="Enter product name*"
+                                                placeholder="Enter product name"
                                             />
                                         </div>                                    
                                         <div className="mb-4">
@@ -641,10 +736,13 @@ const NewProduct = () => {
                                                 )}
                                             />
                                         </div>
+                                        <div>
+                                            <button onClick={()=>handleTab('OD')} type="button" className="btn btn-primary" >Save & Next</button>
+                                        </div>
                                     </div>
 
                                     {/* Odia  */}
-                                    <div className="tab-pane fade" id="odia-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabIndex="0">
+                                    <div className={`tab-pane fade ${tabs.odiaTab ? 'show active' : ''}`} id="odia-tab-pane" role="tabpanel">
                                         <div className="d-flex justify-content-end">
                                             <button type="button" className="btn btn-primary me-2" onClick={() => copyContent('OD')}>Copy Content</button>
                                             <button type="button" className="btn btn-primary text-end" onClick={() => translate('OD')}>Translate</button>
@@ -721,15 +819,18 @@ const NewProduct = () => {
                                                 )}
                                             />
                                         </div>
+
+                                        <div>
+                                            {isSubmitting ?
+                                                <LoadingButton />
+                                                :
+                                                <button type="submit" className="btn  btn-primary large-btn">
+                                                    Add Product
+                                                </button>
+                                            }
+                                        </div>
                                     </div>
-                                </div>
-                                {isSubmitting ?
-                                    <LoadingButton />
-                                    :
-                                    <button type="submit" className="btn  btn-primary large-btn">
-                                        Add Product
-                                    </button>
-                                }
+                                </div>                                
                             </form>
                         </div>
                     </div>
