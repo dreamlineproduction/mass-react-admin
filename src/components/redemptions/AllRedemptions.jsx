@@ -446,7 +446,7 @@ const AllRedemptions = () => {
 			>
 				<table className="table table-striped table-hover mb-0 border">
 					{singleOrder && (
-						<tbody>
+					<tbody>
 						<tr>
 							<th scope="row">Order Number:</th>
 							<td>{singleOrder.order_id}</td>
@@ -463,10 +463,10 @@ const AllRedemptions = () => {
 							<th scope="row">Requested On:</th>
 							<td>{singleOrder.order.order_date}</td>
 						</tr>
-						</tbody>
+					</tbody>
 					)}
-					</table>
-					<form onSubmit={handleSubmitForm2(submitHandler2)}>
+				</table>
+				<form onSubmit={handleSubmitForm2(submitHandler2)}>
 						<div className="mb-3">
 							<label htmlFor="decline_reason" className="form-label">Decline Reason</label>
 							<textarea 
@@ -520,16 +520,16 @@ const AllRedemptions = () => {
 						</tr>
 						</tbody>
 					)}
-					</table>
-						<div className="mb-3">
-							<label htmlFor="decline_reason" className="form-label">Decline Reason</label>
-							<textarea 
-								disabled
-								defaultValue={singleOrder?.order?.decline_reason}
-								className={`form-control disabled`}
-								rows={5}
-							/>
-						</div>
+				</table>
+				<div className="mb-3">
+					<label htmlFor="decline_reason" className="form-label">Decline Reason</label>
+					<textarea 
+						disabled
+						defaultValue={singleOrder?.order?.decline_reason}
+						className={`form-control disabled`}
+						rows={5}
+					/>
+				</div>
 			</BsModal>
         	</div>
 		</div>
