@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import PageTitle from "../others/PageTitle";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,useSearchParams} from "react-router-dom";
 import toast from "react-hot-toast";
 import AuthContext from "../../context/auth";
 import { useForm } from "react-hook-form";
@@ -14,6 +14,8 @@ import AllOrder from "./AllOrder";
 const EditUser = () => {
 
     const params = useParams();
+    const [searchParams] = useSearchParams();
+
     const defaultAvtar = 'AV';    
     const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
@@ -109,11 +111,12 @@ const EditUser = () => {
 
     return (
         <div>
-             <PageTitle 
-                title="Edit User"
+            <PageTitle 
+                title={(searchParams.get('hideForm') === null) ? 'Edit User' : 'View User'}
                 buttonLink="/users/all-users"
                 buttonLabel="Back to List"
             />
+            {searchParams.get('hideForm') === null &&
             <div className="row">
                 <div className="col-12 col-xl-8">
                     <div className="card">               
@@ -298,8 +301,10 @@ const EditUser = () => {
                     
                 </div>
             </div>
+            }
 
-
+            {searchParams.get('hideForm') && 
+            <>
             {/* All Transaction */}
             <AllTransaction 
                 user={user}
@@ -314,6 +319,8 @@ const EditUser = () => {
                 params={params}
                 accessToken={accessToken}
             />
+            </>
+            }
         </div>
     );
 };

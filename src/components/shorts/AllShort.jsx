@@ -9,19 +9,10 @@ const AllShort = () => {
                 buttonLabel={'New Short'}
             />
             <div className="row">
-                <div className="col-12 col-xl-8">
+                <div className="col-12">
                     <div className="card">
                         <div className="card-body">
-                            <div className="mb-4">
-                                <label className="form-label">Name</label>
-                                <input
-                                    className={`form-control custom-input`}
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    placeholder="Enter role name*"
-                                />
-                            </div>
+                            Card
                         </div>
                     </div>
                 </div>

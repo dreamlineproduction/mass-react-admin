@@ -67,7 +67,15 @@ const AllUser = () => {
                     }
                 },
             },
-            { accessorKey: "name", header: "Full Name" },
+            { 
+                accessorKey: "name", 
+                header: "Full Name",
+                cell:({row}) => {
+                    return (<Link to={`/users/edit-user/${row.original.id}?hideForm=true`}>
+                        {row.original.name}
+                    </Link>)
+                }
+            },
             {
                 accessorKey: "age",
                 header: "Age",
@@ -232,8 +240,8 @@ const AllUser = () => {
                     );
                 },
             },
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         ],
+                    // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     );
 
