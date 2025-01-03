@@ -20,7 +20,11 @@ export const getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export const exportToExcel = (data = []) => {
+export const exportToExcel = (data = [],fileName) => {
+    if(fileName === undefined || fileName === null || fileName.length === 0) {
+        fileName =  getRandomInt(1, 99999)
+    }
+
     if (data === undefined || data === null || data.length === 0) {
         throw new Error('The variable is undefined or null.');
     }
@@ -39,7 +43,6 @@ export const exportToExcel = (data = []) => {
     // Create a Blob and save the file
     const file = new Blob([excelBuffer], { type: 'application/octet-stream' });
 
-    const fileName = getRandomInt(1, 99999);
     saveAs(file, `${fileName}-data.xlsx`);
 }
 
@@ -77,6 +80,7 @@ export const configPermission = {
     'ADD_PRODUCT': 'Add Product',
     'EDIT_PRODUCT': 'Edit Product',
     'DELETE_PRODUCT': 'Delete Product',
+    'VIEW_PRODUCT_ANALYTIC': 'View Product Analytic',
     'VIEW_REWARD': 'View Reward',
     'ADD_REWARD': 'Add Reward',
     'EDIT_REWARD': 'Edit Reward',
@@ -90,11 +94,11 @@ export const configPermission = {
     // 'EDIT_QR': 'Edit QR',
     // 'DELETE_QR': 'Delete QR',
     'VIEW_QR_DETAIL': 'View QR Detail',
-    // 'VIEW_REDEMPTION': 'View Redemption',
+    'VIEW_REDEMPTION': 'View Redemption',
     // 'ADD_REDEMPTION': 'Add Redemption',
     // 'EDIT_REDEMPTION': 'Edit Redemption',
     // 'DELETE_REDEMPTION': 'Delete Redemption',
-    // 'VIEW_REFERRAL': 'View Referral',
+    'VIEW_REFERRAL': 'View Referral',
     // 'ADD_REFERRAL': 'Add Referral',
     // 'EDIT_REFERRAL': 'Edit Referral',
     // 'DELETE_REFERRAL': 'Delete Referral',
@@ -102,6 +106,11 @@ export const configPermission = {
     'ADD_NOTIFICATION': 'Add Notification',
     'EDIT_NOTIFICATION': 'Edit Notification',
     'DELETE_NOTIFICATION': 'Delete Notification', 
+    'VIEW_SHORT': 'View Short',
+    'ADD_SHORT': 'Add Short',
+    'EDIT_SHORT': 'Edit Short',
+    'DELETE_SHORT': 'Delete Short', 
+
 }
 
 export const getValueOrDefault = (value, defaultValue = "N/A") => {

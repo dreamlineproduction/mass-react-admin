@@ -37,6 +37,9 @@ import NewPermission from '../permmision/NewPermission';
 import EditPermission from '../permmision/EditPermission';
 import EditEmployee from '../employee/EditEmployee';
 import Unauthorized from '../404/Unauthorized';
+import ProductAnalytic from '../products/ProductAnalytic';
+import AllShort from '../shorts/AllShort';
+import NewShort from '../shorts/NewShort';
 
 const AppContent = () => {
 
@@ -50,6 +53,7 @@ const AppContent = () => {
         { path: '/products/all-products', element: <AllProduct /> },
         { path: '/products/add-product', element: <NewProduct /> },
         { path: '/products/edit-product/:id', element: <EditProduct /> },
+        { path: '/products/analytics', element: <ProductAnalytic /> },
         { path: '/rewards/all-rewards', element: <AllReward /> },
         { path: '/rewards/add-reward', element: <NewReward /> },
         { path: '/rewards/edit-reward/:id', element: <EditReward /> },
@@ -76,6 +80,9 @@ const AppContent = () => {
         { path: '/permissions/all-permission', element: <AllPermission /> },
         { path: '/permissions/new-permission', element: <NewPermission /> },
         { path: '/permissions/edit-permission/:id', element: <EditPermission /> },
+        { path: '/shorts/all-shorts', element: <AllShort  /> },
+        { path: '/shorts/new-shorts', element: <NewShort /> },
+        { path: '/shorts/edit-shorts/:id', element: <EditPermission /> },
         { path: '/403', element: <Unauthorized /> },
     ];
       

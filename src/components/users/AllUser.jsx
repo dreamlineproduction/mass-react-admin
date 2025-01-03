@@ -401,7 +401,8 @@ const AllUser = () => {
             };
         });
 
-        exportToExcel(data);
+        const fileName = 'all-users';
+        exportToExcel(data,fileName);
     };
 
     const fiterViaDate = () => {

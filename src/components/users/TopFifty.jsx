@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { actionDeleteData, actionFetchData, actionPostData } from "../../actions/actions";
-import { API_URL, configPermission, getValueOrDefault } from "../../config";
+import { API_URL, configPermission, exportToExcel, getValueOrDefault } from "../../config";
 import AuthContext from "../../context/auth";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
@@ -14,6 +14,7 @@ import PaginationDataTable from "../others/PaginationDataTable";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
 import { BiCloudDownload } from "react-icons/bi";
+
 
 const TopFifty = () => {
     const navigate = useNavigate();
@@ -263,7 +264,10 @@ const TopFifty = () => {
             };
         });
 
-        exportToExcel(data);
+        
+        let fileName = `top-50-users-`;
+        fileName+= selectedValue === 1 ? 'total-product-scanned' : 'total-xp';
+        exportToExcel(data,fileName);
     };
 
   
