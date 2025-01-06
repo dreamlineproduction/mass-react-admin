@@ -37,7 +37,7 @@ import NewPermission from '../permmision/NewPermission';
 import EditPermission from '../permmision/EditPermission';
 import EditEmployee from '../employee/EditEmployee';
 import Unauthorized from '../404/Unauthorized';
-import ProductAnalytic from '../products/ProductAnalytic';
+import ProductAnalytic from '../analytics/ProductAnalytic';
 import AllShort from '../shorts/AllShort';
 import NewShort from '../shorts/NewShort';
 
@@ -62,6 +62,7 @@ const AppContent = () => {
         { path: '/offers/edit-offer/:id', element: <EditOffer /> },
         { path: '/qr-manager/all-qr', element: <AllQrs /> },
         { path: '/qr-manager/generate-qr', element: <NewQrs /> },
+        { path: '/analytics/product-analytic', element: <ProductAnalytic /> },
         { path: '/qr-manager/qr-details/:productId/:batchNumber', element: <QrsDetail /> },
         { path: '/redemptions/all-redemptions', element: <AllRedemptions /> },
         { path: '/referrals/all-referrals', element: <AllReferrals /> },

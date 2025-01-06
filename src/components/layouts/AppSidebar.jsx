@@ -200,7 +200,10 @@ const AppSidebar = () => {
 
                             <ul id="productAnalytics" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                                 <li className="sidebar-item">
-                                    <NavLink className="sidebar-link" to="/products/analytics">Analytics</NavLink>
+                                    <NavLink className="sidebar-link" to="/analytics/product-analytic">Product Analytics</NavLink>
+                                </li>         
+                                <li className="sidebar-item">
+                                    <NavLink className="sidebar-link" to="/products/analytics">User Analytics</NavLink>
                                 </li>                               
                             </ul>
                         </li>
