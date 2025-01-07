@@ -38,6 +38,7 @@ import EditPermission from '../permmision/EditPermission';
 import EditEmployee from '../employee/EditEmployee';
 import Unauthorized from '../404/Unauthorized';
 import ProductAnalytic from '../analytics/ProductAnalytic';
+import UserAnalytic from '../analytics/UserAnalytic';
 import AllShort from '../shorts/AllShort';
 import NewShort from '../shorts/NewShort';
 
@@ -53,7 +54,6 @@ const AppContent = () => {
         { path: '/products/all-products', element: <AllProduct /> },
         { path: '/products/add-product', element: <NewProduct /> },
         { path: '/products/edit-product/:id', element: <EditProduct /> },
-        { path: '/products/analytics', element: <ProductAnalytic /> },
         { path: '/rewards/all-rewards', element: <AllReward /> },
         { path: '/rewards/add-reward', element: <NewReward /> },
         { path: '/rewards/edit-reward/:id', element: <EditReward /> },
@@ -63,6 +63,7 @@ const AppContent = () => {
         { path: '/qr-manager/all-qr', element: <AllQrs /> },
         { path: '/qr-manager/generate-qr', element: <NewQrs /> },
         { path: '/analytics/product-analytic', element: <ProductAnalytic /> },
+        { path: '/analytics/user-analytic', element: <UserAnalytic /> },
         { path: '/qr-manager/qr-details/:productId/:batchNumber', element: <QrsDetail /> },
         { path: '/redemptions/all-redemptions', element: <AllRedemptions /> },
         { path: '/referrals/all-referrals', element: <AllReferrals /> },

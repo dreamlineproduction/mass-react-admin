@@ -203,7 +203,7 @@ const AppSidebar = () => {
                                     <NavLink className="sidebar-link" to="/analytics/product-analytic">Product Analytics</NavLink>
                                 </li>         
                                 <li className="sidebar-item">
-                                    <NavLink className="sidebar-link" to="/products/analytics">User Analytics</NavLink>
+                                    <NavLink className="sidebar-link" to="/analytics/user-analytic">User Analytics</NavLink>
                                 </li>                               
                             </ul>
                         </li>
