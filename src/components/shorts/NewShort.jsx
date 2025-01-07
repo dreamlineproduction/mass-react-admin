@@ -66,7 +66,7 @@ const NewShort = () => {
             <div className="card-body">
               <div className="mb-4">
                 <label className="form-label">Preview</label>
-                <div className="notification-preview">
+                <div className="short-preview">
                             <div className="phone-frame">
                             {videoUrl ? (
                     <video width="100%" controls style={{ borderRadius: '20px' }}>

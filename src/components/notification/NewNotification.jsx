@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PageTitle from "../others/PageTitle";
-import './phoneframe.scss';
+import './phoneframe2.scss';
 import Select from 'react-select';
 
 const NewNotification = () => {

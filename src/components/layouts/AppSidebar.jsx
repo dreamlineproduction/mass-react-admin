@@ -157,12 +157,16 @@ const AppSidebar = () => {
                         <li className='sidebar-item'>
                             <a data-bs-target="#short" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
                                 <SiYoutubeshorts  style={{height:"20px",width:"30px"}} />
-                                <span className="align-middle">All Shorts</span>
+                                <span className="align-middle">Shorts</span>
                             </a>
 
                             <ul id="short" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                                 <li className="sidebar-item">
-                                    <NavLink className="sidebar-link" to="shorts/all-shorts">Shorts
+                                    <NavLink className="sidebar-link" to="shorts/all-shorts">All Shorts
+                                    </NavLink>
+                                </li>  
+                                <li className="sidebar-item">
+                                    <NavLink className="sidebar-link" to="shorts/new-shorts">Add New Shorts
                                     </NavLink>
                                 </li>                               
                             </ul>

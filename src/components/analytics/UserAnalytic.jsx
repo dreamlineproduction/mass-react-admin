@@ -97,7 +97,7 @@ const UserAnalytic = () => {
     return (
         <div>
             <PageTitle
-                title="Users Analytics"
+                title="Users Analytics (Total User: 25585)"
                 buttonLink="/users/all-users"
                 buttonLabel="View all users"
             />
@@ -168,7 +168,7 @@ const UserAnalytic = () => {
                             <div className="row">
                                 <div className="d-flex justify-content-between">
                                     <div>
-                                        <h4>Detailed User Report</h4>
+                                        <h4>Detailed User Report (West Bengal: 12000)</h4>
                                     </div>
 
                                     <div className='d-flex justify-content-between mb-3'>
