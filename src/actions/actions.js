@@ -175,6 +175,32 @@ export const actionImageUpload = async (file, accessToken) => {
 	}
 }
 
+export const actionVideoUpload = async (file, accessToken) => {
+	try {
+		const formData = new FormData();
+		formData.append("video", file);
+
+		let response = await fetch(`${API_URL}/file/video-upload`, {
+			method: "POST",
+			headers: {
+				'Authorization': `Bearer ${accessToken}`,
+				// Do not set Content-Type header when using FormData
+			},
+			body: formData
+		});
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+
+		return response;
+		// Return the parsed response JSON
+		//return await response.json();
+	} catch (error) {
+		console.error('Failed to upload image:', error.message || error);
+	}
+}
+
 
 export const translateText = async (text, targetLanguage) => {
 	try {

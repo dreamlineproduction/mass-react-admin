@@ -110,7 +110,10 @@ export const configPermission = {
     'ADD_SHORT': 'Add Short',
     'EDIT_SHORT': 'Edit Short',
     'DELETE_SHORT': 'Delete Short', 
-
+    'VIEW_AREA' : 'View Area',
+    'ADD_AREA' : 'Add Area',
+    'EDIT_AREA' : 'Edit Area',
+    'DELETE_AREA' : 'Delete Area',
 }
 
 export const getValueOrDefault = (value, defaultValue = "N/A") => {

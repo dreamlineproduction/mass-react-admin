@@ -288,6 +288,22 @@ const AppSidebar = () => {
                             </ul>
                         </li>
                         )}
+
+                        {hasPermission(configPermission.VIEW_AREA) && (
+                        <li className='sidebar-item'>
+                            <a data-bs-target="#areas" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
+                                <LuClipboardList  style={{height:"20px",width:"30px"}} />
+                                <span className="align-middle">Area Management</span>
+                            </a>
+
+                            <ul id="areas" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                <li className="sidebar-item">
+                                    <NavLink className="sidebar-link" to="areas/all-area">Areas
+                                    </NavLink>
+                                </li>                               
+                            </ul>
+                        </li>
+                        )}
                         
                     </ul>                    
                 </div>

@@ -60,6 +60,7 @@ const IndiaMap = ({stateInfo}) => {
                         svgElement.querySelectorAll('path').forEach((path) => {
                             path.addEventListener('mouseover', (e) => handleMouseOver(e));
                             path.addEventListener('mouseout', handleMouseOut);
+                            path.addEventListener('click', (e) => handleState(e));
                         });
                     }
                 }, 100); // Delay to ensure SVG is rendered
@@ -78,6 +79,12 @@ const IndiaMap = ({stateInfo}) => {
     const handleMouseOut = () => {
         setHoveredState(null);
     };
+
+    const handleState = (e) => {
+        const stateId = e.target.id;
+     
+
+    }
 
     return (
         <div className="india-map-container">

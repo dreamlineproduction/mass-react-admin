@@ -41,6 +41,10 @@ import ProductAnalytic from '../analytics/ProductAnalytic';
 import UserAnalytic from '../analytics/UserAnalytic';
 import AllShort from '../shorts/AllShort';
 import NewShort from '../shorts/NewShort';
+import AllArea from '../areas/AllArea';
+import NewArea from '../areas/NewArea';
+import EditArea from '../areas/EditArea';
+import EditShort from '../shorts/EditShort';
 
 const AppContent = () => {
 
@@ -84,7 +88,10 @@ const AppContent = () => {
         { path: '/permissions/edit-permission/:id', element: <EditPermission /> },
         { path: '/shorts/all-shorts', element: <AllShort  /> },
         { path: '/shorts/new-shorts', element: <NewShort /> },
-        { path: '/shorts/edit-shorts/:id', element: <EditPermission /> },
+        { path: '/shorts/edit-shorts/:id', element: <EditShort /> },
+        {path: '/areas/all-area', element: <AllArea />},
+        {path: '/areas/new-area', element: <NewArea />},
+        {path: '/areas/edit-area/:id', element: <EditArea />},
         { path: '/403', element: <Unauthorized /> },
     ];
       

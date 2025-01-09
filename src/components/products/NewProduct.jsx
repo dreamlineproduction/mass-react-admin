@@ -423,23 +423,7 @@ const NewProduct = () => {
                                             <div className="d-flex justify-content-between mb-3">
                                                 <div>
                                                     <label className="form-label">Product Description</label>
-                                                </div>
-
-                                                {/* <div>
-                                                    <div className="btn-group">
-                                                        <div className="btn-group">
-                                                            <button type="button" className="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                Translate
-                                                            </button>
-                                                            <ul className="dropdown-menu">
-                                                                <li><a className="dropdown-item" href="#">English</a></li>
-                                                                <li><a className="dropdown-item" href="#">Hindi</a></li>
-                                                                <li><a className="dropdown-item" href="#">Bangla</a></li>
-                                                                <li><a className="dropdown-item" href="#">Odia</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div> */}
+                                                </div>                                               
                                             </div>
 
                                             <Controller
@@ -470,23 +454,7 @@ const NewProduct = () => {
                                             <div className="d-flex justify-content-between mb-3">
                                                 <div>
                                                     <label className="form-label">Product Instruction</label>
-                                                </div>
-
-                                                {/* <div>
-                                                    <div className="btn-group">
-                                                        <div className="btn-group">
-                                                            <button type="button" className="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                Translate
-                                                            </button>
-                                                            <ul className="dropdown-menu">
-                                                                <li><a className="dropdown-item" href="#">English</a></li>
-                                                                <li><a className="dropdown-item" href="#">Hindi</a></li>
-                                                                <li><a className="dropdown-item" href="#">Bangla</a></li>
-                                                                <li><a className="dropdown-item" href="#">Odia</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div> */}
+                                                </div>                                               
                                             </div>
 
                                             <Controller
