@@ -407,7 +407,7 @@ const EditProduct = () => {
                                                     <input
                                                         className={`form-check-input ${errors.sizes && 'is-invalid'}`}
                                                         type="checkbox"
-                                                        defaultChecked={productSizeIds.includes(item.id) ? 'checkded' : ''}
+                                                        defaultChecked={(productSizeIds.length > 0 && productSizeIds.includes(item.id)) ? 'checkded' : ''}
                                                         id={`size-${item.id}`}
                                                         value={item.id}
                                                         {...register("sizes", { 
