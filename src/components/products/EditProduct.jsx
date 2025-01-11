@@ -260,7 +260,10 @@ const EditProduct = () => {
 
         if (data.status) {
             reset(data.data);
-            productSizeId(data.data.productSizeIds)
+            if(data.data.productSizeIds){
+                productSizeId(data.data.productSizeIds)
+            }
+            
             
             setImage(data.data.image_url)
             setLoading(false);
