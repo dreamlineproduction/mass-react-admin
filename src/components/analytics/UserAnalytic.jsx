@@ -1,98 +1,9 @@
 import React from 'react';
 import PageTitle from "../others/PageTitle";
-import ReactApexChart from 'react-apexcharts';
+import ApexChart from './ApexChart';
 
 const UserAnalytic = () => {
-    const ApexChart = () => {
-        const [state, setState] = React.useState({
-            series: [{
-                name: 'Total Joined',
-                data: [22, 31, 40, 101, 40, 36, 32, 23, 14, 80, 55, 28]
-            }],
-            options: {
-                chart: {
-                    height: 350,
-                    type: 'bar',
-                },
-                plotOptions: {
-                    bar: {
-                        borderRadius: 4,
-                        dataLabels: {
-                            position: 'top', // top, center, bottom
-                        },
-                    }
-                },
-                dataLabels: {
-                    enabled: true,
-                    formatter: function (val) {
-                        return val;
-                    },
-                    offsetY: -20,
-                    style: {
-                        fontSize: '12px',
-                        colors: ["#304758"]
-                    }
-                },
-                xaxis: {
-                    categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                    position: 'top',
-                    axisBorder: {
-                        show: false
-                    },
-                    axisTicks: {
-                        show: false
-                    },
-                    crosshairs: {
-                        fill: {
-                            type: 'gradient',
-                            gradient: {
-                                colorFrom: '#D8E3F0',
-                                colorTo: '#BED1E6',
-                                stops: [0, 100],
-                                opacityFrom: 0.4,
-                                opacityTo: 0.5,
-                            }
-                        }
-                    },
-                    tooltip: {
-                        enabled: true,
-                    }
-                },
-                yaxis: {
-                    axisBorder: {
-                        show: false
-                    },
-                    axisTicks: {
-                        show: false,
-                    },
-                    labels: {
-                        show: false,
-                        formatter: function (val) {
-                            return val;
-                        }
-                    }
-                },
-                title: {
-                    text: 'Month Wise Carpenter Joining on 2024',
-                    floating: true,
-                    offsetY: 430,
-                    align: 'center',
-                    style: {
-                        color: '#444'
-                    }
-                }
-            },
-        });
-
-        return (
-            <div>
-                <div id="chart">
-                    <ReactApexChart options={state.options} series={state.series} type="bar" height={450} />
-                </div>
-                <div id="html-dist"></div>
-            </div>
-        );
-    };
+  
 
     return (
         <div>
@@ -142,7 +53,11 @@ const UserAnalytic = () => {
                         <div className="card-body">
                             <div className="row">
                                 <div className="col-md-12">
-                                    <ApexChart />
+                                    <ApexChart 
+                                        name={'Total Joined'}
+                                        data={[22, 31, 40, 101, 40, 36, 32, 23, 14, 80, 55, 28]}
+                                        description={'Month Wise Carpenter Joining on 2024'}
+                                    />
                                 </div>
                             </div>
                         </div>

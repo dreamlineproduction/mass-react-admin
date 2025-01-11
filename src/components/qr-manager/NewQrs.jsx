@@ -138,7 +138,7 @@ const NewQrs = () => {
                                                 <option key={item.id} value={item.id}>
                                                     {item.size} {item.size_in}
                                                 </option>
-                                            ))}
+                                        ))}
                                     </select>
                                     {errors.size && (
                                         <p className="invalid-feedback">{errors.size.message}</p>

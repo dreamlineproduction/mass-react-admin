@@ -2,7 +2,7 @@ import { API_URL,GOOGLE_TRANSLATE_API_KEY } from "../config";
 
 export const actionFetchState = async () => {
 	try {
-		let response = await fetch(`${API_URL}/states/101`, {
+		let response = await fetch(`${API_URL}/states`, {
 			method: 'GET',
 		});
 
