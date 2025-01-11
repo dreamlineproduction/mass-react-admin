@@ -125,9 +125,16 @@ export const getValueOrDefault = (value, defaultValue = "N/A") => {
     }
     return value ? value : defaultValue;
 }
-export const years = [
-    2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 
-    2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 
-    2045, 2046, 2047, 2048, 2049,2050
-]
+
+export const getYear = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+
+    for (let year = 2025; year <= currentYear; year++) {
+        if(year){
+           years.push(year); 
+        }        
+    }
+    return years;
+}
   

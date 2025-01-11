@@ -4,12 +4,13 @@ import ApexChart from './ApexChart';
 import { API_URL } from '../../config';
 import { actionFetchData, actionFetchState, actionPostData } from '../../actions/actions';
 import AuthContext from '../../context/auth';
-import { years } from '../../config';
+import { getYear } from '../../config';
 import NoState from '../others/NoState';
 
 const ProductAnalytic = () => {
     const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
+    const years = getYear();
 
     const [charData, setCharData] = useState({
         series: [{
@@ -84,7 +85,6 @@ const ProductAnalytic = () => {
 
     const hasValueGreaterThanZero = charData.series[0].data.some(value => value > 0);
 
-    //const currentYear = new Date().getFullYear();
     const [isLoading, setLoading] = useState(true);
 
     const [formData, setFormData] = useState({
@@ -260,14 +260,27 @@ const ProductAnalytic = () => {
                     data:response.chartData
                 }],                
             })
-            setTableData(response.data)
             setDescription(chatText)
 
         }
-        setLoading(false)
-
-        
+        setLoading(false)        
     }
+
+    const filterTableData = async (stateName = '', district = '', cityName = '',areaName = '') => {
+        let postData = {
+            ...formData
+        }
+
+        setLoading(true)
+        let response = await actionPostData(`${API_URL}/products/table-data`,accessToken,postData);
+        response = await response.json();
+        
+        if(response.status === 200){
+           setTableData(response.data.data || []);
+
+        }
+        setLoading(false)    
+    } 
 
     useEffect(() => {
         // if(!hasPermission(configPermission.VIEW_PRODUCT)){
@@ -447,9 +460,7 @@ const ProductAnalytic = () => {
                                                         )
                                                     })}                                                   
                                                 </select>
-                                            </div>
-                                         
-                                          
+                                            </div>                                                                                   
                                         </div>
                                     </div>
                                 </div>
@@ -468,7 +479,7 @@ const ProductAnalytic = () => {
                                         <tbody>
                                             {tableData.map(item => {
                                                 return(
-                                                    <tr>
+                                                    <tr key={item.id}>
                                                         <td>{item.state_str}</td>
                                                         <td>{item.district}</td>
                                                         <td>{item.city}</td>
