@@ -387,7 +387,7 @@ const Dashboard = () => {
                 <div className="row">
                     <div className="col-12">
                         <div className="card">
-                            <div className="my-4 d-flex justify-content-end gap-3 p-3">
+                            <div className="my-4 d-flex justify-content-end gap-3">
                                 <div>
                                     <select className="form-select" defaultValue={selectedValue} onChange={(e) => filterTransaction(e.target.value)}>
                                         <option disabled value={''} >Select Date</option>

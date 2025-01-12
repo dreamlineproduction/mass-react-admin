@@ -10,7 +10,7 @@ const AllArea = () => {
         <div>
             <PageTitle
                 title="All Area"
-                buttonLink={hasPermission(configPermission.ADD_AREA) ? '/areas/add-area' : null}
+                buttonLink={hasPermission(configPermission.ADD_AREA) ? '/areas/new-area' : null}
                 buttonLabel={hasPermission(configPermission.ADD_AREA) ? 'Add New Area' : null}
             />
         </div>

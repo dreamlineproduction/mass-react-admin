@@ -3,6 +3,7 @@ import { FaSortAmountDown, FaSortAmountUp } from "react-icons/fa";
 
 const DataTable = ({table,columns}) => {
     return (
+        <div className="table-responsive p-3">
         <table className="table table-bordered table-hover mb-0">
             <thead>
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -46,6 +47,7 @@ const DataTable = ({table,columns}) => {
                 ))}
             </tbody>
         </table>
+    </div>
     );
 };
 

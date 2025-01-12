@@ -300,7 +300,11 @@ const AppSidebar = () => {
                                 <li className="sidebar-item">
                                     <NavLink className="sidebar-link" to="areas/all-area">Areas
                                     </NavLink>
-                                </li>                               
+                                </li>  
+                                <li className="sidebar-item">
+                                    <NavLink className="sidebar-link" to="areas/new-area">Add New Areas
+                                    </NavLink>
+                                </li>                                   
                             </ul>
                         </li>
                         )}
