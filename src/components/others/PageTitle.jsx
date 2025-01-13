@@ -8,7 +8,7 @@ const PageTitle = (props) => {
             <h1 className="h3 d-inline align-middle">{title}</h1>
             {buttonLabel && buttonLink &&
                 <div className="">
-                    <Link to={buttonLink} className="btn btn-primary">
+                    <Link to={buttonLink} className="btn btn-success btn-lg">
                        {buttonLabel}
                     </Link>
                 </div> 
