@@ -195,7 +195,7 @@ const Dashboard = () => {
             }
             {Object.keys(dashboard).length > 0 && !dashboardLoading &&
                 <div className="row">
-                    <div className="col-12 col-md-6 col-xxl-3 d-flex">
+                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
                         <div className="card w-100">
                             <div className="card-header d-flex justify-content-between align-items-center">
                                 <div>
@@ -247,7 +247,7 @@ const Dashboard = () => {
                     </div>
 
 
-                    <div className="col-12 col-md-6 col-xxl-3 d-flex">
+                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
                         <div className="card w-100">
                             <div className="card-header d-flex justify-content-between align-items-center">
                                 <div>
@@ -296,7 +296,7 @@ const Dashboard = () => {
                     </div>
 
 
-                    <div className="col-12 col-md-6 col-xxl-3 d-flex">
+                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
                         <div className="card w-100">
                             <div className="card-header d-flex justify-content-between align-items-center">
                                 <div>
@@ -344,12 +344,62 @@ const Dashboard = () => {
                     </div>
 
 
+                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
+                        <div className="card w-100">
+                            <div className="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 className="card-title mb-0">Top 6 Districts</h5>
+                                    
+                                </div>
+                                <div>
+                                    <h2>255</h2>
+                                </div>
+                            </div>
+
+
+
+                            <hr style={{ margin: "0" }} />
+                            <div className="card-body">
+
+                                <div className="align-self-center w-100">
+
+
+                                    <table className="table mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <td>North 24 Parganas <small className="text-muted">(West Bengal)</small></td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Pachim Bardhaman <small className="text-muted">(West Bengal)</small></td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Purba Bardhaman <small className="text-muted">(West Bengal)</small></td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Nadia <small className="text-muted">(West Bengal)</small></td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Howrah <small className="text-muted">(West Bengal)</small></td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                    <Link to="/redemptions/all-redemptions" className="btn btn-primary mt-4">All Products</Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 
 
                  
 
-                    <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
+                    {/* <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
                         <div className="card">
                             <div className="card-header">
                                 <h3 className="card-title mb-0">Total Offers</h3>
@@ -373,7 +423,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             }
 
