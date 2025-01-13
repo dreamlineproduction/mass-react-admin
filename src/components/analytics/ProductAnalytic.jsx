@@ -6,6 +6,7 @@ import { actionFetchData, actionFetchState, actionPostData } from '../../actions
 import AuthContext from '../../context/auth';
 import { getYear } from '../../config';
 import NoState from '../others/NoState';
+import Loading from '../others/Loading';
 
 const ProductAnalytic = () => {
     const { Auth,hasPermission } = useContext(AuthContext)
@@ -261,26 +262,12 @@ const ProductAnalytic = () => {
                 }],                
             })
             setDescription(chatText)
-
+            setTableData(response.data || []);
         }
         setLoading(false)        
     }
 
-    const filterTableData = async (stateName = '', district = '', cityName = '',areaName = '') => {
-        let postData = {
-            ...formData
-        }
-
-        setLoading(true)
-        let response = await actionPostData(`${API_URL}/products/table-data`,accessToken,postData);
-        response = await response.json();
-        
-        if(response.status === 200){
-           setTableData(response.data.data || []);
-
-        }
-        setLoading(false)    
-    } 
+   
 
     useEffect(() => {
         // if(!hasPermission(configPermission.VIEW_PRODUCT)){
@@ -464,6 +451,8 @@ const ProductAnalytic = () => {
                                         </div>
                                     </div>
                                 </div>
+                                {isLoading && <Loading />}
+                                
                                 {tableData && tableData.length > 0 ?
                                 <div className="col-md-12">
                                     <table className="table table-bordered">

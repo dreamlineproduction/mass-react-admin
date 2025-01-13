@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
     actionDeleteData,
     actionFetchData,
@@ -29,6 +29,7 @@ import { format, addDays } from "date-fns";
 import "react-date-range/dist/styles.css"; // Main style file
 import "react-date-range/dist/theme/default.css"; // Theme CSS file
 import BsModal from "../others/BsModal";
+import UserInfomationModal from "./UserInfomationModal";
 
 const AllUser = () => {
     const navigate = useNavigate();
@@ -130,59 +131,7 @@ const AllUser = () => {
                         View More
                     </button>)
                 }
-            },
-            // {
-            //     accessorKey: "area",
-            //     header: "Area",
-            //     enableSorting: false,
-            //     cell: ({ row }) => (row.original.area ? row.original.area : "N/A"),
-            // },
-            // {
-            //     accessorKey: "created_at",
-            //     header: "Joined Date",
-            //     enableSorting: false,
-            // },
-            // {
-            //     accessorKey: "source",
-            //     header: "Source",
-            //     enableSorting: false,
-            //     cell: ({ row }) => (row.original.source ? row.original.source : "N/A"),
-            // },
-            // {
-            //     accessorKey: "referral_code",
-            //     header: "Referral Code",
-            //     cell: ({ row }) =>
-            //         row.original.referral_code ? row.original.referral_code : "N/A",
-            // },
-            // {
-            //     accessorKey: "employee_code",
-            //     header: "Employee Code",
-            //     cell: ({ row }) =>
-            //         row.original.employee_code ? row.original.employee_code : "N/A",
-            // },
-            // {
-            //     accessorKey: "scan_product_count",
-            //     header: "Total Product Scanned",
-            //     enableSorting: false,
-            // },
-            // {
-            //     accessorKey: "total_xp",
-            //     header: "Total XP",
-            //     enableSorting: false,
-            //     cell: ({ row }) => {
-            //         getValueOrDefault(row.original.total_xp, 0);
-            //     },
-            // },
-            // {
-            //     accessorKey: "balance_xp",
-            //     header: "Current XP Balance",
-            //     enableSorting: false,
-            // },
-            // {
-            //     accessorKey: "order_count",
-            //     header: "Total Redeemed",
-            //     enableSorting: false,
-            // },
+            },           
             {
                 accessorKey: "status",
                 header: "Status",
@@ -403,7 +352,7 @@ const AllUser = () => {
         }
     };
 
-    const exportTransactionToExcel = () => {
+    const exportUserToExcel = () => {
         let data = users.map((item) => {
             return {
                 "#": getValueOrDefault(item.id),
@@ -479,8 +428,6 @@ const AllUser = () => {
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageIndex, pageSize, sorting, globalFilter, selectedValue]);
-
-    console.log(singleUser);
 
     return (
         <div>
@@ -672,7 +619,7 @@ const AllUser = () => {
                             </div>
                             <div>
                                 <button
-                                    onClick={exportTransactionToExcel}
+                                    onClick={exportUserToExcel}
                                     className="btn btn-outline-primary"
                                 >
                                     <BiCloudDownload /> Export as Excel
@@ -711,91 +658,9 @@ const AllUser = () => {
                 </div>
             </div>
 
-            {/* View More User Infomation Modal */}
-			<BsModal
-				modalId="viewMoreUserInfoModal"
-				title={singleUser.name}
-				size="lg"
-			>
-				<table style={{
-                    width: "calc(100% + 32px)",
-                    marginTop:"-17px",
-                    marginLeft:"-16px"}} 
-                    className="table  table-striped table-hover table-bordered">
-					{Object.keys(singleUser).length > 0 && (
-					<tbody>
-						<tr>
-							<th scope="row">Id:</th>
-							<td>{singleUser.id}</td>
-						</tr>
-						<tr>
-							<th scope="row">Full Name</th>
-							<td>{singleUser.name}</td>
-						</tr>
-						<tr>
-							<th scope="row">Age:</th>
-							<td>{getValueOrDefault(singleUser.age)}</td>
-						</tr>
-						<tr>
-							<th scope="row">Gender</th>
-							<td>{getValueOrDefault(singleUser.gender)}</td>
-						</tr>
-                        <tr>
-							<th scope="row">User Type</th>
-							<td>{singleUser.role.name ? <span className="badge bg-primary">{singleUser.role.name}</span> : 'N/A'}</td>
-						</tr>
-                        <tr>
-							<th scope="row">Phone</th>
-							<td>{getValueOrDefault(singleUser.phone)}</td>
-						</tr>
-                        <tr>
-							<th scope="row">City</th>
-							<td>{getValueOrDefault(singleUser.city)}</td>
-						</tr>
-                        <tr>
-							<th scope="row">State</th>
-							<td>{getValueOrDefault(singleUser.state_str)}</td>
-						</tr>
-                        <tr>
-							<th scope="row">Area</th>
-							<td>{getValueOrDefault(singleUser.area)}</td>
-						</tr>
-                        <tr>
-							<th scope="row">Joined Date</th>
-							<td>{getValueOrDefault(singleUser.created_at)}</td>
-						</tr>
-                        <tr>
-							<th scope="row">Source</th>
-							<td>{getValueOrDefault(singleUser.source)}</td>
-						</tr>
-                        <tr>
-							<th scope="row">Referral Code</th>
-							<td>{getValueOrDefault(singleUser.referral_code)}</td>
-						</tr>
-                        <tr>
-							<th scope="row">Employee Code</th>
-							<td>{getValueOrDefault(singleUser.employee_code)}</td>
-						</tr>
-                        <tr>
-							<th scope="row">Total Product Scanned</th>
-							<td>{getValueOrDefault(singleUser.scan_product_count,0)}</td>
-						</tr>
-                        <tr>
-							<th scope="row">Total XP</th>
-							<td>{getValueOrDefault(singleUser.total_xp,'0XP')}</td>
-						</tr>
-                        <tr>
-							<th scope="row">Current XP Balance</th>
-							<td>{getValueOrDefault(singleUser.balance_xp,'0XP')}</td>
-						</tr>
-                        <tr>
-							<th scope="row">Total Redeemed</th>
-							<td>{getValueOrDefault(singleUser.order_count,0)}</td>
-						</tr>
-					</tbody>
-					)}
-				</table>	
-            </BsModal>			
+            <UserInfomationModal 
+                singleUser={singleUser}
+            />		
         </div>
     );
 };
