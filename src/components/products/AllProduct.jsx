@@ -39,6 +39,28 @@ const AllProduct = () => {
         },
         { accessorKey: "unique_id", header: "Product ID" },
         { accessorKey: "name", header: "Product Name" },
+        {
+            accessorKey: "size",
+            header: "Size",
+            enableSorting: false,
+            cell: ({ row }) => {
+                const productSize = row?.original?.product_size;
+        
+                if (productSize.length > 0) {
+                    return (
+                        <>
+                            {productSize.map((item) => (
+                                <span key={item.id} className="badge bg-primary me-1">
+                                    {item.size_custom}{item.size_in}
+                                </span>
+                            ))}
+                        </>
+                    );
+                } else {
+                    return <span className="badge bg-danger">N/A</span>;
+                }
+            },
+        },
         { accessorKey: "created_at", header: "Created At", enableSorting: false },
         {
             accessorKey: "status",
