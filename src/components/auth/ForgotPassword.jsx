@@ -1,22 +1,21 @@
-import { useCallback, useContext, useEffect  } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import AuthContext from "../../context/auth";
-import { API_URL, encryptData } from "../../config";
-import LoadingButton from "../others/LoadingButton";
+import {  useNavigate } from "react-router-dom";
 import { actionPostData } from "../../actions/actions";
+import AuthContext from "../../context/auth";
+import LoadingButton from "../others/LoadingButton";
+import { API_URL } from "../../config";
 
-const Login = () => {
-    const { AuthCheck, login } = useContext(AuthContext)
+const ForgotPassword = () => {
+    const { AuthCheck } = useContext(AuthContext)
     const navigate = useNavigate()
-    const location = useLocation()
-    const redirectPath = location.state?.path || '/dashboard';
 
     const {
         register,
         handleSubmit,
         reset,
+        setError,
         formState: {
             errors,
             isSubmitting
@@ -25,38 +24,34 @@ const Login = () => {
 
     const submitHandler = useCallback(async (data) => {
         const toastId = toast.loading("Please wait...")
+        const postData = {...data,user_type:"BACKEND"}
+
         try {
             let accessToken = ''
-            let response = await actionPostData(`${API_URL}/login`, accessToken, data);
+            let response = await actionPostData(`${API_URL}/forgot-password`, accessToken, postData);
             response = await response.json();
 
-            if (response.status) {
-                toast.success('Logged in ', {
+            if (response.status === 200) {
+                toast.success(response.message, {
                     id: toastId
-                });
-
-                let userInfo = {
-                    accessToken: response.token,
-                    name: response.data.name,
-                    userId: response.data.id
-                }
-
-                localStorage.setItem('user-info', JSON.stringify(userInfo));
-                // Save permissions
-                const encryptedPermissions = encryptData(response.permissions)
-                localStorage.setItem('permissions', encryptedPermissions)
-
-                login(userInfo)
-                reset();
-                navigate(redirectPath, { replace: true });
-            } else {
+                });               
+            } 
+            if (response.status === 404) {
                 toast.error(response.message, {
                     id: toastId
+                });                              
+            } 
+            if (response.status === 422) {
+                Object.keys(response.errors).forEach((field) => {
+                    setError(field, {
+                        type: "server",
+                        message: response.errors[field],
+                    });
                 });
-                reset({
-                    password: ''
-                });
-            }
+               toast.dismiss(toastId);                           
+            } 
+
+            reset();
         } catch (error) {
             toast.error(error)
         }        
@@ -64,15 +59,13 @@ const Login = () => {
 
     useEffect(() => {
         if (AuthCheck()) {
-            navigate(redirectPath, { replace: true })
+            navigate('/dashboard', { replace: true })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
-
-        <main className="d-flex w-100">
-           
+        <main className="d-flex w-100">           
             <Toaster
                 position="top-center"
                 reverseOrder={false}
@@ -91,15 +84,15 @@ const Login = () => {
                             <div className="card p-4">
                                 <div className="card-header">
                                     <h1 className="h1">
-                                        Login
+                                        Find Your Account
                                     </h1>
                                     <p className="lead">
-                                            Sign In to your account
+                                        Please enter your email address to search for your account.
                                     </p>
                                 </div>
                                 <div className="card-body pt-0">                                    
                                     <div className="">
-                                        <form onSubmit={handleSubmit(submitHandler)}>
+                                        <form onSubmit={handleSubmit(submitHandler)}>                                      
                                             <div className="mb-3">
                                                 <label className="form-label">Email</label>
                                                 <input 
@@ -118,39 +111,21 @@ const Login = () => {
                                                     placeholder="Enter email address" 
                                                 />
                                                 <p className="invalid-feedback d-block">{errors.email?.message}</p>
-                                            </div>
-                                            <div className="mb-3">
-                                                <label className="form-label">Password</label>
-                                                <input 
-                                                    className={`form-control custom-input ${errors.password && `is-invalid`}`}
-                                                     {...register("password", {
-                                                        required: "Please enter your Password",
-                                                        minLength: {
-                                                            value: 8,
-                                                            message: "Password must be at least 8 characters long!"
-                                                        }
-                                                    })}
-                                                    type="password" 
-                                                    name="password" 
-                                                    placeholder="Enter your password" 
-                                                />
-                                                <p className="invalid-feedback d-block">{errors.password?.message}</p>
-                                            </div>                                           
-                                            <div className="d-grid gap-2 mt-3">
+                                            </div>                                                                                     
+                                            <div className="d-flex justify-content-end gap-2 mt-3">
+                                                <button onClick={() => navigate('/login')} className="btn btn-lg large-btn btn-outline-primary" >Cancel</button>                                                                                                    
                                                 {
                                                     isSubmitting ? <LoadingButton /> :
                                                     <button 
                                                         disabled={isSubmitting}
                                                         className="btn btn-lg btn-primary large-btn ">
-                                                        Sign in
+                                                        Search
                                                     </button>
                                                 }
                                             </div>
                                         </form>
 
-                                        <div className="text-end mt-3">
-                                            <Link className="nav-link" to="/forgot-password">Forgot Password</Link>
-                                        </div>
+                                       
                                     </div>
                                 </div>
                             </div>                            
@@ -162,4 +137,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default ForgotPassword;

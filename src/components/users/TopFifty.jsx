@@ -22,12 +22,19 @@ const TopFifty = () => {
     const accessToken = Auth('accessToken');
 
     const columns = useMemo(() => [
-        { accessorKey: "id", header: "Id", enableSorting: false },
+        { 
+            accessorKey: "id", 
+            header: "Ranking", 
+            enableSorting: false, 
+            cell:({row}) =>{
+                return (row.index+1)
+            }
+        },
         {
             accessorKey: "image",
             header: "Image",
             enableSorting: false,
-            cell: ({ row }) => {
+            cell: ({ row }) => {               
                 if (row.original.image) {
                     return (
                         <img

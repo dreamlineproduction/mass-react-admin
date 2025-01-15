@@ -263,7 +263,7 @@ const NewEmployee = () => {
                                         },
                                     })}
                                     className={`form-control custom-input ${errors.password  && `is-invalid`}` } 
-                                    type="text" 
+                                    type="password" 
                                     name="password" 
                                     id="password"  
                                 />
@@ -273,7 +273,7 @@ const NewEmployee = () => {
                             <div className="mb-3">
                                 <label className="form-label">Confirm Password</label>
                                 <input                                   
-                                    type="text"
+                                    type="password"
                                     {...register("confirmPassword", {
                                         required: "Confirm Password is required",
                                         validate: (value) =>
