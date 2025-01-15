@@ -239,8 +239,12 @@ const NewShort = () => {
 								<label className="form-label">Preview</label>
 								<div className="short-preview">
 									<div className="phone-frame">
+										<div className='short-title-preview'>
+											<h6>Short Title</h6>
+											<p>Short Description</p>
+										</div>
 										{fileData.type === 'image' &&
-											<img style={{borderRadius:"10px"}} src={fileData.imageUrl ? fileData.imageUrl : 'https://placehold.co/360x640'} alt="" />
+											<img style={{borderRadius:"10px"}} src={fileData.imageUrl ? fileData.imageUrl : 'https://placehold.co/400x650?text=Upload+Content'} alt="" />
 										}
 
 										{fileData.type === 'video' &&

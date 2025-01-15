@@ -433,12 +433,12 @@ const AllUser = () => {
         <div>
             <PageTitle
                 title="All Users"
-                buttonLink={
-                    hasPermission(configPermission.ADD_USER) ? "/users/add-user" : null
-                }
-                buttonLabel={
-                    hasPermission(configPermission.ADD_USER) ? "+ Add New User" : null
-                }
+                // buttonLink={
+                //     hasPermission(configPermission.ADD_USER) ? "/users/add-user" : null
+                // }
+                // buttonLabel={
+                //     hasPermission(configPermission.ADD_USER) ? "+ Add New User" : null
+                // }
             />
 
 
