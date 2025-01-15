@@ -257,12 +257,10 @@ const EditProduct = () => {
         let apiUrl = `${API_URL}/products/${params.id}`;
         let response = await actionFetchData(apiUrl, accessToken);
         let data = await response.json();
-
+        
         if (data.status) {
             reset(data.data);
-            if(data.data.productSizeIds){
-                productSizeId(data.data.productSizeIds)
-            }
+            productSizeId(data.data.productSizeIds)
             
             
             setImage(data.data.image_url)

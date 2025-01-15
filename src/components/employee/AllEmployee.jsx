@@ -140,7 +140,7 @@ const AllEmployee = () => {
                   </button>
                 </li>
                 }
-                {hasPermission(configPermission.DELETE_EMPLOYEE) &&
+                {hasPermission(configPermission.DELETE_EMPLOYEE) && (row.original.role_id !== 1) &&
                 <li>
                   <button
                     type="button"

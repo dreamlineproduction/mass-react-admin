@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import AuthContext from "../../context/auth";
 import { useForm } from "react-hook-form";
 import LoadingButton from "../others/LoadingButton";
+import { tr } from "date-fns/locale";
 
 
 const NewEmployee = () => {
@@ -17,7 +18,7 @@ const NewEmployee = () => {
     const [roles, setRole] = useState([])
     const [isLoading, setLoading] = useState(true);
 
-   
+    const [showPassword,setShowPassword] = useState(false);
 
     const createUserAvtar = (event) =>{
         let fullName = event.target.value
@@ -34,6 +35,7 @@ const NewEmployee = () => {
         register,
         handleSubmit,
         formState: { errors,isSubmitting },
+        getValues,
         setError,
     } = useForm();
 
@@ -65,7 +67,7 @@ const NewEmployee = () => {
          } catch (error) {
              toast.error(error)
          }
-       };
+    };
 
     // Fetch Data
     const fetchRoles = async () => {
@@ -132,25 +134,7 @@ const NewEmployee = () => {
                                 <p className="invalid-feedback">{errors.name?.message}</p>
                             </div>
 
-                            <div className="mb-3">
-                                <label className="form-label">Email</label>
-                                <input 
-                                    {...register("email", {
-                                        required: "Please enter email",
-                                        pattern: {
-                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                            message: "Please enter valid email!"
-                                        }
-                                    })}
-                                    className={`form-control custom-input ${errors.email && `is-invalid`}` } 
-                                    type="email" 
-                                    id="email" 
-                                    name="email"
-                                    placeholder="Email Address" 
-                                />
-                                <p className="invalid-feedback">{errors.email?.message}</p>
-                            </div>
-
+                            
                             <div className="mb-3">  
                                 <label className="form-label">Phone Number</label>
                                 <div className="input-group">
@@ -214,12 +198,31 @@ const NewEmployee = () => {
                                 <p className="invalid-feedback">{errors.address1?.message}</p>
                             </div>
                             <div className="mb-3">
+                                <label className="form-label">Email</label>
+                                <input 
+                                    {...register("email", {
+                                        required: "Please enter email",
+                                        pattern: {
+                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: "Please enter valid email!"
+                                        }
+                                    })}
+                                    className={`form-control custom-input ${errors.email && `is-invalid`}` } 
+                                    type="email" 
+                                    id="email" 
+                                    name="email"
+                                    placeholder="Email Address" 
+                                />
+                                <p className="invalid-feedback">{errors.email?.message}</p>
+                            </div>
+
+                            <div className="mb-3">
                                 <label className="form-label">Role</label>
                                 <select 
                                     {...register("role_id", {
                                         required: "Please select role",
                                     })}
-                                    className={`form-control custom-input ${errors.role && `is-invalid`}` } 
+                                    className={`form-control custom-input ${errors.role_id && `is-invalid`}` } 
                                     defaultValue={''} 
                                     name="role_id" 
                                     id="role_id" 
@@ -229,9 +232,63 @@ const NewEmployee = () => {
                                             <option key={`role-${role.id}`} value={role.id}>{role.name}</option>
                                         ))}                                        
                                 </select>
-                                <p className="invalid-feedback">{errors.role?.message}</p>
+                                <p className="invalid-feedback">{errors.role_id?.message}</p>
                             </div>
                             
+                            <div className="mb-3">
+                                <div className="form-check form-switch">
+                                    <input 
+                                        {...register("is_login", {
+                                            required: false,                                           
+                                        })}
+                                        name="is_login"
+                                        id="is_login"
+                                        className="form-check-input" 
+                                        type="checkbox" 
+                                        onChange={e =>  setShowPassword(e.target.checked)}
+                                    />
+                                    <label className="form-check-label" htmlFor="is_login">Is Login</label>
+                                </div>
+                            </div>
+                            {showPassword &&
+                            <>
+                            <div className="mb-3">
+                                <label className="form-label">Password</label>
+                                <input
+                                    {...register("password", {
+                                        required: "Password is required",
+                                        minLength: {
+                                          value: 6,
+                                          message: "Password must be at least 6 characters long",
+                                        },
+                                    })}
+                                    className={`form-control custom-input ${errors.password  && `is-invalid`}` } 
+                                    type="text" 
+                                    name="password" 
+                                    id="password"  
+                                />
+                                <p className="invalid-feedback">{errors?.password?.message}</p>
+                            </div>
+
+                            <div className="mb-3">
+                                <label className="form-label">Confirm Password</label>
+                                <input                                   
+                                    type="text"
+                                    {...register("confirmPassword", {
+                                        required: "Confirm Password is required",
+                                        validate: (value) =>
+                                            (value === getValues('password')) || "Passwords do not match",
+                                        }
+                                    )}
+                                    className={`form-control custom-input ${errors.confirmPassword && `is-invalid`}` } 
+                                    name="confirmPassword" 
+                                    id="confirmPassword"  
+                                />
+                                    <p className="invalid-feedback">{errors?.confirmPassword?.message}</p>
+                            </div>
+                            </>
+                            }
+
                             {isSubmitting ?
                                 <LoadingButton />
                                 :

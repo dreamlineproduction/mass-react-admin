@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect  } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthContext from "../../context/auth";
 import { API_URL, encryptData } from "../../config";
 import LoadingButton from "../others/LoadingButton";
@@ -150,6 +150,10 @@ const Login = () => {
                                                 }
                                             </div>
                                         </form>
+
+                                        <div className="text-end mt-3">
+                                            <Link className="nav-link" href="#">Forgot Password</Link>
+                                        </div>
                                     </div>
                                 </div>
                             </div>                            
