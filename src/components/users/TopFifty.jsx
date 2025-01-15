@@ -18,90 +18,94 @@ import { BiCloudDownload } from "react-icons/bi";
 
 const TopFifty = () => {
     const navigate = useNavigate();
-    const { Auth,hasPermission } = useContext(AuthContext)
+    const { Auth, hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
 
     const columns = useMemo(() => [
-        { accessorKey: "id", header: "Id",enableSorting: false },
-        { 
-            accessorKey: "image", 
+        { accessorKey: "id", header: "Id", enableSorting: false },
+        {
+            accessorKey: "image",
             header: "Image",
             enableSorting: false,
             cell: ({ row }) => {
-                if(row.original.image) {
+                if (row.original.image) {
                     return (
-                        <img 
-                            src={row.original.image_url} 
-                            className="rounded-circle me-3" 
-                            alt={row.original.name} 
-                            width={48} 
+                        <img
+                            src={row.original.image_url}
+                            className="rounded me-3"
+                            alt={row.original.name}
+                            width={48}
                             height={48}
-                            style={{objectFit: 'cover'}}
+                            style={{ objectFit: 'cover' }}
                         />
                     );
                 } else {
                     return (
                         <img
                             src={`https://ui-avatars.com/api/?name=${row.original.name}&background=212631&color=fff`}
-                            className="rounded-circle me-3"
-                            alt={row.original.name} 
-                            width={48} 
+                            className="rounded me-3"
+                            alt={row.original.name}
+                            width={48}
                             height={48}
-                            style={{objectFit: 'cover'}}
-                        />  
+                            style={{ objectFit: 'cover' }}
+                        />
                     );
                 }
             },
         },
-        { accessorKey: "name", header: "Full Name",enableSorting: false },
-        { accessorKey: "age", header: "Age", enableSorting: false,
-            cell: ({ row }) => row.original.age ? row.original.age : 'N/A' 
+        { accessorKey: "name", header: "Full Name", enableSorting: false },
+        {
+            accessorKey: "age", header: "Age", enableSorting: false,
+            cell: ({ row }) => row.original.age ? row.original.age : 'N/A'
         },
-        { accessorKey: "gender", header: "Gender", enableSorting: false,
-            cell: ({ row }) => row.original.gender ? row.original.gender : 'N/A' 
+        {
+            accessorKey: "gender", header: "Gender", enableSorting: false,
+            cell: ({ row }) => row.original.gender ? row.original.gender : 'N/A'
         },
-        { 
-            accessorKey: "role", 
+        {
+            accessorKey: "role",
             header: "User Type",
             enableSorting: false,
             cell: ({ row }) => {
                 return <span className="badge bg-primary">{row.original.role.name}</span>;
             },
         },
-        { accessorKey: "phone", header: "Phone",enableSorting: false },
-        { 
-            accessorKey: "city", 
-            header: "City", 
-            enableSorting: false, 
-            cell: ({ row }) => row.original.city ? row.original.city : 'N/A' 
+        { accessorKey: "phone", header: "Phone", enableSorting: false },
+        {
+            accessorKey: "city",
+            header: "City",
+            enableSorting: false,
+            cell: ({ row }) => row.original.city ? row.original.city : 'N/A'
         },
-        { 
-            accessorKey: "state_str", 
-            header: "State", 
-            enableSorting: false, 
-            cell: ({ row }) => row.original.state_str ? row.original.state_str : 'N/A' 
+        {
+            accessorKey: "state_str",
+            header: "State",
+            enableSorting: false,
+            cell: ({ row }) => row.original.state_str ? row.original.state_str : 'N/A'
         },
-        { accessorKey: "area", header: "Area", enableSorting: false, 
-            cell: ({ row }) => row.original.area ? row.original.area : 'N/A' 
+        {
+            accessorKey: "area", header: "Area", enableSorting: false,
+            cell: ({ row }) => row.original.area ? row.original.area : 'N/A'
         },
         { accessorKey: "created_at", header: "Joined Date", enableSorting: false },
-        { accessorKey: "source", header: "Source", enableSorting: false,
-            cell: ({ row }) => row.original.source ? row.original.source : 'N/A' 
+        {
+            accessorKey: "source", header: "Source", enableSorting: false,
+            cell: ({ row }) => row.original.source ? row.original.source : 'N/A'
         },
 
-        { 
-            accessorKey: "referral_code", 
-            header: "Referral Code", 
+        {
+            accessorKey: "referral_code",
+            header: "Referral Code",
             enableSorting: false,
-            cell: ({ row }) => row.original.referral_code ? row.original.referral_code : 'N/A' 
+            cell: ({ row }) => row.original.referral_code ? row.original.referral_code : 'N/A'
         },
-        { 
-            accessorKey: "employee_code", 
-            header: "Employee Code", 
+        {
+            accessorKey: "employee_code",
+            header: "Employee Code",
             enableSorting: false,
-            cell: ({ row }) => row.original.employee_code ? row.original.employee_code : 'N/A' 
+            cell: ({ row }) => row.original.employee_code ? row.original.employee_code : 'N/A'
         },
-        
+
         { accessorKey: "scan_product_count", header: "Total Product Scanned", enableSorting: false },
         { accessorKey: "total_xp", header: "Total XP", enableSorting: false },
         { accessorKey: "balance_xp", header: "Current XP Balance", enableSorting: false },
@@ -121,49 +125,49 @@ const TopFifty = () => {
             cell: ({ row }) => {
                 return (
                     <div className="dropdown">
-                        <button 
-                            className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_USER) && !hasPermission(configPermission.DELETE_USER)) ? 'disabled' : ''}`} 
-                            type="button" 
+                        <button
+                            className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_USER) && !hasPermission(configPermission.DELETE_USER)) ? 'disabled' : ''}`}
+                            type="button"
                             disabled={(!hasPermission(configPermission.EDIT_USER) && !hasPermission(configPermission.DELETE_USER))}
-                            data-bs-toggle="dropdown" 
+                            data-bs-toggle="dropdown"
                             aria-expanded="false">
                             More Options
                         </button>
                         {(hasPermission(configPermission.EDIT_USER) || hasPermission(configPermission.DELETE_USER)) &&
-                        <ul className="dropdown-menu">
-                            {hasPermission(configPermission.EDIT_USER) &&
-                            <li>
-                                <Link className="dropdown-item" to={`/users/edit-user/${row.original.id}`}>
-                                    Edit
-                                </Link>
-                            </li>
-                            }
-                            {hasPermission(configPermission.EDIT_USER) &&
-                            <li>
-                                <button type="button" className="dropdown-item" onClick={() => changeStatus(row.original.id,row.original.status)}>
-                                    {row.original.status === 1 ? 'Inactive' : 'Active'}
-                                </button>
-                            </li>
-                            }
-                            {hasPermission(configPermission.DELETE_USER) &&
-                            <li>
-                                <button type="button" className="dropdown-item" onClick={() => deleteUser(row.original.id)}>
-                                    Delete
-                                </button>
-                            </li>
-                            }
-                        </ul>
+                            <ul className="dropdown-menu">
+                                {hasPermission(configPermission.EDIT_USER) &&
+                                    <li>
+                                        <Link className="dropdown-item" to={`/users/edit-user/${row.original.id}`}>
+                                            Edit
+                                        </Link>
+                                    </li>
+                                }
+                                {hasPermission(configPermission.EDIT_USER) &&
+                                    <li>
+                                        <button type="button" className="dropdown-item" onClick={() => changeStatus(row.original.id, row.original.status)}>
+                                            {row.original.status === 1 ? 'Inactive' : 'Active'}
+                                        </button>
+                                    </li>
+                                }
+                                {hasPermission(configPermission.DELETE_USER) &&
+                                    <li>
+                                        <button type="button" className="dropdown-item" onClick={() => deleteUser(row.original.id)}>
+                                            Delete
+                                        </button>
+                                    </li>
+                                }
+                            </ul>
                         }
                     </div>
                 );
             },
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    ],[]);
+    ], []);
 
-    
+
     const [users, setUsers] = useState([])
-   
+
 
     const [pageCount, setPageCount] = useState(0);
     const [isLoading, setLoading] = useState(true);
@@ -173,7 +177,7 @@ const TopFifty = () => {
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
-   
+
 
     // Fetch data
     const fetchData = async () => {
@@ -264,25 +268,25 @@ const TopFifty = () => {
             };
         });
 
-        
+
         let fileName = `top-50-users-`;
-        fileName+= selectedValue === 1 ? 'total-product-scanned' : 'total-xp';
-        exportToExcel(data,fileName);
+        fileName += selectedValue === 1 ? 'total-product-scanned' : 'total-xp';
+        exportToExcel(data, fileName);
     };
 
-  
 
-    const changeStatus = async (id,currentStatus) => {
-        const toastId = toast.loading("Please wait...");      
+
+    const changeStatus = async (id, currentStatus) => {
+        const toastId = toast.loading("Please wait...");
         let status = currentStatus === 1 ? 0 : 1;
-    
+
         try {
             const postData = { status };
             let response = await actionPostData(`${API_URL}/users/change-status/${id}`, accessToken, postData, 'PUT');
             response = await response.json();
-    
+
             if (response.status) {
-                setUsers(prevData => 
+                setUsers(prevData =>
                     prevData.map(row => row.id === id ? { ...row, status } : row)
                 );
                 toast.success(response.message, {
@@ -300,9 +304,9 @@ const TopFifty = () => {
             console.error(error);
         }
     };
-       
 
-   
+
+
 
     const table = useReactTable({
         data: users,
@@ -322,23 +326,23 @@ const TopFifty = () => {
         manualPagination: true,
         getCoreRowModel: getCoreRowModel(),
     });
-    
-  
 
-    
+
+
+
 
     useEffect(() => {
-        if(!hasPermission(configPermission.VIEW_USER) && !isLoading){
+        if (!hasPermission(configPermission.VIEW_USER) && !isLoading) {
             navigate('/403')
-         }
-        fetchData()            
+        }
+        fetchData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageIndex, pageSize, sorting, globalFilter,selectedValue]);
+    }, [pageIndex, pageSize, sorting, globalFilter, selectedValue]);
 
-   
+
     return (
         <div>
-            <PageTitle 
+            <PageTitle
                 title="Top 50 Users"
                 buttonLink={hasPermission(configPermission.ADD_USER) ? "/users/all-users" : null}
                 buttonLabel={hasPermission(configPermission.ADD_USER) ? "Back to list" : null}
@@ -346,26 +350,39 @@ const TopFifty = () => {
             <div className="row">
                 <div className="col-12">
                     <div className="card">
-                        <div className="my-4 d-flex justify-content-end gap-3">                           
-                            <div>
-                                <select
-                                    className="form-select"
-                                    defaultValue={selectedValue}
-                                    onChange={(e) => setSelectedValue(e.target.value)}
-                                >                                    
-                                    <option value="1">Total Product Scanned</option>
-                                    <option value="2">Total XP</option>
-                                </select>
+
+<div className="card-body">
+
+
+                        <div className="d-flex justify-between-end align-items-center gap-3">
+
+<div>
+    <h4>Total users by product scanned </h4>
+</div>
+                            <div className="d-flex gap-2 ">
+                                
+                                    <select
+                                        className="form-select"
+                                        defaultValue={selectedValue}
+                                        onChange={(e) => setSelectedValue(e.target.value)}
+                                    >
+                                        <option value="1">Total Product Scanned</option>
+                                        <option value="2">Total XP</option>
+                                    </select>
+
+                                    <button
+                                        onClick={exportTransactionToExcel}
+                                        className="btn btn-outline-primary w-100"
+                                    >
+                                        <BiCloudDownload /> Export as Excel
+                                    </button>
+                                
+
+                              
                             </div>
 
-                            <div className="me-3">
-                                <button
-                                    onClick={exportTransactionToExcel}
-                                    className="btn btn-outline-primary"
-                                >
-                                    <BiCloudDownload /> Export as Excel
-                                </button>
-                            </div>                           
+                        </div>
+
                         </div>
 
                         {isLoading && <Loading />}
@@ -378,25 +395,29 @@ const TopFifty = () => {
                                 <DataTable table={table} columns={columns} />
                             </div>
                         )}
+
+
+
+
                     </div>
 
                     {users.length > 0 && (
-                        <PaginationDataTable 
-                            table={table} 
-                            pageCount={pageCount} 
-                            pageIndex={pageIndex} 
-                            setPageIndex={setPageIndex} 
+                        <PaginationDataTable
+                            table={table}
+                            pageCount={pageCount}
+                            pageIndex={pageIndex}
+                            setPageIndex={setPageIndex}
                         />
                     )}
                 </div>
             </div>
-          
-           
-           
+
+
+
         </div>
     );
 
-    
+
 };
 
 export default TopFifty;

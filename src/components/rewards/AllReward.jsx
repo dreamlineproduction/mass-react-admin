@@ -31,7 +31,7 @@ const AllReward = () => {
                 return (
                   <img
                     src={row.original.image_url}
-                    className="rounded-circle me-3"
+                    className="rounded me-3"
                     alt={row.original.name}
                     width={48}
                     height={48}

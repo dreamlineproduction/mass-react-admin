@@ -17,43 +17,43 @@ const AllPermission = () => {
     const columns = useMemo(() => [
         { accessorKey: "id", header: "Id" },
         { accessorKey: "name", header: "Name" },
-        { accessorKey: "created_at", header: "Created At", enableSorting: false },
+        
         {
             accessorKey: "action",
-            header: "Action",
+            header: "Description",
             enableSorting: false,
             cell: ({ row }) => {
-                return (
-                    <div className="dropdown">
-                        <button 
-                            className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_PERMISSION) || !hasPermission(configPermission.DELETE_PERMISSION)) ? 'disabled' : ''}`} 
-                            type="button" 
-                            disabled={(!hasPermission(configPermission.EDIT_PERMISSION) || !hasPermission(configPermission.DELETE_PERMISSION))}
-                            data-bs-toggle="dropdown" 
-                            aria-expanded="false"
-                        >
-                            More Options
-                        </button>
-                        {(hasPermission(configPermission.EDIT_PERMISSION) || hasPermission(configPermission.DELETE_PERMISSION)) &&
-                        <ul className="dropdown-menu">
-                            {hasPermission(configPermission.EDIT_PERMISSION) &&
-                            <li>
-                                <Link className="dropdown-item" to={`/permissions/edit-permission/${row.original.id}`}>
-                                    Edit
-                                </Link>
-                            </li>
-                            }
-                            {hasPermission(configPermission.DELETE_PERMISSION) &&
-                            <li>
-                                <button type="button" className="dropdown-item" onClick={() => deletePermission(row.original.id)}>
-                                   Delete
-                                </button>
-                            </li>
-                            }
-                        </ul>
-                        }   
-                    </div>
-                );
+                // return (
+                //     <div className="dropdown">
+                //         <button 
+                //             className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_PERMISSION) || !hasPermission(configPermission.DELETE_PERMISSION)) ? 'disabled' : ''}`} 
+                //             type="button" 
+                //             disabled={(!hasPermission(configPermission.EDIT_PERMISSION) || !hasPermission(configPermission.DELETE_PERMISSION))}
+                //             data-bs-toggle="dropdown" 
+                //             aria-expanded="false"
+                //         >
+                //             More Options
+                //         </button>
+                //         {(hasPermission(configPermission.EDIT_PERMISSION) || hasPermission(configPermission.DELETE_PERMISSION)) &&
+                //         <ul className="dropdown-menu">
+                //             {hasPermission(configPermission.EDIT_PERMISSION) &&
+                //             <li>
+                //                 <Link className="dropdown-item" to={`/permissions/edit-permission/${row.original.id}`}>
+                //                     Edit
+                //                 </Link>
+                //             </li>
+                //             }
+                //             {hasPermission(configPermission.DELETE_PERMISSION) &&
+                //             <li>
+                //                 <button type="button" className="dropdown-item" onClick={() => deletePermission(row.original.id)}>
+                //                    Delete
+                //                 </button>
+                //             </li>
+                //             }
+                //         </ul>
+                //         }   
+                //     </div>
+                // );
             },
         },
         
@@ -167,8 +167,8 @@ const AllPermission = () => {
         <div>
             <PageTitle
                 title="All Permissions"
-                buttonLink={hasPermission(configPermission.ADD_PERMISSION) ? '/permissions/new-permission' : null}
-                buttonLabel={hasPermission(configPermission.ADD_PERMISSION) ? 'Add New Permission' : null}
+                // buttonLink={hasPermission(configPermission.ADD_PERMISSION) ? '/permissions/new-permission' : null}
+                // buttonLabel={hasPermission(configPermission.ADD_PERMISSION) ? 'Add New Permission' : null}
             />
             <div className="row">
                 <div className="col-12">

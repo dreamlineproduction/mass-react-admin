@@ -199,7 +199,7 @@ const AppSidebar = () => {
                         <li className='sidebar-item'>
                             <a data-bs-target="#productAnalytics" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                
                                 <BsGraphUpArrow   style={{height:"20px",width:"30px"}} />
-                                <span className="align-middle">Product Analytics</span>
+                                <span className="align-middle">Analytics</span>
                             </a>
 
                             <ul id="productAnalytics" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">

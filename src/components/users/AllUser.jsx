@@ -35,7 +35,7 @@ const AllUser = () => {
     const navigate = useNavigate();
     const { Auth, hasPermission } = useContext(AuthContext);
     const accessToken = Auth("accessToken");
-    const [singleUser,setSingleUser] = useState({});
+    const [singleUser, setSingleUser] = useState({});
 
 
     const columns = useMemo(
@@ -50,7 +50,7 @@ const AllUser = () => {
                         return (
                             <img
                                 src={row.original.image_url}
-                                className="rounded-circle me-3"
+                                className="rounded me-3"
                                 alt={row.original.name}
                                 width={48}
                                 height={48}
@@ -61,7 +61,7 @@ const AllUser = () => {
                         return (
                             <img
                                 src={`https://ui-avatars.com/api/?name=${row.original.name}&background=212631&color=fff`}
-                                className="rounded-circle me-3"
+                                className="rounded me-3"
                                 alt={row.original.name}
                                 width={48}
                                 height={48}
@@ -71,10 +71,10 @@ const AllUser = () => {
                     }
                 },
             },
-            { 
-                accessorKey: "name", 
+            {
+                accessorKey: "name",
                 header: "Full Name",
-                cell:({row}) => {
+                cell: ({ row }) => {
                     return (<Link to={`/users/edit-user/${row.original.id}?hideForm=true`}>
                         {row.original.name}
                     </Link>)
@@ -98,7 +98,7 @@ const AllUser = () => {
                 enableSorting: false,
                 cell: ({ row }) => {
                     return (
-                        <span className="badge bg-primary">{row.original.role.name}</span>
+                        <span className="d-inline-flex px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">{row.original.role.name}</span>
                     );
                 },
             },
@@ -119,19 +119,19 @@ const AllUser = () => {
             {
                 accessorKey: "more",
                 header: "View More",
-                cell:({row}) => {
+                cell: ({ row }) => {
                     return (
-                        <button 
-                            data-bs-toggle="modal" 
-							data-bs-target="#viewMoreUserInfoModal"
+                        <button
+                            data-bs-toggle="modal"
+                            data-bs-target="#viewMoreUserInfoModal"
                             className="btn btn-primary"
                             onClick={() => {
-                                setSingleUser(row.original)																		
+                                setSingleUser(row.original)
                             }}>
-                        View More
-                    </button>)
+                            View More
+                        </button>)
                 }
-            },           
+            },
             {
                 accessorKey: "status",
                 header: "Status",
@@ -207,7 +207,7 @@ const AllUser = () => {
                 },
             },
         ],
-                    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     );
 
@@ -377,11 +377,11 @@ const AllUser = () => {
         });
 
         const fileName = 'all-users';
-        exportToExcel(data,fileName);
+        exportToExcel(data, fileName);
     };
 
     const fiterViaDate = () => {
-        fetchData();        
+        fetchData();
     };
 
     // Fetch Data user count
@@ -437,128 +437,354 @@ const AllUser = () => {
                     hasPermission(configPermission.ADD_USER) ? "/users/add-user" : null
                 }
                 buttonLabel={
-                    hasPermission(configPermission.ADD_USER) ? "Add New User" : null
+                    hasPermission(configPermission.ADD_USER) ? "+ Add New User" : null
                 }
             />
 
-            {Object.keys(userCount).length > 0 && (
-                <div className="row">
-                    <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
-                        <div className="card">
-                            <div className="card-header">
-                                <h3 className="card-title mb-0">Customer</h3>
+
+
+
+<div className="row">
+                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
+                        <div className="card w-100">
+                            <div className="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 className="card-title mb-0">Total Users</h5>
+                                    <div className="mt-2">
+                                        <span className="active-signal"></span> Active 1
+                                        <span className="inactive-signal ms-4"></span> Inactive 0
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2>255</h2>
+                                </div>
                             </div>
-                            <div className="card-body pt-0">
-                                <div className="row">
-                                    <div className="col-12">
-                                        <h1>{userCount.total_customer}</h1>
-                                    </div>
-                                    <div className="col-12">
-                                        <div className="row">
-                                            <div className="col-auto">
-                                                <span className="active-signal"></span> Active{" "}
-                                                {userCount.active_customer}
-                                            </div>
-                                            <div className="col-auto">
-                                                <span className="inactive-signal"></span> Inactive{" "}
-                                                {userCount.inactive_customer}
-                                            </div>
-                                        </div>
-                                    </div>
+
+
+
+                            <hr style={{ margin: "0" }} />
+                            <div className="card-body">
+
+                                <div className="align-self-center w-100">
+
+
+                                    <table className="table mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <td>Carpenter</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Contractor</td>
+                                                <td className="text-end">3801</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Shop Owner</td>
+                                                <td className="text-end">1689</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Dealer</td>
+                                                <td className="text-end">1689</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Retail User</td>
+                                                <td className="text-end">1689</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <Link to="/users/all-users" className="btn btn-primary mt-4">All Users</Link>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
-                        <div className="card">
-                            <div className="card-header">
-                                <h3 className="card-title mb-0">Carpenter</h3>
+                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
+                        <div className="card w-100">
+                            <div className="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 className="card-title mb-0">Top 10 Users</h5>
+                                    <div className="mt-2">
+                                        <span className="active-signal"></span> Active 1
+                                        <span className="inactive-signal ms-4"></span> Inactive 0
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2>255</h2>
+                                </div>
                             </div>
-                            <div className="card-body pt-0">
-                                <div className="row">
-                                    <div className="col-12">
-                                        <h1>{userCount.total_carpenter}</h1>
-                                    </div>
-                                    <div className="col-12">
-                                        <div className="row">
-                                            <div className="col-auto">
-                                                <span className="active-signal"></span> Active{" "}
-                                                {userCount.active_carpenter}
-                                            </div>
-                                            <div className="col-auto">
-                                                <span className="inactive-signal"></span> Inactive{" "}
-                                                {userCount.inactive_carpenter}
-                                            </div>
-                                        </div>
-                                    </div>
+
+
+
+                            <hr style={{ margin: "0" }} />
+                            <div className="card-body">
+
+                                <div className="align-self-center w-100">
+
+
+                                    <table className="table mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <td><a href="#">Ajay Sen</a></td>
+                                                <td className="text-end">10000XP</td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#">Bijoy Sen</a></td>
+                                                <td className="text-end">8000XP</td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#">Laltu Karmakar</a></td>
+                                                <td className="text-end">5800XP</td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#">Abhijit Pal</a></td>
+                                                <td className="text-end">3250XP</td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#">Shyamal Poddar</a></td>
+                                                <td className="text-end">2000XP</td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#">Ajay Sen</a></td>
+                                                <td className="text-end">10000XP</td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#">Bijoy Sen</a></td>
+                                                <td className="text-end">8000XP</td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#">Laltu Karmakar</a></td>
+                                                <td className="text-end">5800XP</td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#">Abhijit Pal</a></td>
+                                                <td className="text-end">3250XP</td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#">Shyamal Poddar</a></td>
+                                                <td className="text-end">2000XP</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <Link to="/users/all-users" className="btn btn-primary mt-4">View Top 50</Link>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
-                        <div className="card">
-                            <div className="card-header">
-                                <h3 className="card-title mb-0">Vendor</h3>
+
+
+                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
+                        <div className="card w-100">
+                            <div className="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 className="card-title mb-0">State Wise Users</h5>
+                                    <div className="mt-2">
+                                        <span className="active-signal"></span> Active 1
+                                        <span className="inactive-signal ms-4"></span> Inactive 0
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2>255</h2>
+                                </div>
                             </div>
-                            <div className="card-body pt-0">
-                                <div className="row">
-                                    <div className="col-12">
-                                        <h1>{userCount.total_vendor}</h1>
-                                    </div>
-                                    <div className="col-12">
-                                        <div className="row">
-                                            <div className="col-auto">
-                                                <span className="active-signal"></span> Active{" "}
-                                                {userCount.active_vendor}
-                                            </div>
-                                            <div className="col-auto">
-                                                <span className="inactive-signal"></span> Inactive{" "}
-                                                {userCount.inactive_vendor}
-                                            </div>
-                                        </div>
-                                    </div>
+
+
+
+                            <hr style={{ margin: "0" }} />
+                            <div className="card-body">
+
+                                <div className="align-self-center w-100">
+
+
+                                    <table className="table mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <td>Assam</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Bihar</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Chhattisgarh</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Jharkhand</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Odisha</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tripura</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Uttar Pradesh</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>West Bengal</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                    <Link to="/analytics/user-analytic" className="btn btn-primary mt-4">View Analytics</Link>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
-                        <div className="card">
-                            <div className="card-header">
-                                <h3 className="card-title mb-0">Employee</h3>
-                            </div>
-                            <div className="card-body pt-0">
-                                <div className="row">
-                                    <div className="col-12">
-                                        <h1>{userCount.total_employee}</h1>
-                                    </div>
-                                    <div className="col-12">
-                                        <div className="row">
-                                            <div className="col-auto">
-                                                <span className="active-signal"></span> Active{" "}
-                                                {userCount.active_employee}
-                                            </div>
-                                            <div className="col-auto">
-                                                <span className="inactive-signal"></span> Inactive{" "}
-                                                {userCount.inactive_employee}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
-                </div>
-            )}
+
+            {/* {Object.keys(userCount).length > 0 && (
+                // <div className="row">
+                //     <div className="d-flex justify-content-between gap-3">
+                //         <div className="card w-100">
+                //             <div className="card-header">
+                //                 <h3 className="card-title mb-0">Carpenter</h3>
+                //             </div>
+                //             <div className="card-body pt-0">
+                //                 <div className="row">
+                //                     <div className="col-12">
+                //                         <h1>{userCount.total_carpenter}</h1>
+                //                     </div>
+                //                     <div className="col-12">
+                //                         <div className="row">
+                //                             <div className="col-auto">
+                //                                 <span className="active-signal"></span> Active{" "}
+                //                                 {userCount.active_carpenter}
+                //                             </div>
+                //                             <div className="col-auto">
+                //                                 <span className="inactive-signal"></span> Inactive{" "}
+                //                                 {userCount.inactive_carpenter}
+                //                             </div>
+                //                         </div>
+                //                     </div>
+                //                 </div>
+                //             </div>
+                //         </div>
+
+                //         <div className="card w-100">
+                //             <div className="card-header">
+                //                 <h3 className="card-title mb-0">Dealer</h3>
+                //             </div>
+                //             <div className="card-body pt-0">
+                //                 <div className="row">
+                //                     <div className="col-12">
+                //                         <h1>{userCount.total_employee}</h1>
+                //                     </div>
+                //                     <div className="col-12">
+                //                         <div className="row">
+                //                             <div className="col-auto">
+                //                                 <span className="active-signal"></span> Active{" "}
+                //                                 {userCount.active_employee}
+                //                             </div>
+                //                             <div className="col-auto">
+                //                                 <span className="inactive-signal"></span> Inactive{" "}
+                //                                 {userCount.inactive_employee}
+                //                             </div>
+                //                         </div>
+                //                     </div>
+                //                 </div>
+                //             </div>
+                //         </div>
+
+                //         <div className="card w-100">
+                //             <div className="card-header">
+                //                 <h3 className="card-title mb-0">Shop Owner</h3>
+                //             </div>
+                //             <div className="card-body pt-0">
+                //                 <div className="row">
+                //                     <div className="col-12">
+                //                         <h1>{userCount.total_vendor}</h1>
+                //                     </div>
+                //                     <div className="col-12">
+                //                         <div className="row">
+                //                             <div className="col-auto">
+                //                                 <span className="active-signal"></span> Active{" "}
+                //                                 {userCount.active_vendor}
+                //                             </div>
+                //                             <div className="col-auto">
+                //                                 <span className="inactive-signal"></span> Inactive{" "}
+                //                                 {userCount.inactive_vendor}
+                //                             </div>
+                //                         </div>
+                //                     </div>
+                //                 </div>
+                //             </div>
+                //         </div>
+
+                //         <div className="card w-100">
+                //             <div className="card-header">
+                //                 <h3 className="card-title mb-0">Dealer</h3>
+                //             </div>
+                //             <div className="card-body pt-0">
+                //                 <div className="row">
+                //                     <div className="col-12">
+                //                         <h1>{userCount.total_employee}</h1>
+                //                     </div>
+                //                     <div className="col-12">
+                //                         <div className="row">
+                //                             <div className="col-auto">
+                //                                 <span className="active-signal"></span> Active{" "}
+                //                                 {userCount.active_employee}
+                //                             </div>
+                //                             <div className="col-auto">
+                //                                 <span className="inactive-signal"></span> Inactive{" "}
+                //                                 {userCount.inactive_employee}
+                //                             </div>
+                //                         </div>
+                //                     </div>
+                //                 </div>
+                //             </div>
+                //         </div>
+
+                //         <div className="card w-100">
+                //             <div className="card-header">
+                //                 <h3 className="card-title mb-0">Retail User</h3>
+                //             </div>
+                //             <div className="card-body pt-0">
+                //                 <div className="row">
+                //                     <div className="col-12">
+                //                         <h1>{userCount.total_customer}</h1>
+                //                     </div>
+                //                     <div className="col-12">
+                //                         <div className="row">
+                //                             <div className="col-auto">
+                //                                 <span className="active-signal"></span> Active{" "}
+                //                                 {userCount.active_customer}
+                //                             </div>
+                //                             <div className="col-auto">
+                //                                 <span className="inactive-signal"></span> Inactive{" "}
+                //                                 {userCount.inactive_customer}
+                //                             </div>
+                //                         </div>
+                //                     </div>
+                //                 </div>
+                //             </div>
+                //         </div>
+                //     </div>
+
+
+
+
+
+
+                // </div>
+            )} */}
 
             <div className="row">
                 <div className="col-12">
                     <div className="card">
                         <div className="my-4 d-flex justify-content-end gap-3">
 
-                        <div>
+                            <div>
                                 <select
                                     className="form-select"
                                     defaultValue={selectedValue}
@@ -574,12 +800,12 @@ const AllUser = () => {
                             </div>
 
                             <div className="btn-group">
-                                <button className="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                                {date[0]?.startFilter  ? (
-                                `${format(date[0]?.startDate, 'dd-MM-yyyy')} - ${format(date[0]?.endDate, 'dd-MM-yyyy')}`
-                                ) : (
-                                'Select Custom Date'
-                                )}
+                                <button className="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                    {date[0]?.startFilter ? (
+                                        `${format(date[0]?.startDate, 'dd-MM-yyyy')} - ${format(date[0]?.endDate, 'dd-MM-yyyy')}`
+                                    ) : (
+                                        'Select Custom Date'
+                                    )}
 
                                 </button>
                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -601,12 +827,12 @@ const AllUser = () => {
                                     className="btn btn-primary"
                                     onClick={fiterViaDate}
                                 >
-                                    Filter By Date
+                                    Search
                                 </button>
                             </div>
 
-                           
-                         
+
+
 
                             <div className="search-input-outer">
                                 <input
@@ -658,9 +884,9 @@ const AllUser = () => {
                 </div>
             </div>
 
-            <UserInfomationModal 
+            <UserInfomationModal
                 singleUser={singleUser}
-            />		
+            />
         </div>
     );
 };

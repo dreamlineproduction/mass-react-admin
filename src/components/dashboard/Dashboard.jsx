@@ -195,13 +195,15 @@ const Dashboard = () => {
             }
             {Object.keys(dashboard).length > 0 && !dashboardLoading &&
                 <div className="row">
-                    <div className="col-12 col-md-6 col-xxl-3 d-flex">
+                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
                         <div className="card w-100">
                             <div className="card-header d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5 className="card-title mb-0">Total Users</h5>
-                                    <span className="active-signal"></span> Active {dashboard.active_user_count}
-                                    <span className="inactive-signal ms-4"></span> Inactive {dashboard.inactive_user_count}
+                                    <div className="mt-2">
+                                        <span className="active-signal"></span> Active {dashboard.active_user_count}
+                                        <span className="inactive-signal ms-4"></span> Inactive {dashboard.inactive_user_count}
+                                    </div>
                                 </div>
                                 <div>
                                     <h2>{dashboard.total_user_count}</h2>
@@ -247,13 +249,15 @@ const Dashboard = () => {
                     </div>
 
 
-                    <div className="col-12 col-md-6 col-xxl-3 d-flex">
+                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
                         <div className="card w-100">
                             <div className="card-header d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5 className="card-title mb-0">Total Products</h5>
-                                    <span className="active-signal"></span> Active {dashboard.active_product_count}
-                                    <span className="inactive-signal ms-4"></span> Inactive {dashboard.inactive_product_count}
+                                    <div className="mt-2">
+                                        <span className="active-signal"></span> Active {dashboard.active_product_count}
+                                        <span className="inactive-signal ms-4"></span> Inactive {dashboard.inactive_product_count}
+                                    </div>
                                 </div>
                                 <div>
                                     <h2>{dashboard.total_product_count}</h2>
@@ -296,15 +300,63 @@ const Dashboard = () => {
                     </div>
 
 
-                    <div className="col-12 col-md-6 col-xxl-3 d-flex">
+                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
                         <div className="card w-100">
                             <div className="card-header d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5 className="card-title mb-0">Total Redemption</h5>
-                                    
+
                                 </div>
                                 <div>
                                     <h2>{dashboard.total_redemption_count}</h2>
+                                </div>
+                            </div>
+
+
+
+                            <hr style={{ margin: "0" }} />
+                            <div className="card-body">
+
+                                <div className="align-self-center w-100 redemption">
+
+
+                                    <table className="table mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <td><span className="active-signal"></span> Delivered</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span className="transit-signal"></span> In-Transit</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span className="pending-signal"></span> Pending</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span className="inactive-signal"></span> Declined</td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                    <Link to="/redemptions/all-redemptions" className="btn btn-primary mt-4">All Redemption</Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
+                        <div className="card w-100">
+                            <div className="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 className="card-title mb-0">Top 6 Districts by Users</h5>
+
+                                </div>
+                                <div>
+                                    <h2>255</h2>
                                 </div>
                             </div>
 
@@ -319,25 +371,29 @@ const Dashboard = () => {
                                     <table className="table mb-0">
                                         <tbody>
                                             <tr>
-                                                <td>Delivered</td>
+                                                <td>North 24 Parganas <small className="text-muted">(West Bengal)</small></td>
                                                 <td className="text-end">4306</td>
                                             </tr>
                                             <tr>
-                                                <td>In-Transit</td>
+                                                <td>Pachim Bardhaman <small className="text-muted">(West Bengal)</small></td>
                                                 <td className="text-end">4306</td>
                                             </tr>
                                             <tr>
-                                                <td>Pending</td>
+                                                <td>Purba Bardhaman <small className="text-muted">(West Bengal)</small></td>
                                                 <td className="text-end">4306</td>
                                             </tr>
                                             <tr>
-                                                <td>Declined</td>
+                                                <td>Nadia <small className="text-muted">(West Bengal)</small></td>
+                                                <td className="text-end">4306</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Howrah <small className="text-muted">(West Bengal)</small></td>
                                                 <td className="text-end">4306</td>
                                             </tr>
 
                                         </tbody>
                                     </table>
-                                    <Link to="/redemptions/all-redemptions" className="btn btn-primary mt-4">All Products</Link>
+                                    <Link to="/analytics/product-analytic" className="btn btn-primary mt-4">View Analytics</Link>
                                 </div>
                             </div>
                         </div>
@@ -347,9 +403,7 @@ const Dashboard = () => {
 
 
 
-                 
-
-                    <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
+                    {/* <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
                         <div className="card">
                             <div className="card-header">
                                 <h3 className="card-title mb-0">Total Offers</h3>
@@ -373,7 +427,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             }
 
@@ -531,23 +585,30 @@ const Dashboard = () => {
                 <PageTitle title=" User Tracking" />
 
                 <div className="row">
-                    <div className="col-12">
-                        {mapLoading &&
-                            <div className="d-flex justify-content-center align-items-center">
-                                <Loading />
+                    <div className="col-6">
+                        <div className="card">
+                            <div className="card-body">
+                                {mapLoading &&
+                                    <div className="d-flex justify-content-center align-items-center">
+                                        <Loading />
+                                    </div>
+                                }
+
+                                {!mapLoading &&
+                                    <IndiaMap
+                                        stateInfo={mapData}
+                                    />
+                                }
                             </div>
-                        }
+                        </div>
+
                     </div>
 
-                    <div className="col-7">
-                        {!mapLoading &&
-                            <IndiaMap
-                                stateInfo={mapData}
-                            />
-                        }
-                    </div>
-                    <div className="col-5">
-                        {stateUsers.length === 0 && !mapLoading &&
+
+                    <div className="col-6">
+                        <div className="card">
+                            <div className="card-body">
+                            {stateUsers.length === 0 && !mapLoading &&
                             <NoState
                                 message="No state user found."
                             />
@@ -567,7 +628,7 @@ const Dashboard = () => {
                                         stateUsers.map(item => {
                                             return (
                                                 <tr key={item.id}>
-                                                    <th>{item.state_str}</th>
+                                                    <td>{item.state_str}</td>
                                                     <td>{item.total_user}</td>
                                                     <td>
                                                         <button
@@ -586,7 +647,13 @@ const Dashboard = () => {
                                 </tbody>
                             </table>
                         }
+                            </div>
+                        </div>
+
                     </div>
+
+                   
+                  
                 </div>
             </div>
 

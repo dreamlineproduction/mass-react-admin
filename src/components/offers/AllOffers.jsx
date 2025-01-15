@@ -27,7 +27,7 @@ const AllOffers = () => {
             />
         }},
         { header: 'Title', accessorKey: 'title' },
-        { header: 'In Homepage ?', accessorKey: 'is_home', enableSorting: false, cell: ({ row }) => {
+        { header: 'In Homepage', accessorKey: 'is_home', enableSorting: false, cell: ({ row }) => {
             return row.original.is_home ? 
                 <span className="badge bg-success">Yes</span> : 
                 <span className="badge bg-danger">No</span>;
