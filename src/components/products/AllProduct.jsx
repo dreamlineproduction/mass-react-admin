@@ -50,7 +50,7 @@ const AllProduct = () => {
                     return (
                         <>
                             {productSize.map((item) => (
-                                <span key={item.id} className="badge bg-primary me-1">
+                                <span key={item.id} className="d-inline-flex px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2 me-1">
                                     {item.size_custom}{item.size_in}
                                 </span>
                             ))}

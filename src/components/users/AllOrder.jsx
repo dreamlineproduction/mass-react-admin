@@ -68,18 +68,18 @@ const AllOrder = (props) => {
                                                 <td>{item.updated_at}</td>
                                                 <td>
                                                     {item.status === 1 &&
-                                                        <span className="badge bg-warning" style={{ fontWeight: "600" }}>Pending</span>
+                                                        <span className="d-inline-flex px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2" style={{ fontWeight: "600" }}>Pending</span>
                                                     }
 
                                                     {item.status === 2 &&
-                                                        <span className="badge bg-primary" style={{ fontWeight: "600" }}>In transit</span>
+                                                        <span className="d-inline-flex px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2" style={{ fontWeight: "600" }}>In transit</span>
                                                     }
 
                                                     {item.status === 3 &&
-                                                        <span className="badge bg-success" style={{ fontWeight: "600" }}>Delivered</span>
+                                                        <span className="d-inline-flex px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2" style={{ fontWeight: "600" }}>Delivered</span>
                                                     }
                                                     {item.status === 4 &&
-                                                        <span className="badge bg-danger" style={{ fontWeight: "600" }}>Decline</span>
+                                                        <span className="d-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2" style={{ fontWeight: "600" }}>Decline</span>
                                                     }
                                                 </td>
                                             </tr>

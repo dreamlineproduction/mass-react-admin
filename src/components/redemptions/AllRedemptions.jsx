@@ -195,16 +195,16 @@ const AllRedemptions = () => {
 											<td>{item?.order?.order_date ? item.order.order_date : 'N/A'}</td>
 											<td>
 												{item?.order?.status === 1 &&
-													<span className="badge bg-warning">Pending</span>
+													<span className="d-inline-flex px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">Pending</span>
 												}
 												{item?.order?.status === 2 &&
-													<span className="badge bg-primary">In transit</span>
+													<span className="d-inline-flex px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">In transit</span>
 												}
 												{item?.order?.status === 3 &&
-													<span className="badge bg-success">Delivered</span>
+													<span className="d-inline-flex px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">Delivered</span>
 												}
 												{item?.order?.status === 4 &&
-													<span className="badge bg-danger">Declined</span>
+													<span className="d-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">Declined</span>
 												}
 
 											</td>
