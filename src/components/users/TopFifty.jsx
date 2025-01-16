@@ -14,12 +14,15 @@ import PaginationDataTable from "../others/PaginationDataTable";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
 import { BiCloudDownload } from "react-icons/bi";
+import UserInfomationModal from "./UserInfomationModal";
 
 
 const TopFifty = () => {
     const navigate = useNavigate();
     const { Auth, hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
+    const [singleUser, setSingleUser] = useState({});
+
 
     const columns = useMemo(() => [
         { 
@@ -78,12 +81,7 @@ const TopFifty = () => {
             },
         },
         { accessorKey: "phone", header: "Phone", enableSorting: false },
-        {
-            accessorKey: "city",
-            header: "City",
-            enableSorting: false,
-            cell: ({ row }) => row.original.city ? row.original.city : 'N/A'
-        },
+        
         {
             accessorKey: "state_str",
             header: "State",
@@ -91,32 +89,21 @@ const TopFifty = () => {
             cell: ({ row }) => row.original.state_str ? row.original.state_str : 'N/A'
         },
         {
-            accessorKey: "area", header: "Area", enableSorting: false,
-            cell: ({ row }) => row.original.area ? row.original.area : 'N/A'
-        },
-        { accessorKey: "created_at", header: "Joined Date", enableSorting: false },
-        {
-            accessorKey: "source", header: "Source", enableSorting: false,
-            cell: ({ row }) => row.original.source ? row.original.source : 'N/A'
-        },
-
-        {
-            accessorKey: "referral_code",
-            header: "Referral Code",
-            enableSorting: false,
-            cell: ({ row }) => row.original.referral_code ? row.original.referral_code : 'N/A'
-        },
-        {
-            accessorKey: "employee_code",
-            header: "Employee Code",
-            enableSorting: false,
-            cell: ({ row }) => row.original.employee_code ? row.original.employee_code : 'N/A'
-        },
-
-        { accessorKey: "scan_product_count", header: "Total Product Scanned", enableSorting: false },
-        { accessorKey: "total_xp", header: "Total XP", enableSorting: false },
-        { accessorKey: "balance_xp", header: "Current XP Balance", enableSorting: false },
-        { accessorKey: "order_count", header: "Total Redeemed", enableSorting: false },
+            accessorKey: "more",
+            header: "View More",
+            cell: ({ row }) => {
+                return (
+                    <button
+                        data-bs-toggle="modal"
+                        data-bs-target="#viewMoreUserInfoModal"
+                        className="btn btn-primary"
+                        onClick={() => {
+                            setSingleUser(row.original)
+                        }}>
+                        View More
+                    </button>)
+            }
+        },        
         {
             accessorKey: "status",
             header: "Status",
@@ -204,7 +191,7 @@ const TopFifty = () => {
         try {
             let response = await actionFetchData(`${API_URL}/users/50/top?${new URLSearchParams(params)}`, accessToken);
             response = await response.json();
-            if (response.status) {
+            if (response.status === 200) {
                 setUsers(response.data.data);
                 setPageCount(response.totalPage);
             }
@@ -420,7 +407,9 @@ const TopFifty = () => {
             </div>
 
 
-
+            <UserInfomationModal
+                singleUser={singleUser}
+            />
         </div>
     );
 

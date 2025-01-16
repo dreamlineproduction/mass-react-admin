@@ -3,23 +3,27 @@ import PageTitle from "../others/PageTitle";
 import { useContext, useEffect, useState } from "react";
 import AuthContext from "../../context/auth";
 import { actionFetchData } from "../../actions/actions";
-import { API_URL, exportToExcel } from "../../config";
+import { API_URL, configPermission, exportToExcel, getValueOrDefault } from "../../config";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
 import Pagination from "../others/Pagination";
 import { BiCloudDownload } from "react-icons/bi";
 import IndiaMap from "./IndiaMap";
 import BsModal from "../others/BsModal";
+import TopCard from "../others/TopCard";
 
 const Dashboard = () => {
-    const { Auth } = useContext(AuthContext)
+    const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
     const perPage = 20;
 
-    const [dashboardLoading, setDashboardLoading] = useState(true);
-    const [dashboard, setDashboard] = useState({});
-    const [stateUsers, setStateUser] = useState([]);
-    const [cityUsers, setCityUser] = useState([]);
+    const [userRoleCount,setUserRoleCount] = useState("");
+    const [products,setProduct] = useState("");
+
+    // const [dashboardLoading, setDashboardLoading] = useState(true);
+    // const [dashboard, setDashboard] = useState({});
+    // const [stateUsers, setStateUser] = useState([]);
+    //const [cityUsers, setCityUser] = useState([]);
 
     // Transaction State
     const [loadingTransaction, setLoadingTransaction] = useState(true);
@@ -47,17 +51,36 @@ const Dashboard = () => {
     const [mapData, setMapData] = useState(null);
 
 
-
-    const fetchDashboard = async () => {
-        //--Fetch Data
-        let response = await actionFetchData(`${API_URL}/dashboard`, accessToken);
-        response = await response.json();
-
-        if (response.status) {
-            setDashboard(response);
-            setStateUser(response.users)
-            setDashboardLoading(false)
+    // Fetch Data user count
+    const fetchRoleCountUser = async () => {
+        const result = await actionFetchData(`${API_URL}/users/roles/count`,accessToken)
+        const response = await result.json()
+        if(response.status === 200)
+        {
+            setUserRoleCount(response)
         }
+    };
+    // Fetch Data user count
+    const fetchProductCount = async () => {
+        const result = await actionFetchData(`${API_URL}/dashboard/products?page=1&perPage=5`,accessToken)
+        const response = await result.json()
+        if(response.status === 200)
+        {
+            setProduct(response)
+        }
+    };
+
+    
+    const fetchDashboard = async () => {
+        // //--Fetch Data
+        // let response = await actionFetchData(`${API_URL}/dashboard`, accessToken);
+        // response = await response.json();
+
+        // if (response.status) {
+        //     setDashboard(response);
+        //     setStateUser(response.users)
+        //     setDashboardLoading(false)
+        // }
     }
 
     const fetchTransaction = async () => {
@@ -161,6 +184,8 @@ const Dashboard = () => {
     }
 
     useEffect(() => {
+        fetchRoleCountUser()
+        fetchProductCount();
         fetchDashboard();
         fetchMap();
 
@@ -178,11 +203,10 @@ const Dashboard = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageNumberQrCode])
 
-
     return (
         <div>
             <PageTitle title="Dashboard" />
-            {dashboardLoading &&
+            {/*dashboardLoading &&
                 <div className="row">
                     <div className="col-12">
                         <div className="card">
@@ -191,116 +215,58 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>*/
             }
-            {Object.keys(dashboard).length > 0 && !dashboardLoading &&
                 <div className="row">
-                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
-                        <div className="card w-100">
-                            <div className="card-header d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 className="card-title mb-0">Total Users</h5>
-                                    <div className="mt-2">
-                                        <span className="active-signal"></span> Active {dashboard.active_user_count}
-                                        <span className="inactive-signal ms-4"></span> Inactive {dashboard.inactive_user_count}
-                                    </div>
-                                </div>
-                                <div>
-                                    <h2>{dashboard.total_user_count}</h2>
-                                </div>
-                            </div>
+                    <TopCard   
+                        title="Total Users"                        
+                        active={getValueOrDefault(userRoleCount.active_user,0)}
+                        inactive={getValueOrDefault(userRoleCount.inactive_user,0)}
+                        total={getValueOrDefault(userRoleCount.total_user,0)}
+                        buttonLink={hasPermission(configPermission.VIEW_USER) ? '/users/all-users' : null}
+                        buttonLabel={hasPermission(configPermission.VIEW_USER) ? 'All Users' : null}
+                    >
+                        {userRoleCount?.data?.length > 0 ?
+                            <table className="table mb-0">
+                                <tbody>
+                                    {userRoleCount.data.map(item =>
+                                        <tr key={item.role_id}>
+                                            <td>{item.name}</td>
+                                            <td className="text-end">{item.total_user}</td>
+                                        </tr>  
+                                    )}                                                                      
+                                </tbody>
+                            </table>
+                            :
+                            <NoState />
+                        }                        
+                    </TopCard>
+
+                    <TopCard   
+                        title="Total Products"                        
+                        active={getValueOrDefault(products.active_product,0)}
+                        inactive={getValueOrDefault(products.inactive_product,0)}
+                        total={getValueOrDefault(products.total_product,0)}
+                        buttonLink={hasPermission(configPermission.VIEW_PRODUCT) ? '/products/all-products' : null}
+                        buttonLabel={hasPermission(configPermission.VIEW_PRODUCT) ? 'All Product' : null}
+                    >
+                        {products?.data?.length > 0 ?
+                            <table className="table mb-0">
+                                <tbody>
+                                    {products.data.map(item =>
+                                        <tr key={item.id}>
+                                            <td>{item.short_name}</td>
+                                        </tr>  
+                                    )}                                                                      
+                                </tbody>
+                            </table>
+                            :
+                            <NoState />
+                        }                        
+                    </TopCard>
 
 
-
-                            <hr style={{ margin: "0" }} />
-                            <div className="card-body">
-
-                                <div className="align-self-center w-100">
-
-
-                                    <table className="table mb-0">
-                                        <tbody>
-                                            <tr>
-                                                <td>Carpenter</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Contractor</td>
-                                                <td className="text-end">3801</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Shop Owner</td>
-                                                <td className="text-end">1689</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Dealer</td>
-                                                <td className="text-end">1689</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Retail User</td>
-                                                <td className="text-end">1689</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <Link to="/users/all-users" className="btn btn-primary mt-4">All Users</Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
-                        <div className="card w-100">
-                            <div className="card-header d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 className="card-title mb-0">Total Products</h5>
-                                    <div className="mt-2">
-                                        <span className="active-signal"></span> Active {dashboard.active_product_count}
-                                        <span className="inactive-signal ms-4"></span> Inactive {dashboard.inactive_product_count}
-                                    </div>
-                                </div>
-                                <div>
-                                    <h2>{dashboard.total_product_count}</h2>
-                                </div>
-                            </div>
-
-
-
-                            <hr style={{ margin: "0" }} />
-                            <div className="card-body">
-
-                                <div className="align-self-center w-100">
-
-
-                                    <table className="table mb-0">
-                                        <tbody>
-                                            <tr>
-                                                <td>Mass Wood Polish</td>
-
-                                            </tr>
-                                            <tr>
-                                                <td>Mass Wood Polish</td>
-
-                                            </tr>
-                                            <tr>
-                                                <td>Mass Wood Polish</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Mass Wood Polish</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Mass Wood Polish</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <Link to="/products/all-products" className="btn btn-primary mt-4">All Products</Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
+                    {/* <div className="col-12 col-md-3 col-xxl-3 d-flex">
                         <div className="card w-100">
                             <div className="card-header d-flex justify-content-between align-items-center">
                                 <div>
@@ -346,8 +312,6 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-
-
                     <div className="col-12 col-md-3 col-xxl-3 d-flex">
                         <div className="card w-100">
                             <div className="card-header d-flex justify-content-between align-items-center">
@@ -397,39 +361,8 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-
-
-
-
-                    {/* <div className="col-12 col-sm-6 col-xl-4 col-xxl-3">
-                        <div className="card">
-                            <div className="card-header">
-                                <h3 className="card-title mb-0">Total Offers</h3>
-                            </div>
-                            <div className="card-body pt-0">
-                                <div className="row">
-                                    <div className="col-12">
-                                        <h1>{dashboard.total_offer_count}</h1>
-                                    </div>
-                                    <div className="col-12">
-                                        <div className="row">
-                                            <div className="col-auto">
-                                                <span className="active-signal"></span> Active {dashboard.active_offer_count}
-                                            </div>
-                                            <div className="col-auto">
-                                                <span className="inactive-signal"></span> Inactive {dashboard.inactive_offer_count}
-                                            </div>
-                                        </div>
-                                        <Link to="/offers/all-offers" className="btn btn-primary mt-4">All Offers</Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
+                    </div>                     */}
                 </div>
-            }
 
             <div className="mt-4">
                 <PageTitle
@@ -605,7 +538,7 @@ const Dashboard = () => {
                     </div>
 
 
-                    <div className="col-6">
+                    {/* <div className="col-6">
                         <div className="card">
                             <div className="card-body">
                             {stateUsers.length === 0 && !mapLoading &&
@@ -650,7 +583,7 @@ const Dashboard = () => {
                             </div>
                         </div>
 
-                    </div>
+                    </div> */}
 
                    
                   
@@ -658,7 +591,7 @@ const Dashboard = () => {
             </div>
 
             {/* Modals */}
-            <BsModal
+            {/* <BsModal
                 modalId="cityModal"
                 title={manageUi.selectedState}
                 size="xl"
@@ -730,7 +663,7 @@ const Dashboard = () => {
                         </table>
                     </div>
                 }
-            </BsModal>
+            </BsModal> */}
         </div>
     );
 };

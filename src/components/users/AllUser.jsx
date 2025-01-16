@@ -30,6 +30,7 @@ import "react-date-range/dist/styles.css"; // Main style file
 import "react-date-range/dist/theme/default.css"; // Theme CSS file
 import BsModal from "../others/BsModal";
 import UserInfomationModal from "./UserInfomationModal";
+import TopCard from "../others/TopCard";
 
 const AllUser = () => {
     const navigate = useNavigate();
@@ -211,8 +212,11 @@ const AllUser = () => {
         []
     );
 
+    const [userRoleCount,setUserRoleCount] = useState("");
+    const [userStateCount,setUserStateCount] = useState("");
+    const [userTopTen,setTopTen] = useState([]);
+
     const [users, setUsers] = useState([]);
-    const [userCount, setUserCount] = useState("");
 
     const [pageCount, setPageCount] = useState(0);
     const [isLoading, setLoading] = useState(false);
@@ -385,16 +389,41 @@ const AllUser = () => {
     };
 
     // Fetch Data user count
-    const fetchUserCount = async () => {
-        let response = await actionFetchData(
-            `${API_URL}/users/roles/count`,
-            accessToken
-        );
-        response = await response.json();
-        if (response.status === 200) {
-            setUserCount(response);
+    const fetchRoleCountUser = async () => {
+        const result = await actionFetchData(`${API_URL}/users/roles/count`,accessToken)
+        const response = await result.json()
+        if(response.status === 200)
+        {
+            setUserRoleCount(response)
         }
     };
+
+    // Fetch top ten users
+    const fetchTop = async () => {
+        const params = {
+            page: pageIndex + 1,
+            perPage: pageSize,
+        };
+       
+        try {
+            let response = await actionFetchData(`${API_URL}/users/10/top?${new URLSearchParams(params)}`, accessToken);
+            response = await response.json();
+            if (response.status === 200) {
+                setTopTen(response.data.data);
+            }
+        } catch (error) {
+            toast.error(error)
+        }
+    }
+
+    const fetchStateCountUser = async() => {
+        const result = await actionFetchData(`${API_URL}/users/states/count`,accessToken)
+        const response = await result.json()
+        if(response.status === 200)
+        {
+            setUserStateCount(response)
+        }
+    }
 
     const table = useReactTable({
         data: users,
@@ -416,8 +445,9 @@ const AllUser = () => {
     });
 
     useEffect(() => {
-        fetchUserCount();
-
+        fetchRoleCountUser();
+        fetchTop()
+        fetchStateCountUser();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -425,365 +455,101 @@ const AllUser = () => {
         if (!hasPermission(configPermission.VIEW_USER) && !isLoading) {
             navigate("/403");
         }
-        fetchData();
+        fetchData();       
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageIndex, pageSize, sorting, globalFilter, selectedValue]);
 
     return (
         <div>
             <PageTitle
-                title="All Users"
-                // buttonLink={
-                //     hasPermission(configPermission.ADD_USER) ? "/users/add-user" : null
-                // }
-                // buttonLabel={
-                //     hasPermission(configPermission.ADD_USER) ? "+ Add New User" : null
-                // }
+                title="All Users"               
             />
 
+            {isLoading && <Loading />}
 
+            <div className="row">
+                <TopCard   
+                    title="Total Users"                        
+                    active={getValueOrDefault(userRoleCount.active_user,0)}
+                    inactive={getValueOrDefault(userRoleCount.inactive_user,0)}
+                    total={getValueOrDefault(userRoleCount.total_user,0)}
+                    buttonLabel={'View Top 50'}
+                    buttonLink={''}
+                >
+                    {userRoleCount?.data?.length > 0 ?
+                        <table className="table mb-0">
+                            <tbody>
+                                {userRoleCount.data.map(item =>
+                                    <tr key={item.role_id}>
+                                        <td>{item.name}</td>
+                                        <td className="text-end">{item.total_user}</td>
+                                    </tr>  
+                                )}                                                                      
+                            </tbody>
+                        </table>
+                        :
+                        <NoState />
+                    }                        
+                </TopCard>
 
+                <TopCard
+                    title="Top 10 Users"
+                    showActive={false}
+                    buttonLabel={'View Top 50'}
+                    buttonLink={'/users/all-users'}
+                    total={10}
+                >
+                    {userTopTen.length  > 0 ?                                
+                        <table className="table mb-0">
+                            <tbody>                                        
+                                {userTopTen.map(item => 
+                                    <tr key={item.id}>
+                                        <td>
+                                            <Link to={`/users/edit-user/${item.id}`}>{item.name}</Link>
+                                        </td>
+                                        <td className="text-end">{getValueOrDefault(item.total_xp,'0')}XP</td>
+                                    </tr>
+                                )}                                                                            
+                            </tbody>
+                        </table>
+                        :
+                        <NoState />
+                    }
+                </TopCard>
+                
+                <TopCard
+                    title="State Wise Users" 
+                    active={getValueOrDefault(userStateCount.active_user,0)}
+                    inactive={getValueOrDefault(userStateCount.inactive_user,0)}                 
+                    buttonLabel={'View Analytics'}
+                    buttonLink={'/analytics/user-analytic'}
+                    total={getValueOrDefault(userStateCount.total_user,0)}
+                >
+                    {userStateCount?.data?.length  > 0 ?                                
+                        <table className="table mb-0">
+                            <tbody>                                        
+                                {userStateCount.data.map(item => 
+                                    <tr key={item.id}>
+                                        <td>
+                                            {item.state_str}
+                                        </td>
+                                        <td className="text-end">{item.total_user}</td>
+                                    </tr>
+                                )}                                                                            
+                            </tbody>
+                        </table>
+                        :
+                        <NoState />
+                    }
+                </TopCard>                    
+            </div>
 
-<div className="row">
-                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
-                        <div className="card w-100">
-                            <div className="card-header d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 className="card-title mb-0">Total Users</h5>
-                                    <div className="mt-2">
-                                        <span className="active-signal"></span> Active 1
-                                        <span className="inactive-signal ms-4"></span> Inactive 0
-                                    </div>
-                                </div>
-                                <div>
-                                    <h2>255</h2>
-                                </div>
-                            </div>
-
-
-
-                            <hr style={{ margin: "0" }} />
-                            <div className="card-body">
-
-                                <div className="align-self-center w-100">
-
-
-                                    <table className="table mb-0">
-                                        <tbody>
-                                            <tr>
-                                                <td>Carpenter</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Contractor</td>
-                                                <td className="text-end">3801</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Shop Owner</td>
-                                                <td className="text-end">1689</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Dealer</td>
-                                                <td className="text-end">1689</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Retail User</td>
-                                                <td className="text-end">1689</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <Link to="/users/all-users" className="btn btn-primary mt-4">All Users</Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
-                        <div className="card w-100">
-                            <div className="card-header d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 className="card-title mb-0">Top 10 Users</h5>
-                                    <div className="mt-2">
-                                        <span className="active-signal"></span> Active 1
-                                        <span className="inactive-signal ms-4"></span> Inactive 0
-                                    </div>
-                                </div>
-                                <div>
-                                    <h2>255</h2>
-                                </div>
-                            </div>
-
-
-
-                            <hr style={{ margin: "0" }} />
-                            <div className="card-body">
-
-                                <div className="align-self-center w-100">
-
-
-                                    <table className="table mb-0">
-                                        <tbody>
-                                            <tr>
-                                                <td><a href="#">Ajay Sen</a></td>
-                                                <td className="text-end">10000XP</td>
-                                            </tr>
-                                            <tr>
-                                                <td><a href="#">Bijoy Sen</a></td>
-                                                <td className="text-end">8000XP</td>
-                                            </tr>
-                                            <tr>
-                                                <td><a href="#">Laltu Karmakar</a></td>
-                                                <td className="text-end">5800XP</td>
-                                            </tr>
-                                            <tr>
-                                                <td><a href="#">Abhijit Pal</a></td>
-                                                <td className="text-end">3250XP</td>
-                                            </tr>
-                                            <tr>
-                                                <td><a href="#">Shyamal Poddar</a></td>
-                                                <td className="text-end">2000XP</td>
-                                            </tr>
-                                            <tr>
-                                                <td><a href="#">Ajay Sen</a></td>
-                                                <td className="text-end">10000XP</td>
-                                            </tr>
-                                            <tr>
-                                                <td><a href="#">Bijoy Sen</a></td>
-                                                <td className="text-end">8000XP</td>
-                                            </tr>
-                                            <tr>
-                                                <td><a href="#">Laltu Karmakar</a></td>
-                                                <td className="text-end">5800XP</td>
-                                            </tr>
-                                            <tr>
-                                                <td><a href="#">Abhijit Pal</a></td>
-                                                <td className="text-end">3250XP</td>
-                                            </tr>
-                                            <tr>
-                                                <td><a href="#">Shyamal Poddar</a></td>
-                                                <td className="text-end">2000XP</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <Link to="/users/all-users" className="btn btn-primary mt-4">View Top 50</Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
-                        <div className="card w-100">
-                            <div className="card-header d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 className="card-title mb-0">State Wise Users</h5>
-                                    <div className="mt-2">
-                                        <span className="active-signal"></span> Active 1
-                                        <span className="inactive-signal ms-4"></span> Inactive 0
-                                    </div>
-                                </div>
-                                <div>
-                                    <h2>255</h2>
-                                </div>
-                            </div>
-
-
-
-                            <hr style={{ margin: "0" }} />
-                            <div className="card-body">
-
-                                <div className="align-self-center w-100">
-
-
-                                    <table className="table mb-0">
-                                        <tbody>
-                                            <tr>
-                                                <td>Assam</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Bihar</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Chhattisgarh</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Jharkhand</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Odisha</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Tripura</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Uttar Pradesh</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>West Bengal</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-
-                                        </tbody>
-                                    </table>
-                                    <Link to="/analytics/user-analytic" className="btn btn-primary mt-4">View Analytics</Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    </div>
-
-            {/* {Object.keys(userCount).length > 0 && (
-                // <div className="row">
-                //     <div className="d-flex justify-content-between gap-3">
-                //         <div className="card w-100">
-                //             <div className="card-header">
-                //                 <h3 className="card-title mb-0">Carpenter</h3>
-                //             </div>
-                //             <div className="card-body pt-0">
-                //                 <div className="row">
-                //                     <div className="col-12">
-                //                         <h1>{userCount.total_carpenter}</h1>
-                //                     </div>
-                //                     <div className="col-12">
-                //                         <div className="row">
-                //                             <div className="col-auto">
-                //                                 <span className="active-signal"></span> Active{" "}
-                //                                 {userCount.active_carpenter}
-                //                             </div>
-                //                             <div className="col-auto">
-                //                                 <span className="inactive-signal"></span> Inactive{" "}
-                //                                 {userCount.inactive_carpenter}
-                //                             </div>
-                //                         </div>
-                //                     </div>
-                //                 </div>
-                //             </div>
-                //         </div>
-
-                //         <div className="card w-100">
-                //             <div className="card-header">
-                //                 <h3 className="card-title mb-0">Dealer</h3>
-                //             </div>
-                //             <div className="card-body pt-0">
-                //                 <div className="row">
-                //                     <div className="col-12">
-                //                         <h1>{userCount.total_employee}</h1>
-                //                     </div>
-                //                     <div className="col-12">
-                //                         <div className="row">
-                //                             <div className="col-auto">
-                //                                 <span className="active-signal"></span> Active{" "}
-                //                                 {userCount.active_employee}
-                //                             </div>
-                //                             <div className="col-auto">
-                //                                 <span className="inactive-signal"></span> Inactive{" "}
-                //                                 {userCount.inactive_employee}
-                //                             </div>
-                //                         </div>
-                //                     </div>
-                //                 </div>
-                //             </div>
-                //         </div>
-
-                //         <div className="card w-100">
-                //             <div className="card-header">
-                //                 <h3 className="card-title mb-0">Shop Owner</h3>
-                //             </div>
-                //             <div className="card-body pt-0">
-                //                 <div className="row">
-                //                     <div className="col-12">
-                //                         <h1>{userCount.total_vendor}</h1>
-                //                     </div>
-                //                     <div className="col-12">
-                //                         <div className="row">
-                //                             <div className="col-auto">
-                //                                 <span className="active-signal"></span> Active{" "}
-                //                                 {userCount.active_vendor}
-                //                             </div>
-                //                             <div className="col-auto">
-                //                                 <span className="inactive-signal"></span> Inactive{" "}
-                //                                 {userCount.inactive_vendor}
-                //                             </div>
-                //                         </div>
-                //                     </div>
-                //                 </div>
-                //             </div>
-                //         </div>
-
-                //         <div className="card w-100">
-                //             <div className="card-header">
-                //                 <h3 className="card-title mb-0">Dealer</h3>
-                //             </div>
-                //             <div className="card-body pt-0">
-                //                 <div className="row">
-                //                     <div className="col-12">
-                //                         <h1>{userCount.total_employee}</h1>
-                //                     </div>
-                //                     <div className="col-12">
-                //                         <div className="row">
-                //                             <div className="col-auto">
-                //                                 <span className="active-signal"></span> Active{" "}
-                //                                 {userCount.active_employee}
-                //                             </div>
-                //                             <div className="col-auto">
-                //                                 <span className="inactive-signal"></span> Inactive{" "}
-                //                                 {userCount.inactive_employee}
-                //                             </div>
-                //                         </div>
-                //                     </div>
-                //                 </div>
-                //             </div>
-                //         </div>
-
-                //         <div className="card w-100">
-                //             <div className="card-header">
-                //                 <h3 className="card-title mb-0">Retail User</h3>
-                //             </div>
-                //             <div className="card-body pt-0">
-                //                 <div className="row">
-                //                     <div className="col-12">
-                //                         <h1>{userCount.total_customer}</h1>
-                //                     </div>
-                //                     <div className="col-12">
-                //                         <div className="row">
-                //                             <div className="col-auto">
-                //                                 <span className="active-signal"></span> Active{" "}
-                //                                 {userCount.active_customer}
-                //                             </div>
-                //                             <div className="col-auto">
-                //                                 <span className="inactive-signal"></span> Inactive{" "}
-                //                                 {userCount.inactive_customer}
-                //                             </div>
-                //                         </div>
-                //                     </div>
-                //                 </div>
-                //             </div>
-                //         </div>
-                //     </div>
-
-
-
-
-
-
-                // </div>
-            )} */}
+          
 
             <div className="row">
                 <div className="col-12">
                     <div className="card">
                         <div className="my-4 d-flex justify-content-end gap-3">
-
                             <div>
                                 <select
                                     className="form-select"
@@ -830,10 +596,6 @@ const AllUser = () => {
                                     Search
                                 </button>
                             </div>
-
-
-
-
                             <div className="search-input-outer">
                                 <input
                                     onChange={(e) => setGlobalFilter(e.target.value)}
@@ -859,9 +621,8 @@ const AllUser = () => {
                                     Reset Filters
                                 </button>
                             </div>
-                        </div>
+                        </div>                       
 
-                        {isLoading && <Loading />}
                         {!isLoading && users.length === 0 && (
                             <NoState message="No users found." />
                         )}
