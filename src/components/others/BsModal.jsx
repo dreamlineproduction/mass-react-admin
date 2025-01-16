@@ -6,7 +6,7 @@ const BsModal = ({
     children='Modal Body', 
     showCloseBtn = true,
     size = 'xl',
-    modalRef=''
+    modalRef=null
 }) => {
     return (
         <div 
@@ -19,8 +19,9 @@ const BsModal = ({
                     <div className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-4">{title}</h1>
-                                <button         ref={modalRef}
- type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button         
+                                    ref={modalRef}
+                                    type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
                             {children}
