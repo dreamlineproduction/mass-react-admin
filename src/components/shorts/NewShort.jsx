@@ -15,6 +15,7 @@ const NewShort = () => {
 	const accessToken = Auth('accessToken');
 	const navigate = useNavigate();
 
+	const [title,setTitle] = useState('')
 	const [caption,setCaption] = useState('')
 	const [fileData, setFileData] = useState({
 		imageUrl:"",
@@ -151,6 +152,7 @@ const NewShort = () => {
 										type="text"
 										id="title"
 										name="title"
+										onChange={(e) => setTitle(e.target.value)}
 										placeholder="Enter short's title"
 									/>
 									<p className="invalid-feedback">{errors.title?.message}</p>
@@ -240,8 +242,11 @@ const NewShort = () => {
 								<div className="short-preview">
 									<div className="phone-frame">
 										<div className='short-title-preview'>
-											<h6>Short Title</h6>
-											<p>Short Description</p>
+											<h6>{title}</h6>
+											{caption &&
+												<p>{caption}</p>
+											}
+											
 										</div>
 										{fileData.type === 'image' &&
 											<img style={{borderRadius:"10px"}} src={fileData.imageUrl ? fileData.imageUrl : 'https://placehold.co/400x650?text=Upload+Content'} alt="" />
