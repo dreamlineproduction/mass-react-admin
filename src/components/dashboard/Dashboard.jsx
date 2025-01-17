@@ -22,11 +22,11 @@ const Dashboard = () => {
     const [products,setProduct] = useState("");
     const [orders,setOrder] = useState("");
     const [district,setDistrict] = useState([]);
+    const [stateUsers, setStateUser] = useState([]);
+    const [cityUsers, setCityUser] = useState([]);
 
     
-    // const [dashboard, setDashboard] = useState({});
-    // const [stateUsers, setStateUser] = useState([]);
-    //const [cityUsers, setCityUser] = useState([]);
+   
 
     // Transaction State
     const [loadingTransaction, setLoadingTransaction] = useState(true);
@@ -55,10 +55,10 @@ const Dashboard = () => {
 
 
     
-
-    
+  
     const fetchDashboard = async () => {
 
+        // Card 1 Total Users
         const result = await actionFetchData(`${API_URL}/users/roles/count`,accessToken)
         const response = await result.json()
         if(response.status === 200)
@@ -66,6 +66,7 @@ const Dashboard = () => {
             setUserRoleCount(response)
         }
 
+        // Card 2 Total Products
         const resultI = await actionFetchData(`${API_URL}/dashboard/products?page=1&perPage=5`,accessToken)
         const responseI = await resultI.json()
         if(responseI.status === 200)
@@ -73,6 +74,7 @@ const Dashboard = () => {
             setProduct(responseI)
         }
 
+        // Card 3 Total Redemption
         const resultII = await actionFetchData(`${API_URL}/dashboard/redemption`,accessToken)
         const responseII = await resultII.json()
         if(responseII.status === 200)
@@ -80,14 +82,31 @@ const Dashboard = () => {
             setOrder(responseII)
         }
 
+        // Card 4 Top 6 Districts by Users
         const resultIII = await actionFetchData(`${API_URL}/users/district/count?limit=6`,accessToken)
         const responseIII = await resultIII.json()
         if(responseIII.status === 200)
         {
             setDistrict(responseIII.data)
-            setDashboardLoading();
         }
         
+        // Card 5 States and total users 
+        const resultIV = await actionFetchData(`${API_URL}/users/states/count`,accessToken)
+        const responseIV = await resultIV.json()
+        if(responseIV.status === 200)
+        {
+            setStateUser(responseIV.data)
+            setDashboardLoading();
+        }
+
+        //--Fetch Data
+        const resultV = await actionFetchData(`${API_URL}/dashboard/map-data`, accessToken);
+        const responseV = await resultV.json();
+
+        if (responseV.status) {
+            setMapData(responseV.data);
+            setMapLoading(false);
+        }
     }
 
     const fetchTransaction = async () => {
@@ -131,7 +150,6 @@ const Dashboard = () => {
         exportToExcel(data);
     };
 
-
     // Fetch data
     const fetchQrCodes = async () => {
         setLoadingQrCode(true);
@@ -148,7 +166,6 @@ const Dashboard = () => {
 
 
     const handleStateShowModal = async (state) => {
-        //setVisible(true)
 
         setManageUi({ ...manageUi, loadingModal: true, selectedState: state });
 
@@ -161,6 +178,7 @@ const Dashboard = () => {
             setCityUser(response.users);
         }
         setManageUi({ ...manageUi, loadingModal: false, selectedState: state });
+
     }
 
     const exportCityUserToExcel = () => {
@@ -176,24 +194,9 @@ const Dashboard = () => {
 
         exportToExcel(data);
     }
-
-
-
-    const fetchMap = async () => {
-        //--Fetch Data
-        let response = await actionFetchData(`${API_URL}/dashboard/map-data`, accessToken);
-        response = await response.json();
-
-        if (response.status) {
-            setMapData(response.data);
-            setMapLoading(false);
-        }
-    }
-
+   
     useEffect(() => {
         fetchDashboard();
-        fetchMap();
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -235,7 +238,7 @@ const Dashboard = () => {
                         <table className="table mb-0">
                             <tbody>
                                 {userRoleCount.data.map(item =>
-                                    <tr key={item.role_id}>
+                                    <tr key={`roles-${item.role_id}`}>
                                         <td>{item.name}</td>
                                         <td className="text-end">{item.total_user}</td>
                                     </tr>  
@@ -259,7 +262,7 @@ const Dashboard = () => {
                         <table className="table mb-0">
                             <tbody>
                                 {products.data.map(item =>
-                                    <tr key={item.id}>
+                                    <tr key={`products-${item.id}`}>
                                         <td>{item.short_name}</td>
                                     </tr>  
                                 )}                                                                      
@@ -314,7 +317,7 @@ const Dashboard = () => {
                         <table className="table mb-0">
                             <tbody>
                                 {district.map(item => 
-                                    <tr>
+                                    <tr key={`district-${item.id}`}>
                                         <td>{item.district} <small className="text-muted">({item.state_str})</small></td>
                                         <td className="text-end">{item.total_user}</td>
                                     </tr>
@@ -507,7 +510,7 @@ const Dashboard = () => {
                     </div>
 
 
-                    {/* <div className="col-6">
+                    <div className="col-6">
                         <div className="card">
                             <div className="card-body">
                             {stateUsers.length === 0 && !mapLoading &&
@@ -527,9 +530,9 @@ const Dashboard = () => {
                                 </thead>
                                 <tbody>
                                     {
-                                        stateUsers.map(item => {
+                                        stateUsers.map((item,index) => {
                                             return (
-                                                <tr key={item.id}>
+                                                <tr key={index}>
                                                     <td>{item.state_str}</td>
                                                     <td>{item.total_user}</td>
                                                     <td>
@@ -552,7 +555,7 @@ const Dashboard = () => {
                             </div>
                         </div>
 
-                    </div> */}
+                    </div>
 
                    
                   
@@ -560,7 +563,7 @@ const Dashboard = () => {
             </div>
 
             {/* Modals */}
-            {/* <BsModal
+            <BsModal
                 modalId="cityModal"
                 title={manageUi.selectedState}
                 size="xl"
@@ -632,7 +635,7 @@ const Dashboard = () => {
                         </table>
                     </div>
                 }
-            </BsModal> */}
+            </BsModal>
         </div>
     );
 };
