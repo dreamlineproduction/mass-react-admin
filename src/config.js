@@ -126,7 +126,7 @@ export const getValueOrDefault = (value, defaultValue = "N/A") => {
     return value ? value : defaultValue;
 }
 
-export const getYear = () => {
+export const getInitYears = () => {
     const currentYear = new Date().getFullYear();
     const years = [];
 
@@ -138,3 +138,6 @@ export const getYear = () => {
     return years;
 }
   
+export function removeCountryCode(phoneNumber) {
+    return phoneNumber.replace(/^\+91\s?/, '');
+}

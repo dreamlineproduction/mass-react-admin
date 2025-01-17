@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
-import { API_URL, configPermission } from "../../config";
+import { API_URL, configPermission, removeCountryCode } from "../../config";
 import { actionFetchData, actionPostData } from "../../actions/actions";
 import { useForm } from "react-hook-form";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
@@ -72,7 +72,10 @@ const EditEmployee = () => {
         response = await response.json();
 
         if (response.status) {
-            reset(response.data);
+            reset({
+                ...response.data,
+                phone:removeCountryCode(response.data.phone)
+            });
             setEmployee(response.data);
             userAvtar.current.innerHTML = response.data.avtar_name;
             setLoading(false);

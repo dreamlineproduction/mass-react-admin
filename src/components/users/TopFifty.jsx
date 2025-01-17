@@ -63,7 +63,16 @@ const TopFifty = () => {
                 }
             },
         },
-        { accessorKey: "name", header: "Full Name", enableSorting: false },
+        {
+            accessorKey: "name",
+            header: "Full Name",
+            enableSorting:false,
+            cell: ({ row }) => {
+                return (<Link to={`/users/edit-user/${row.original.id}?hideForm=true`}>
+                    {row.original.name}
+                </Link>)
+            }
+        },
         {
             accessorKey: "age", header: "Age", enableSorting: false,
             cell: ({ row }) => row.original.age ? row.original.age : 'N/A'

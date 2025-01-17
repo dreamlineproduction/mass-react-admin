@@ -6,8 +6,8 @@ import AuthContext from "../../context/auth";
 import { useForm } from "react-hook-form";
 import LoadingButton from '../others/LoadingButton';
 
-import { actionFetchData, actionFetchState, actionPostData } from "../../actions/actions";
-import { API_URL, configPermission } from "../../config";
+import { actionFetchData, actionPostData } from "../../actions/actions";
+import { API_URL, configPermission,removeCountryCode } from "../../config";
 import AllTransaction from "./AllTransaction";
 import AllOrder from "./AllOrder";
 
@@ -21,7 +21,7 @@ const EditUser = () => {
     const accessToken = Auth('accessToken');
 
     const userAvtar = useRef(null);
-    const [states, setState] = useState([]);
+    const [areas, setArea] = useState([]);
     const [isLoading, setLoading] = useState(true);
 
     const [user, setUser] = useState(null);
@@ -33,13 +33,14 @@ const EditUser = () => {
         register,
         handleSubmit,
         reset,
+        setValue,
         formState: {
             errors,
             isSubmitting
         }
     } = useForm();
 
-
+    
     const createUserAvtar = (event) => {
 
         let fullName = event.target.value;
@@ -74,11 +75,29 @@ const EditUser = () => {
         }
     })
 
-    const fetchState = async () => {
-        let response = await actionFetchState();
-        let data = await response.json();
-        if (data.status) {
-            setState(data.data)
+    // const fetchState = async () => {
+    //     let response = await actionFetchState();
+    //     let data = await response.json();
+    //     if (data.status) {
+    //         setState(data.data)
+    //     }
+    // }
+
+    const handlePinCode = async (pinCode) => {
+        if(pinCode.length > 5){
+            setLoading(true);
+            const response = await actionFetchData(`${API_URL}/front/area?pin_code=${pinCode}`)
+            const data = await response.json();
+            if(data.status === 200){
+                setValue('state',data.state)
+                setValue('district',data.district)
+                setValue('city',data.city)
+                setArea(data.data)
+                setLoading(false);
+            } else {
+                setLoading(false);
+                toast.error(data.message)
+            }
         }
     }
 
@@ -90,13 +109,17 @@ const EditUser = () => {
         response = await response.json();
 
         if (response.status) {
+
             reset({
+                ...response.data,
                 fullName: response.data.name,
-                ...response.data
+                area_name:response.data.area_id,
+                phone:removeCountryCode(response.data.phone)
             });
-            setUser(response.data)
             userAvtar.current.innerHTML = response.data.avtar_name;
-            setLoading(false);
+            handlePinCode(response.data.pincode)
+
+            setUser(response.data)
         }
     }
 
@@ -104,7 +127,7 @@ const EditUser = () => {
         if(!hasPermission(configPermission.EDIT_USER)){
             navigate('/403')
         }
-        fetchState()
+        //fetchState()
         fetchUser();       
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -122,6 +145,7 @@ const EditUser = () => {
                     <div className="card">               
                         <div className="card-body">
                             {isLoading && <div className="cover-body"></div>}
+
                             <form  onSubmit={handleSubmit(submitHandler)} method="post">
                                 <div className="mb-4">
                                     <label className="form-label">User Avatar</label>
@@ -160,8 +184,8 @@ const EditUser = () => {
                                             {...register("phone", {
                                                 required: "Please enter phone number",
                                                 minLength: {
-                                                value: 10,
-                                                message: "Phone number must be at least 10 characters long!"
+                                                    value: 10,
+                                                    message: "Phone number must be at least 10 characters long!"
                                                 },
                                                 maxLength: {
                                                     value: 10,
@@ -220,66 +244,90 @@ const EditUser = () => {
                                         placeholder="Enter address line 2"
                                     />
                                 </div>
-                                <div className="mb-4">
-                                    <label className="form-label">City</label>
-                                    <input 
-                                        {...register("city", {
-                                            required: "Please enter city."                                    
-                                        })} 
-                                        className={`form-control custom-input ${errors.city && `is-invalid`}` } 
-                                        type="text" 
-                                        id="city" 
-                                        name="city" 
-                                        placeholder="Enter city" 
-                                    />
-                                    <p className="invalid-feedback">{errors.city?.message}</p>
-                                </div>
-                                <div className="mb-4">
-                                    <label className="form-label">Pin Code</label>
-                                    <input 
-                                        {...register("pincode", {
-                                            required: "Please enter pin code."                                    
-                                        })} 
-                                        className={`form-control custom-input ${errors.pincode && `is-invalid`}` } 
-                                        type="text" 
-                                        id="pincode"
-                                        name="pincode" 
-                                        placeholder="Enter Pin Code" 
-                                    />
-                                    <p className="invalid-feedback">{errors.pincode?.message}</p>
-                                </div>
-                                <div className="mb-4">
-                                    <label className="form-label">New Location</label>
-                                    <input 
-                                        {...register("near_location", {
-                                            required: "Please enter near location."                                    
-                                        })}
-                                        className={`form-control custom-input ${errors.near_location && `is-invalid`}` } 
-                                        type="text" 
-                                        id="near_location" 
-                                        name="near_location"
-                                        placeholder="Enter landmark" 
-                                    />
-                                    <p className="invalid-feedback">{errors.near_location?.message}</p>
-                                </div>
                                 <div className="mb-3">
-                                    <label className="form-label">State</label>
-                                    <select 
-                                        {...register("state", {
-                                            required: "Please enter state."                                    
-                                        })} 
-                                        className={`form-control custom-input ${errors.state && `is-invalid`}` }                     
+                                    <label className="form-label">Pin Code*</label>
+                                    <input
+                                        {...register("pincode", {
+                                            required: "Pin Code is required",
+                                            pattern: {
+                                            value: /^[0-9]{6}$/,
+                                            message: "Enter a valid 6-digit Pin Code",                                    
+                                            },
+                                        })}
+                                        onChange={(e)=>handlePinCode(e.target.value)}
+                                        className={`form-control custom-input ${errors.pincode ? "is-invalid" : ""}`}
+                                        type="text"
+                                        id="pin_code"
+                                        placeholder="Enter pin code"
+
+                                    />
+                                    {errors.pincode && <div className="invalid-feedback">{errors.pincode.message}</div>}
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">State*</label>
+                                    <input 
+                                        {...register("state", { 
+                                            required: "State is required" 
+                                        })}
+                                        className={`form-control disabled custom-input ${errors.state ? "is-invalid" : ""}`}
+                                        disabled
+                                        type="text" 
+                                        name="state" 
                                         id="state" 
-                                        name="state"
-                                        >
-                                        <option value="">Select State</option>
-                                        {states.length > 0 &&
-                                            states.map(state => {
-                                                return ( <option key={state.id} value={state.id}>{state.name}</option>)
-                                            })
-                                        }
+                                        placeholder="Enter state"
+                                    />                              
+                                    {errors.state && <div className="invalid-feedback">{errors.state.message}</div>}
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">District*</label>
+                                    <input 
+                                        {...register("district", { 
+                                            required: "District is required" 
+                                        })}
+                                        className={`form-control disabled custom-input ${errors.district ? "is-invalid" : ""}`}
+                                        disabled
+                                        type="text" 
+                                        name="district" 
+                                        id="district" 
+                                        placeholder="Enter district"
+                                    />                                   
+                                    {errors.district && <div className="invalid-feedback">{errors.district.message}</div>}
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">City*</label>
+                                    <input 
+                                        {...register("city", { 
+                                            required: "City is required" 
+                                        })}
+                                        className={`form-control disabled custom-input ${errors.city ? "is-invalid" : ""}`}
+                                        disabled
+                                        type="text" 
+                                        name="city" 
+                                        id="city" 
+                                        placeholder="Enter city"
+                                    />                                
+                                    {errors.city && <div className="invalid-feedback">{errors.city.message}</div>}
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">Area Name*</label>
+                                    <select 
+                                        {...register("area_name", { required: "Area Name is required" })}
+                                        className={`form-select custom-input ${errors.area_name ? "is-invalid" : ""}`}
+                                        name="area_name" 
+                                        defaultValue={''}
+                                        id="area_name">
+
+                                        <option value="">Select Area</option>
+                                        {areas.map((item,i) => 
+                                            <option selected={item.id === user?.area_id} key={i} value={item.id}>{item.area}</option>
+                                        )}
+                                        
                                     </select>
-                                    <p className="invalid-feedback">{errors.state?.message}</p>
+                                    {errors.area_name && <div className="invalid-feedback">{errors.area_name.message}</div>}                                   
                                 </div>
                                 
                                 {isSubmitting ? 

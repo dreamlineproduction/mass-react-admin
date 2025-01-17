@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import PageTitle from "../others/PageTitle";
 import ApexChart from './ApexChart';
-import { API_URL, configPermission, getYear } from '../../config';
+import { API_URL, configPermission, getInitYears } from '../../config';
 import AuthContext from '../../context/auth';
 import { actionFetchData, actionFetchState, actionPostData } from '../../actions/actions';
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -13,12 +13,13 @@ import PaginationDataTable from '../others/PaginationDataTable';
 import UserInfomationModal from '../users/UserInfomationModal';
 import { BiCloudDownload } from 'react-icons/bi';
 import Loading from '../others/Loading';
+import { getYear } from 'date-fns';
 
 const UserAnalytic = () => {
     const { Auth, hasPermission } = useContext(AuthContext)
 
     const accessToken = Auth('accessToken');
-    const years = getYear();
+    const years = getInitYears();
 
     const columns = useMemo(
         () => [
@@ -205,7 +206,7 @@ const UserAnalytic = () => {
     const [formData, setFormData] = useState({
         role_id: '',
         source: '',
-        year: ''
+        year: getYear(new Date())
     });
 
     const [isLoading, setLoading] = useState(true);
@@ -237,17 +238,39 @@ const UserAnalytic = () => {
             [name]: value,
         }));
 
-        if(name === 'state_name'){                  
+        if(name === 'state_name'){  
+            setFormData((prevState) => ({
+                ...prevState,
+                district_name: "",
+                city_name: "",
+                area_name: "",
+            }));
+    
+            setDistrict([])   
+            setCity([])     
+            setArea([])                           
             fetchDistrict(value)
         }
 
-        if(name === 'district_name'){            
+        if(name === 'district_name'){  
+            setFormData((prevState) => ({
+                ...prevState,
+                city_name: "",
+                area_name: "",
+            }));  
+            setCity([])          
+            setArea([])  
             fetchCity(formData.state_name,value)     
         }  
 
-        if(name === 'city_name'){       
+        if(name === 'city_name'){      
+            setFormData((prevState) => ({
+                ...prevState,
+                area_name: "",
+            }));
+            setArea([])   
             fetchArea(formData.state_name,formData.district_name,value)  
-        }         
+        }          
     };
 
     // Fetch Roles data
@@ -459,8 +482,8 @@ const UserAnalytic = () => {
         //     navigate('/403')
         // }
 
-        if (formData.year > 0) {
-            filterTableData(formData)
+        if (formData.role_id > 0 && formData.year > 0) {
+            filterData()
         }
     }, [pageIndex, pageSize, sorting,formData]);
 
@@ -587,7 +610,7 @@ const UserAnalytic = () => {
                                                     id='state_name'
                                                     className="form-select"
                                                     onChange={handleChange}>
-                                                    <option selected disabled>Select State</option>
+                                                    <option selected value={''}>Select State</option>
                                                     {states.map(item => {
                                                         return (
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -604,7 +627,7 @@ const UserAnalytic = () => {
                                                     id='district_name'
                                                     className="form-select"
                                                     onChange={handleChange}>
-                                                    <option selected disabled>Select District</option>
+                                                    <option selected value={''}>Select District</option>
                                                     {districts.map(item => {
                                                         return (
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -620,7 +643,7 @@ const UserAnalytic = () => {
                                                     id='city_name'
                                                     className="form-select"
                                                     onChange={handleChange}>
-                                                    <option selected disabled>Select City</option>
+                                                    <option selected value={''}>Select City</option>
                                                     {cities.map(item => {
                                                         return (
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -636,7 +659,7 @@ const UserAnalytic = () => {
                                                     id='area_name'
                                                     className="form-select"
                                                     onChange={handleChange}>
-                                                    <option selected disabled>Select Area</option>
+                                                    <option selected value={''}>Select Area</option>
                                                     {areas.map(item => {
                                                         return (
                                                             <option key={item.id} value={item.name}>{item.name}</option>

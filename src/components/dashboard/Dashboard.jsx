@@ -17,10 +17,13 @@ const Dashboard = () => {
     const accessToken = Auth('accessToken');
     const perPage = 20;
 
+    const [dashboardLoading, setDashboardLoading] = useState(true);
     const [userRoleCount,setUserRoleCount] = useState("");
     const [products,setProduct] = useState("");
+    const [orders,setOrder] = useState("");
+    const [district,setDistrict] = useState([]);
 
-    // const [dashboardLoading, setDashboardLoading] = useState(true);
+    
     // const [dashboard, setDashboard] = useState({});
     // const [stateUsers, setStateUser] = useState([]);
     //const [cityUsers, setCityUser] = useState([]);
@@ -51,36 +54,40 @@ const Dashboard = () => {
     const [mapData, setMapData] = useState(null);
 
 
-    // Fetch Data user count
-    const fetchRoleCountUser = async () => {
+    
+
+    
+    const fetchDashboard = async () => {
+
         const result = await actionFetchData(`${API_URL}/users/roles/count`,accessToken)
         const response = await result.json()
         if(response.status === 200)
         {
             setUserRoleCount(response)
         }
-    };
-    // Fetch Data user count
-    const fetchProductCount = async () => {
-        const result = await actionFetchData(`${API_URL}/dashboard/products?page=1&perPage=5`,accessToken)
-        const response = await result.json()
-        if(response.status === 200)
+
+        const resultI = await actionFetchData(`${API_URL}/dashboard/products?page=1&perPage=5`,accessToken)
+        const responseI = await resultI.json()
+        if(responseI.status === 200)
         {
-            setProduct(response)
+            setProduct(responseI)
         }
-    };
 
-    
-    const fetchDashboard = async () => {
-        // //--Fetch Data
-        // let response = await actionFetchData(`${API_URL}/dashboard`, accessToken);
-        // response = await response.json();
+        const resultII = await actionFetchData(`${API_URL}/dashboard/redemption`,accessToken)
+        const responseII = await resultII.json()
+        if(responseII.status === 200)
+        {
+            setOrder(responseII)
+        }
 
-        // if (response.status) {
-        //     setDashboard(response);
-        //     setStateUser(response.users)
-        //     setDashboardLoading(false)
-        // }
+        const resultIII = await actionFetchData(`${API_URL}/users/district/count?limit=6`,accessToken)
+        const responseIII = await resultIII.json()
+        if(responseIII.status === 200)
+        {
+            setDistrict(responseIII.data)
+            setDashboardLoading();
+        }
+        
     }
 
     const fetchTransaction = async () => {
@@ -184,8 +191,6 @@ const Dashboard = () => {
     }
 
     useEffect(() => {
-        fetchRoleCountUser()
-        fetchProductCount();
         fetchDashboard();
         fetchMap();
 
@@ -206,7 +211,7 @@ const Dashboard = () => {
     return (
         <div>
             <PageTitle title="Dashboard" />
-            {/*dashboardLoading &&
+            {dashboardLoading &&
                 <div className="row">
                     <div className="col-12">
                         <div className="card">
@@ -215,160 +220,120 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                </div>*/
-            }
-                <div className="row">
-                    <TopCard   
-                        title="Total Users"                        
-                        active={getValueOrDefault(userRoleCount.active_user,0)}
-                        inactive={getValueOrDefault(userRoleCount.inactive_user,0)}
-                        total={getValueOrDefault(userRoleCount.total_user,0)}
-                        buttonLink={hasPermission(configPermission.VIEW_USER) ? '/users/all-users' : null}
-                        buttonLabel={hasPermission(configPermission.VIEW_USER) ? 'All Users' : null}
-                    >
-                        {userRoleCount?.data?.length > 0 ?
-                            <table className="table mb-0">
-                                <tbody>
-                                    {userRoleCount.data.map(item =>
-                                        <tr key={item.role_id}>
-                                            <td>{item.name}</td>
-                                            <td className="text-end">{item.total_user}</td>
-                                        </tr>  
-                                    )}                                                                      
-                                </tbody>
-                            </table>
-                            :
-                            <NoState />
-                        }                        
-                    </TopCard>
-
-                    <TopCard   
-                        title="Total Products"                        
-                        active={getValueOrDefault(products.active_product,0)}
-                        inactive={getValueOrDefault(products.inactive_product,0)}
-                        total={getValueOrDefault(products.total_product,0)}
-                        buttonLink={hasPermission(configPermission.VIEW_PRODUCT) ? '/products/all-products' : null}
-                        buttonLabel={hasPermission(configPermission.VIEW_PRODUCT) ? 'All Product' : null}
-                    >
-                        {products?.data?.length > 0 ?
-                            <table className="table mb-0">
-                                <tbody>
-                                    {products.data.map(item =>
-                                        <tr key={item.id}>
-                                            <td>{item.short_name}</td>
-                                        </tr>  
-                                    )}                                                                      
-                                </tbody>
-                            </table>
-                            :
-                            <NoState />
-                        }                        
-                    </TopCard>
-
-
-                    {/* <div className="col-12 col-md-3 col-xxl-3 d-flex">
-                        <div className="card w-100">
-                            <div className="card-header d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 className="card-title mb-0">Total Redemption</h5>
-
-                                </div>
-                                <div>
-                                    <h2>{dashboard.total_redemption_count}</h2>
-                                </div>
-                            </div>
-
-
-
-                            <hr style={{ margin: "0" }} />
-                            <div className="card-body">
-
-                                <div className="align-self-center w-100 redemption">
-
-
-                                    <table className="table mb-0">
-                                        <tbody>
-                                            <tr>
-                                                <td><span className="active-signal"></span> Delivered</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td><span className="transit-signal"></span> In-Transit</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td><span className="pending-signal"></span> Pending</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td><span className="inactive-signal"></span> Declined</td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-
-                                        </tbody>
-                                    </table>
-                                    <Link to="/redemptions/all-redemptions" className="btn btn-primary mt-4">All Redemption</Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-12 col-md-3 col-xxl-3 d-flex">
-                        <div className="card w-100">
-                            <div className="card-header d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 className="card-title mb-0">Top 6 Districts by Users</h5>
-
-                                </div>
-                                <div>
-                                    <h2>255</h2>
-                                </div>
-                            </div>
-
-
-
-                            <hr style={{ margin: "0" }} />
-                            <div className="card-body">
-
-                                <div className="align-self-center w-100">
-
-
-                                    <table className="table mb-0">
-                                        <tbody>
-                                            <tr>
-                                                <td>North 24 Parganas <small className="text-muted">(West Bengal)</small></td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Pachim Bardhaman <small className="text-muted">(West Bengal)</small></td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Purba Bardhaman <small className="text-muted">(West Bengal)</small></td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Nadia <small className="text-muted">(West Bengal)</small></td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Howrah <small className="text-muted">(West Bengal)</small></td>
-                                                <td className="text-end">4306</td>
-                                            </tr>
-
-                                        </tbody>
-                                    </table>
-                                    <Link to="/analytics/product-analytic" className="btn btn-primary mt-4">View Analytics</Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>                     */}
                 </div>
+            }
+            <div className="row">
+                <TopCard   
+                    title="Total Users"                        
+                    active={getValueOrDefault(userRoleCount.active_user,0)}
+                    inactive={getValueOrDefault(userRoleCount.inactive_user,0)}
+                    total={getValueOrDefault(userRoleCount.total_user,0)}
+                    buttonLink={hasPermission(configPermission.VIEW_USER) ? '/users/all-users' : null}
+                    buttonLabel={hasPermission(configPermission.VIEW_USER) ? 'All Users' : null}
+                >
+                    {userRoleCount?.data?.length > 0 ?
+                        <table className="table mb-0">
+                            <tbody>
+                                {userRoleCount.data.map(item =>
+                                    <tr key={item.role_id}>
+                                        <td>{item.name}</td>
+                                        <td className="text-end">{item.total_user}</td>
+                                    </tr>  
+                                )}                                                                      
+                            </tbody>
+                        </table>
+                        :
+                        <NoState />
+                    }                        
+                </TopCard>
+
+                <TopCard   
+                    title="Total Products"                        
+                    active={getValueOrDefault(products.active_product,0)}
+                    inactive={getValueOrDefault(products.inactive_product,0)}
+                    total={getValueOrDefault(products.total_product,0)}
+                    buttonLink={hasPermission(configPermission.VIEW_PRODUCT) ? '/products/all-products' : null}
+                    buttonLabel={hasPermission(configPermission.VIEW_PRODUCT) ? 'All Product' : null}
+                >
+                    {products?.data?.length > 0 ?
+                        <table className="table mb-0">
+                            <tbody>
+                                {products.data.map(item =>
+                                    <tr key={item.id}>
+                                        <td>{item.short_name}</td>
+                                    </tr>  
+                                )}                                                                      
+                            </tbody>
+                        </table>
+                        :
+                        <NoState />
+                    }                        
+                </TopCard>
+
+                <TopCard   
+                    title="Total Redemption"                        
+                    showActive={false}
+                    total={getValueOrDefault(orders.total_redemption,0)}
+                    buttonLink={hasPermission(configPermission.VIEW_REDEMPTION) ? '/redemptions/all-redemptions' : null}
+                    buttonLabel={hasPermission(configPermission.VIEW_REDEMPTION) ? 'All Redemption' : null}
+                >
+                    <div className="redemption">
+                        <table className="table mb-0">
+                            <tbody>
+                                <tr>
+                                    <td><span className="active-signal"></span> Delivered</td>
+                                    <td className="text-end">{getValueOrDefault(orders.total_deliver_redemption,0)}</td>
+                                </tr>
+                                <tr>
+                                    <td><span className="transit-signal"></span> In-Transit</td>
+                                    <td className="text-end">{getValueOrDefault(orders.total_transit_redemption,0)}</td>
+                                </tr>
+                                <tr>
+                                    <td><span className="pending-signal"></span> Pending</td>
+                                    <td className="text-end">{getValueOrDefault(orders.total_pending_redemption,0)}</td>
+                                </tr>
+                                <tr>
+                                    <td><span className="inactive-signal"></span> Declined</td>
+                                    <td className="text-end">{getValueOrDefault(orders.total_cancel_redemption,0)}</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </TopCard>
+                    
+                <TopCard   
+                    title="Top 6 Districts by Users"                        
+                    showActive={false}
+                    total={district.reduce((sum,item) => sum + item.total_user,0)}
+                    buttonLink={hasPermission(configPermission.VIEW_REDEMPTION) ? '/analytics/user-analytic' : null}
+                    buttonLabel={hasPermission(configPermission.VIEW_REDEMPTION) ? 'User Analytic' : null}
+                >
+                    <div className="redemption">
+                        {district.length > 0 ?
+                        <table className="table mb-0">
+                            <tbody>
+                                {district.map(item => 
+                                    <tr>
+                                        <td>{item.district} <small className="text-muted">({item.state_str})</small></td>
+                                        <td className="text-end">{item.total_user}</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+
+                        :
+                        <NoState />
+                        }
+                    </div>
+                </TopCard>                   
+            </div>
 
             <div className="mt-4">
                 <PageTitle
                     title="All Referral XP transactions"
-                    buttonLabel="View All"
-                    buttonLink="referrals/all-referrals"
+                    buttonLink={hasPermission(configPermission.VIEW_REFERRAL) ? '/referrals/all-referrals' : null}
+                    buttonLabel={hasPermission(configPermission.VIEW_REFERRAL) ? 'View All' : null}
                 />
 
                 <div className="row">
@@ -456,7 +421,11 @@ const Dashboard = () => {
 
             {/* Recent Qr Codes Details */}
             <div className="mt-4">
-                <PageTitle title="Recent QR Details" buttonLabel="View All" buttonLink="qr-manager/all-qr" />
+                <PageTitle 
+                    title="Recent QR Details" 
+                    buttonLink={hasPermission(configPermission.VIEW_QR) ? '/qr-manager/all-qr' : null}
+                    buttonLabel={hasPermission(configPermission.VIEW_QR) ? 'View All' : null}
+                />
 
                 <div className="row">
                     <div className="col-12">

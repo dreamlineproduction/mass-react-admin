@@ -4,14 +4,15 @@ import ApexChart from './ApexChart';
 import { API_URL } from '../../config';
 import { actionFetchData, actionFetchState, actionPostData } from '../../actions/actions';
 import AuthContext from '../../context/auth';
-import { getYear } from '../../config';
+import { getInitYears } from '../../config';
 import NoState from '../others/NoState';
 import Loading from '../others/Loading';
+import { getYear } from 'date-fns';
 
 const ProductAnalytic = () => {
     const { Auth,hasPermission } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
-    const years = getYear();
+    const years = getInitYears();
 
     const [charData, setCharData] = useState({
         series: [{
@@ -91,7 +92,7 @@ const ProductAnalytic = () => {
     const [formData, setFormData] = useState({
         product_id: '',
         size_id: '',
-        year: ''
+        year: getYear(new Date())
     });
 
     const [states,setState] = useState([]);
@@ -105,8 +106,7 @@ const ProductAnalytic = () => {
 
     const [tableData,setTableData]  = useState([]);
     
-    const handleProduct = async (e) => {
-        const productId = e.target.value;
+    const fetchProductSize = async (productId = 0) => {        
 
         if(productId > 0){           
             setLoading(true);
@@ -131,27 +131,43 @@ const ProductAnalytic = () => {
             [name]: value,
         }));
 
-        if(name === 'state_name'){                  
+        if(name === 'product'){
+            fetchProductSize(value)
+        }
+
+        if(name === 'state_name'){  
+            setFormData((prevState) => ({
+                ...prevState,
+                district_name: "",
+                city_name: "",
+                area_name: "",
+            }));
+    
+            setDistrict([])   
+            setCity([])     
+            setArea([])                           
             fetchDistrict(value)
-            filterData(value)
         }
 
-        if(name === 'district_name'){            
+        if(name === 'district_name'){  
+            setFormData((prevState) => ({
+                ...prevState,
+                city_name: "",
+                area_name: "",
+            }));  
+            setCity([])          
+            setArea([])  
             fetchCity(formData.state_name,value)     
-            filterData(formData.state_name,value)       
         }  
 
-        if(name === 'city_name'){       
+        if(name === 'city_name'){      
+            setFormData((prevState) => ({
+                ...prevState,
+                area_name: "",
+            }));
+            setArea([])   
             fetchArea(formData.state_name,formData.district_name,value)  
-            filterData(formData.state_name,formData.district_name,value)  
-        }  
-
-        if(name === 'area_name')
-        {
-            filterData(formData.state_name,formData.district_name,formData.city_name,value)  
-        }
-      
-       
+        }         
     };
 
 
@@ -225,24 +241,8 @@ const ProductAnalytic = () => {
     }
 
     // Filter data
-    const filterData = async (stateName = '', district = '', cityName = '',areaName = '') => {    
-        let postData = {
-            ...formData
-        }
-        if(stateName.length > 0){           
-            postData.state_name = stateName
-        }
-        if(district.length > 0){          
-            postData.district_name = district
-        }
-        if(cityName.length > 0){           
-            postData.city_name = cityName
-        }
-        if(areaName.length > 0){           
-            postData.area_name = areaName
-        }
-
-
+    const filterData = async () => {    
+        
         let chatText = '';
         if(formData.product_id > 0 && formData.size_id > 0 && formData.year > 0){
             const selectedProduct = products.find(item=> item.id === parseInt(formData.product_id))
@@ -251,7 +251,7 @@ const ProductAnalytic = () => {
         }       
 
         setLoading(true)
-        let response = await actionPostData(`${API_URL}/products/chart-data`,accessToken,postData);
+        let response = await actionPostData(`${API_URL}/products/chart-data`,accessToken,formData);
         response = await response.json();
         
         if(response.status === 200){
@@ -267,7 +267,12 @@ const ProductAnalytic = () => {
         setLoading(false)        
     }
 
-   
+    
+    useEffect(()=>{
+        if(formData.product_id > 0 && formData.year){
+            filterData()
+        }
+    },[formData])
 
     useEffect(() => {
         // if(!hasPermission(configPermission.VIEW_PRODUCT)){
@@ -276,7 +281,7 @@ const ProductAnalytic = () => {
         fetchProduct()
         fetchState();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -298,9 +303,9 @@ const ProductAnalytic = () => {
                                 <div className="col-md-3">
                                     <select 
                                         defaultValue={formData.product_id}
-                                        onChange={handleProduct}
-                                        name="product_id"
-                                        id="product_id"
+                                        onChange={handleChange}
+                                        name="product"
+                                        id="product"
                                         className="form-select custom-input" >
                                         <option value={''} disabled>Select product</option>
                                         {products && products.length > 0 &&
@@ -392,7 +397,7 @@ const ProductAnalytic = () => {
                                                     id='state_name' 
                                                     className="form-select" 
                                                     onChange={handleChange}>
-                                                    <option selected disabled>Select State</option>
+                                                    <option selected value={''}>Select State</option>
                                                     {states.map(item => {
                                                         return(
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -408,7 +413,7 @@ const ProductAnalytic = () => {
                                                     id='district_name' 
                                                     className="form-select" 
                                                     onChange={handleChange}>
-                                                    <option selected disabled>Select District</option>
+                                                    <option selected value={''}>Select District</option>
                                                     {districts.map(item => {
                                                         return(
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -424,7 +429,7 @@ const ProductAnalytic = () => {
                                                     id='city_name' 
                                                     className="form-select" 
                                                     onChange={handleChange}>
-                                                    <option selected disabled>Select City</option>                                                    
+                                                    <option selected value={''}>Select City</option>                                                    
                                                     {cities.map(item => {
                                                         return(
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -440,7 +445,7 @@ const ProductAnalytic = () => {
                                                     id='area_name' 
                                                     className="form-select" 
                                                     onChange={handleChange}>
-                                                    <option selected disabled>Select Area</option>                                                    
+                                                    <option selected value={''}>Select Area</option>                                                    
                                                     {areas.map(item => {
                                                         return(
                                                             <option key={item.id} value={item.name}>{item.name}</option>
