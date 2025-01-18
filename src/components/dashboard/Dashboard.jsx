@@ -98,7 +98,7 @@ const Dashboard = () => {
         }
 
         //--Fetch Data
-        const resultV = await actionFetchData(`${API_URL}/dashboard/map-data`, accessToken);
+        const resultV = await actionFetchData(`${API_URL}/dashboard/india-map-data`, accessToken);
         const responseV = await resultV.json();
 
         if (responseV.status) {
@@ -500,6 +500,7 @@ const Dashboard = () => {
                                 {!mapLoading &&
                                     <IndiaMap
                                         stateInfo={mapData}
+                                        accessToken={accessToken}
                                     />
                                 }
                             </div>

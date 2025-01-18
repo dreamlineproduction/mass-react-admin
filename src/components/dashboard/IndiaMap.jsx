@@ -2,16 +2,20 @@
 import { useState, useEffect, useRef } from 'react';
 import './IndiaMap.scss';
 import BsModal from '../others/BsModal';
-const IndiaMap = ({stateInfo}) => {
+import { actionFetchData } from '../../actions/actions';
+import { API_URL } from '../../config';
+import Loading from '../others/Loading';
+const IndiaMap = ({stateInfo,accessToken}) => {
     const modalRef = useRef(null);
 
-
+    const [isLoading,setIsLoading] = useState(false);
     
     const [hoveredState, setHoveredState] = useState(null);
     const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
     const [svgContent, setSvgContent] = useState('');
 
 
+    const [districtInfo, setDistrictInfo] = useState('');
     const [hoveredDistrict, setHoveredDistrict] = useState(null);
     const [tooltipPosDistrict, setTooltipPosDistrict] = useState({ x: 0, y: 0 });
     const [stateSvgContent, setStateSvgContent] = useState('');
@@ -22,11 +26,7 @@ const IndiaMap = ({stateInfo}) => {
     //     INAS: "Assam: Known for Tea Gardens",
     //     INBR: "Bihar: Historical State with Bodh Gaya",
     // };
-    
-    const districtInfo = {
-        UPLMK:'Lakhimpur Khiri 320',
-        UPLKO:'Lucknow'
-    }
+
 
     useEffect(() => {
         // Fetch and set the SVG content
@@ -58,7 +58,8 @@ const IndiaMap = ({stateInfo}) => {
     };
 
    
-    const handleState = (e) => {
+    const handleState = async (e) => {
+        setIsLoading(true)
         const stateId = e.target.id;
         
         const modal = new bootstrap.Modal(modalRef.current, {
@@ -66,14 +67,31 @@ const IndiaMap = ({stateInfo}) => {
         });
         modal.show();
 
+        let districtMap = '';
 
         if(stateId === 'INUP'){
-            fetch('/images/districts/uttar-pradesh.svg')
+            districtMap = '/images/districts/uttar-pradesh.svg';
+        }
+
+        if(stateId === 'INWB') {
+            districtMap = '/images/districts/west_bengal.svg';
+        }
+
+        if(districtMap !== '')
+        {
+            //--Fetch Data
+            let response = await actionFetchData(`${API_URL}/dashboard/state-map-data/${stateId}`, accessToken);
+            response = await response.json();
+
+            if(response.status === 200){
+                setDistrictInfo(response.data)
+
+                fetch(districtMap)
                 .then(response => response.text())
                 .then(svg => {
                     setStateSvgContent(svg);
-                    // Add event listeners after the SVG has been inserted into the DOM
                     setTimeout(() => {
+                        
                         const svgElement = document.querySelector('.state-body svg');
                         if (svgElement) {
                             svgElement.querySelectorAll('path').forEach((path) => {
@@ -84,10 +102,12 @@ const IndiaMap = ({stateInfo}) => {
                                 });
                             });
                         }
-                        
-                    }, 100); // Delay to ensure SVG is rendered
-            });
+                        setIsLoading(false)
+                    }, 100); 
+                });
+            }            
         }
+        
     }
 
     const handleDistrictMouseOver = (e) => {     
@@ -101,6 +121,8 @@ const IndiaMap = ({stateInfo}) => {
         }
     }
 
+    console.log(districtInfo);
+    
     return (
         <>
             <div className="india-map-container">
@@ -131,20 +153,26 @@ const IndiaMap = ({stateInfo}) => {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                           <div
-                                className="state-body w-100 h-auto"
-                                dangerouslySetInnerHTML={{ __html: stateSvgContent }}
-                            />
+                            {isLoading &&
+                                <Loading />
+                            }
+                            {!isLoading &&
 
-                            {/* Tooltip to display the hovered state info */}
-                            {hoveredDistrict && (
+                            <div>
                                 <div
-                                    className="tooltip"
-                                    style={{ top: `${tooltipPosDistrict.y}px`, left: `${tooltipPosDistrict.x}px` }}
-                                >
-                                    {hoveredDistrict}
-                                </div>
-                            )}
+                                    className="state-body w-100 h-auto"
+                                    dangerouslySetInnerHTML={{ __html: stateSvgContent }}
+                                />
+                                {hoveredDistrict && (
+                                    <div
+                                        className="tooltip"
+                                        style={{ top: `${tooltipPosDistrict.y}px`, left: `${tooltipPosDistrict.x}px` }}
+                                    >
+                                        {hoveredDistrict}
+                                    </div>
+                                )}
+                            </div>
+                            }
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
