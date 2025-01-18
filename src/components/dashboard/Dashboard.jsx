@@ -48,8 +48,6 @@ const Dashboard = () => {
         loadingModal: false,
     });
 
-
-
     const [mapLoading, setMapLoading] = useState(true);
     const [mapData, setMapData] = useState(null);
 
