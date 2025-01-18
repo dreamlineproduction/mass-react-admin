@@ -52,10 +52,12 @@
     outline: 1px solid red;
 }
 
+
+
 /* State paths (default and hover) */
 .state-body path {
-    fill: #18c265; /* Default state color */
-    stroke: #fff; /* Optional: Add stroke for borders */
+    // fill: #18c265; /* Default state color */
+    // stroke: #fff; /* Optional: Add stroke for borders */
     stroke-width: 1; /* Border width */
     transition: fill 0.3s ease; /* Smooth transition for color change */
 }

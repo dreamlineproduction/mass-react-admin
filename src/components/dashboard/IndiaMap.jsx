@@ -14,8 +14,9 @@ const IndiaMap = ({stateInfo,accessToken}) => {
     const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
     const [svgContent, setSvgContent] = useState('');
 
+    const [selectedState, setSelectedState] = useState('');
 
-    const [districtInfo, setDistrictInfo] = useState('');
+    const [districtInfo, setDistrictInfo] = useState({});
     const [hoveredDistrict, setHoveredDistrict] = useState(null);
     const [tooltipPosDistrict, setTooltipPosDistrict] = useState({ x: 0, y: 0 });
     const [stateSvgContent, setStateSvgContent] = useState('');
@@ -27,14 +28,11 @@ const IndiaMap = ({stateInfo,accessToken}) => {
     //     INBR: "Bihar: Historical State with Bodh Gaya",
     // };
 
-
-    useEffect(() => {
-        // Fetch and set the SVG content
+    const fetchIndiaMap = () => {
         fetch('/images/india.svg')
-            .then(response => response.text())
-            .then(svg => {
-                setSvgContent(svg);
-                // Add event listeners after the SVG has been inserted into the DOM
+        .then(response => response.text())
+        .then(svg => {
+            setSvgContent(svg);
                 setTimeout(() => {
                     const svgElement = document.querySelector('.india-map svg');
                     if (svgElement) {
@@ -44,14 +42,13 @@ const IndiaMap = ({stateInfo,accessToken}) => {
                             path.addEventListener('click', (e) => handleState(e));
                         });
                     }
-                }, 100); // Delay to ensure SVG is rendered
+                }, 100); 
         });
-    }, []);
+    }
 
     const handleMouseOver = (e) => {
         const stateId = e.target.id;
         if (stateInfo[stateId]) {
-            //console.log('Hovered State:', stateInfo[stateId], 'Position:', e.clientX, e.clientY);
             setHoveredState(stateInfo[stateId]);
             setTooltipPos({ x: e.clientX + 10, y: e.clientY - 20 });
         }
@@ -60,12 +57,15 @@ const IndiaMap = ({stateInfo,accessToken}) => {
    
     const handleState = async (e) => {
         setIsLoading(true)
-        const stateId = e.target.id;
-        
+        const stateId = e.target.id;        
+
+        setSelectedState(stateInfo[stateId]);
+
         const modal = new bootstrap.Modal(modalRef.current, {
             backdrop: false, // Disable the backdrop
         });
         modal.show();
+
 
         let districtMap = '';
 
@@ -78,33 +78,19 @@ const IndiaMap = ({stateInfo,accessToken}) => {
         }
 
         if(districtMap !== '')
-        {
+        {            
             //--Fetch Data
             let response = await actionFetchData(`${API_URL}/dashboard/state-map-data/${stateId}`, accessToken);
             response = await response.json();
 
             if(response.status === 200){
-                setDistrictInfo(response.data)
-
+                setDistrictInfo(response.data)                
                 fetch(districtMap)
-                .then(response => response.text())
+                .then(responseII => responseII.text())
                 .then(svg => {
                     setStateSvgContent(svg);
-                    setTimeout(() => {
-                        
-                        const svgElement = document.querySelector('.state-body svg');
-                        if (svgElement) {
-                            svgElement.querySelectorAll('path').forEach((path) => {
-                                path.addEventListener('mouseover', (e) => handleDistrictMouseOver(e));
-                                path.addEventListener('mouseout', (e) => {
-                                    setHoveredDistrict(null)
-                                    //e.target.style.fill = '';
-                                });
-                            });
-                        }
-                        setIsLoading(false)
-                    }, 100); 
-                });
+                    setIsLoading(false)                       
+                });             
             }            
         }
         
@@ -112,7 +98,6 @@ const IndiaMap = ({stateInfo,accessToken}) => {
 
     const handleDistrictMouseOver = (e) => {     
         const districtId = e.target.id;        
-
         if(districtInfo[districtId]){
             setHoveredDistrict(districtInfo[districtId]);
             //pathElement.style.stroke = 'red';
@@ -121,7 +106,25 @@ const IndiaMap = ({stateInfo,accessToken}) => {
         }
     }
 
-    console.log(districtInfo);
+    useEffect(() => {
+        // Fetch and set the SVG content
+        fetchIndiaMap()
+
+        
+        const stateSvgElement = document.querySelector('.state-body svg');
+        if (stateSvgElement && Object.keys(districtInfo).length > 0) {
+            stateSvgElement.querySelectorAll('path').forEach((path) => {
+                path.addEventListener('mouseover', (e) => handleDistrictMouseOver(e));
+                path.addEventListener('mouseout', (e) => {
+                    setHoveredDistrict(null)
+                    //e.target.style.fill = '';
+                });
+            });
+        }  
+    }, [districtInfo]);
+
+
+   
     
     return (
         <>
@@ -149,15 +152,13 @@ const IndiaMap = ({stateInfo,accessToken}) => {
                 <div className="modal-dialog modal-xl">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Modal Title</h5>
+                            <h5 className="modal-title" id="exampleModalLabel">{selectedState}</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
                             {isLoading &&
                                 <Loading />
                             }
-                            {!isLoading &&
-
                             <div>
                                 <div
                                     className="state-body w-100 h-auto"
@@ -172,12 +173,7 @@ const IndiaMap = ({stateInfo,accessToken}) => {
                                     </div>
                                 )}
                             </div>
-                            }
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary">Save changes</button>
-                        </div>
+                        </div>                       
                     </div>
                 </div>
             </div>
