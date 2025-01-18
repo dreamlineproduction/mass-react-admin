@@ -17,45 +17,46 @@ const AllPermission = () => {
     const columns = useMemo(() => [
         { accessorKey: "id", header: "Id" },
         { accessorKey: "name", header: "Name" },
+        { accessorKey: "description", header: "Description" , enableSorting: false},
         
-        {
-            accessorKey: "action",
-            header: "Description",
-            enableSorting: false,
-            cell: ({ row }) => {
-                // return (
-                //     <div className="dropdown">
-                //         <button 
-                //             className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_PERMISSION) || !hasPermission(configPermission.DELETE_PERMISSION)) ? 'disabled' : ''}`} 
-                //             type="button" 
-                //             disabled={(!hasPermission(configPermission.EDIT_PERMISSION) || !hasPermission(configPermission.DELETE_PERMISSION))}
-                //             data-bs-toggle="dropdown" 
-                //             aria-expanded="false"
-                //         >
-                //             More Options
-                //         </button>
-                //         {(hasPermission(configPermission.EDIT_PERMISSION) || hasPermission(configPermission.DELETE_PERMISSION)) &&
-                //         <ul className="dropdown-menu">
-                //             {hasPermission(configPermission.EDIT_PERMISSION) &&
-                //             <li>
-                //                 <Link className="dropdown-item" to={`/permissions/edit-permission/${row.original.id}`}>
-                //                     Edit
-                //                 </Link>
-                //             </li>
-                //             }
-                //             {hasPermission(configPermission.DELETE_PERMISSION) &&
-                //             <li>
-                //                 <button type="button" className="dropdown-item" onClick={() => deletePermission(row.original.id)}>
-                //                    Delete
-                //                 </button>
-                //             </li>
-                //             }
-                //         </ul>
-                //         }   
-                //     </div>
-                // );
-            },
-        },
+        // {
+        //     accessorKey: "description",
+        //     header: "Description",
+        //     enableSorting: false,
+        //     cell: ({ row }) => {
+        //         // return (
+        //         //     <div className="dropdown">
+        //         //         <button 
+        //         //             className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_PERMISSION) || !hasPermission(configPermission.DELETE_PERMISSION)) ? 'disabled' : ''}`} 
+        //         //             type="button" 
+        //         //             disabled={(!hasPermission(configPermission.EDIT_PERMISSION) || !hasPermission(configPermission.DELETE_PERMISSION))}
+        //         //             data-bs-toggle="dropdown" 
+        //         //             aria-expanded="false"
+        //         //         >
+        //         //             More Options
+        //         //         </button>
+        //         //         {(hasPermission(configPermission.EDIT_PERMISSION) || hasPermission(configPermission.DELETE_PERMISSION)) &&
+        //         //         <ul className="dropdown-menu">
+        //         //             {hasPermission(configPermission.EDIT_PERMISSION) &&
+        //         //             <li>
+        //         //                 <Link className="dropdown-item" to={`/permissions/edit-permission/${row.original.id}`}>
+        //         //                     Edit
+        //         //                 </Link>
+        //         //             </li>
+        //         //             }
+        //         //             {hasPermission(configPermission.DELETE_PERMISSION) &&
+        //         //             <li>
+        //         //                 <button type="button" className="dropdown-item" onClick={() => deletePermission(row.original.id)}>
+        //         //                    Delete
+        //         //                 </button>
+        //         //             </li>
+        //         //             }
+        //         //         </ul>
+        //         //         }   
+        //         //     </div>
+        //         // );
+        //     },
+        // },
         
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ],[]);
