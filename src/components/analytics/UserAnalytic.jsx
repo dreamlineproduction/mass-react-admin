@@ -144,7 +144,7 @@ const UserAnalytic = () => {
                 bar: {
                     borderRadius: 4,
                     dataLabels: {
-                        position: 'top',
+                        position: 'bottom',
                     },
                 }
             },

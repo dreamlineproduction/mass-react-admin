@@ -159,9 +159,11 @@ const IndiaMap = ({stateInfo,accessToken}) => {
                             {isLoading &&
                                 <Loading />
                             }
-                            <div>
+                            <div className='card'>
+
+                                <div className="card-body m-auto">
                                 <div
-                                    className="state-body w-100 h-auto"
+                                    className="state-body w-100 h-75"
                                     dangerouslySetInnerHTML={{ __html: stateSvgContent }}
                                 />
                                 {hoveredDistrict && (
@@ -172,6 +174,9 @@ const IndiaMap = ({stateInfo,accessToken}) => {
                                         {hoveredDistrict}
                                     </div>
                                 )}
+</div>
+
+
                             </div>
                         </div>                       
                     </div>
