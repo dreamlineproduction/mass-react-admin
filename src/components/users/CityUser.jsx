@@ -1,75 +1,158 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import PageTitle from "../others/PageTitle";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import AuthContext from "../../context/auth";
 import { actionFetchData } from "../../actions/actions";
-import { API_URL, exportToExcel } from "../../config";
+import { API_URL, exportToExcel, getValueOrDefault } from "../../config";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
 import Pagination from "../others/Pagination";
 import { BsCloudDownload } from "react-icons/bs";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import DataTable from "../others/DataTable";
+import PaginationDataTable from "../others/PaginationDataTable";
 
 const CityUser = () => {
-    const params = useParams();
-
-    const { Auth } =  useContext(AuthContext)
-    const perPage = 20;
+    
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const state = queryParams.get('state');
+    const district = queryParams.get('district');
+    const { Auth } = useContext(AuthContext)
     const accessToken = Auth('accessToken');
+
+     const columns = useMemo(() => [
+        { accessorKey: "id", header: "#" },
+        { accessorKey: "name", header: "Name" },
+        { accessorKey: "area_name", header: "Area Name" },
+        { accessorKey: "phone", header: "Contact Number", enableSorting: false },
+        { accessorKey: "created_at", header: "Install Date", enableSorting: false },
+        { accessorKey: "last_login", header: "Last Active", enableSorting: false },
+        { 
+            accessorKey: "total_xp", 
+            header: "Total XP Balance", 
+            enableSorting: false,
+            cell:({row}) => {
+                return getValueOrDefault(row.original.total_xp , '0')+'XP' 
+            } 
+        },
+        { 
+            accessorKey: "redeem_xp", 
+            header: "Total Reward Redeems", 
+            enableSorting: false,
+            cell:({row}) => {
+                return getValueOrDefault(row.original.redeem_xp , '0')+'XP' 
+            } 
+        },
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    ],[]);
     const [users, setUsers] = useState([])
 
-    const [pageNumber, setPageNumber] = useState(1);
     const [pageCount, setPageCount] = useState(0);
-    const [isLoading,setLoading] = useState(true);
+    const [isLoading, setLoading] = useState(true);
 
-     // Fetch data
-     const fetchUsers = async () => {
-        let response = await actionFetchData(`${API_URL}/dashboard/city-users/${params.city}?page=${pageNumber}&perPage=${perPage}`, accessToken);
-		response = await response.json();
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(20);
+    const [sorting, setSorting] = useState([]);
+    const [globalFilter, setGlobalFilter] = useState('');
+
+    // Fetch data
+    const fetchUsers = async () => {
+
+        setLoading(true);
+        const params = {
+            page: pageIndex + 1,
+            perPage: pageSize,
+            state,
+            district
+        };
+        if (sorting.length > 0) {
+            params.sort = sorting[0].id;
+            params.order = sorting[0].desc ? "desc" : "asc";
+        }
+        if (globalFilter !== "") {
+            params.search = globalFilter.trim();
+        }
+
+        let response = await actionFetchData(`${API_URL}/users/district?${new URLSearchParams(params)}`, accessToken);
+        response = await response.json();
         if (response.status) {
             setUsers(response.data.data);
             setPageCount(response.totalPage);
             setLoading(false)
-       }       
-     }
 
-     const exportUserToExcel = () => {
-		let data = users.map(item => {
-			return {
-				"#": item.id,
-				"User Name": item.name,
-				"Location": item.city,
-				"Contact Number": item.phone,
-				"Install Date": item.created_at,
-				"Last Active": item.last_login,
-				"Total XP Balance": item.total_xp ? item.total_xp : 0 + ' xp',
-				"Total Reward Redeems": item.redeem_xp ? item.redeem_xp : 0 + ' xp'
-			}
-		})
+        }
+    }
 
-		exportToExcel(data);
-	}
+    const exportUserToExcel = () => {
+        let data = users.map(item => {
+            return {
+                "#": item.id,
+                "Name": item.name,
+                "Area Name": item.area_name,
+                "Contact Number": item.phone,
+                "Install Date": item.created_at,
+                "Last Active": item.last_login,
+                "Total XP Balance": item.total_xp ? item.total_xp : 0 + ' xp',
+                "Total Reward Redeems": item.redeem_xp ? item.redeem_xp : 0 + ' xp'
+            }
+        })
 
-    useEffect(() =>{
+        exportToExcel(data);
+    }
+
+    const table = useReactTable({
+        data: users,
+        columns,
+        pageCount,
+        globalFilter,
+        state: {
+            sorting,
+            pagination: { pageIndex, pageSize },
+        },
+        onSortingChange: setSorting,
+        onPaginationChange: ({ pageIndex, pageSize }) => {
+            setPageIndex(pageIndex);
+            setPageSize(pageSize);
+        },
+        manualSorting: true,
+        manualPagination: true,
+        getCoreRowModel: getCoreRowModel(),
+    });
+
+
+    useEffect(() => {
         fetchUsers()
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    }, [pageIndex, pageSize, sorting, globalFilter]);
 
     return (
         <div>
-             <PageTitle 
-                title={`Showing all users from ${params.city}` }
+            <PageTitle
+                title={`Showing all users from ${district}`}
             />
 
             <div className="row">
                 <div className="col-12">
-                    <div className="card">
-                        <div className="my-4 d-flex justify-content-end gap-3">
-                            <button className="btn btn-outline-primary me-4" onClick={exportUserToExcel}>
-                               <BsCloudDownload /> Export to Excel
-                            </button>
+                    <div className="card">                        
+                        <div className="my-4 d-flex justify-content-end">
+                            <div className="search-input-outer me-4">
+                                <input
+                                    placeholder="Search..."     
+                                    value={globalFilter}
+                                    onChange={(e) => setGlobalFilter(e.target.value)}
+                                    className="form-control"
+                                    type="text"
+                                />
+                            </div> 
+                            <div>
+                                <button className="btn btn-outline-primary me-4" onClick={exportUserToExcel}>
+                                    <BsCloudDownload /> Export to Excel
+                                </button>
+                            </div>
                         </div>
-                        
+
                         {isLoading &&
                             <Loading />
                         }
@@ -78,62 +161,19 @@ const CityUser = () => {
                                 message="No users found."
                             />
                         }
-                        
+
                         {users.length > 0 &&
-                            <table className="table table-striped table-hover mb-0">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">User Name</th>
-                                        <th scope="col">Location</th>
-                                        <th scope="col">Contact Number</th>
-                                        <th scope="col">Install Date</th>
-                                        <th scope="col">Last Active</th>
-                                        <th scope="col">Total XP Balance</th>
-                                        <th scope="col">Total Reward Redeems</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {
-                                    users.map(item => {
-                                        return (
-                                            <tr key={`${item.id}-user`}>
-                                                <td scope="row">{item.id}</td>
-                                                <td>
-                                                    <Link to={`/users/edit-user/${item.id}`}>
-                                                        {item.name}
-                                                    </Link>
-                                                </td>
-                                                <td>
-                                                    {item.latitude && item.longitude ? 
-                                                        <Link to={`https://www.google.com/maps?q=${item.latitude},${item.longitude}`} target='_blank'>
-                                                        {item.city}
-                                                    </Link>
-                                                    :
-                                                    item.city
-                                                    }                                                
-                                                </td>
-                                                <td>{item.phone}</td>
-                                                <td>{item.created_at}</td>
-                                                <td>{item.last_login}</td>
-                                                <td>{item.total_xp ? item.total_xp : '0'} xp</td>
-                                                <td>{item.redeem_xp ? item.redeem_xp : '0'} xp</td>
-                                            </tr>
-                                        )
-                                    })
-                                }
-                                </tbody>
-                            </table>                                                        
+                            <DataTable table={table} columns={columns} />
                         }
                     </div>
 
                     {users.length > 0 &&
-                        <div className='d-flex  align-items-start justify-content-end'>
-                            <Pagination
-                                pageCount={pageCount}
-                                handlePageChange={(event) => setPageNumber(event.selected + 1)}
-                            />
-                        </div>
+                        <PaginationDataTable
+                            table={table}
+                            pageCount={pageCount}
+                            pageIndex={pageIndex}
+                            setPageIndex={setPageIndex}
+                        />
                     }
                 </div>
             </div>

@@ -627,7 +627,7 @@ const Dashboard = () => {
                                                 <td>{item.active_user}</td>
                                                 <td>{item.inactive_user}</td>
                                                 <td>
-                                                    <Link target="_blank" to={`/users/city-users/${item.district}`}>
+                                                    <Link target="_blank" to={`/users/city-users?state=${item.state_str}&district=${item.district}`}>
                                                         <button className="btn btn-primary">View Details</button>
                                                     </Link>
                                                 </td>

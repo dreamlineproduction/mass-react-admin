@@ -54,7 +54,7 @@ const AppContent = () => {
         { path: '/users/top-fifty', element: <TopFifty /> },
         { path: '/users/add-user', element: <NewUser /> },
         { path: '/users/edit-user/:id', element: <EditUser /> },
-        { path: '/users/city-users/:city', element: <CityUser /> },
+        { path: '/users/city-users', element: <CityUser /> },
         { path: '/products/all-products', element: <AllProduct /> },
         { path: '/products/add-product', element: <NewProduct /> },
         { path: '/products/edit-product/:id', element: <EditProduct /> },
