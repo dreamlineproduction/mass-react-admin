@@ -5,8 +5,10 @@ import BsModal from '../others/BsModal';
 import { actionFetchData } from '../../actions/actions';
 import { API_URL } from '../../config';
 import Loading from '../others/Loading';
+import { useNavigate } from 'react-router-dom';
 const IndiaMap = ({stateInfo,accessToken}) => {
     const modalRef = useRef(null);
+    const navigate =  useNavigate()
 
     const [isLoading,setIsLoading] = useState(false);
     
@@ -57,9 +59,19 @@ const IndiaMap = ({stateInfo,accessToken}) => {
    
     const handleState = async (e) => {
         setIsLoading(true)
+        let stateName = '';
+
         const stateId = e.target.id;        
 
-        setSelectedState(stateInfo[stateId]);
+        if(stateInfo[stateId]) {
+            stateName = stateInfo[stateId].replace(/\s*\(\d+\)$/, ""); 
+            setSelectedState(stateName);
+        }
+        
+        if(stateName === ''){
+            console.error('Invalid State Name');
+            return
+        }
 
         const modal = new bootstrap.Modal(modalRef.current, {
             backdrop: false, // Disable the backdrop
@@ -119,6 +131,23 @@ const IndiaMap = ({stateInfo,accessToken}) => {
                     setHoveredDistrict(null)
                     //e.target.style.fill = '';
                 });
+
+                path.addEventListener('click',(e) => {
+                    let districtName = ''
+                    const districtId = e.target.id 
+                    if(districtInfo[districtId]){
+                        districtName  = districtInfo[districtId].replace(/\s*\(\d+\)$/, "");
+                    }
+                    
+
+                    if(districtName !== ''){
+                        // navigate(`/users/city-users?state=${selectedState}&district=${districtName}`,{
+                        //     target:"_blank"
+                        // })
+                        window.open(`/users/city-users?state=${selectedState}&district=${districtName}`, '_blank');
+
+                    }
+                })
             });
         }  
     }, [districtInfo]);
