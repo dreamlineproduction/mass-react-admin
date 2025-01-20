@@ -169,12 +169,17 @@ const Dashboard = () => {
 
 
         //--Fetch Data
-        let response = await actionFetchData(`${API_URL}/dashboard/state-users/${state}`, accessToken);
-        response = await response.json();
-
-        if (response.status) {
-            setCityUser(response.users);
+        //let response = await actionFetchData(`${API_URL}/dashboard/state-users/${state}`, accessToken);
+        //response = await response.json();
+        let response = await actionFetchData(`${API_URL}/users/district/count?state=${state}`,accessToken)
+        response = await response.json()
+        if(response.status === 200)
+        {
+            //setDistrict(responseIII.data)
+            setCityUser(response.data);
         }
+
+       
         setManageUi({ ...manageUi, loadingModal: false, selectedState: state });
 
     }
@@ -617,12 +622,12 @@ const Dashboard = () => {
                                         return (
                                             <tr key={`city-user-${item.id}`}>
                                                 <td scope="row">{item.id}</td>
-                                                <td>{item.city}</td>
+                                                <td>{item.district}</td>
                                                 <td>{item.total_user}</td>
-                                                <td>{item.active_users}</td>
-                                                <td>{item.inactive_users}</td>
+                                                <td>{item.active_user}</td>
+                                                <td>{item.inactive_user}</td>
                                                 <td>
-                                                    <Link target="_blank" to={`/users/city-users/${item.city}`}>
+                                                    <Link target="_blank" to={`/users/city-users/${item.district}`}>
                                                         <button className="btn btn-primary">View Details</button>
                                                     </Link>
                                                 </td>
