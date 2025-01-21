@@ -11,6 +11,7 @@ import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
 import Status from "../others/Status";
 import Swal from "sweetalert2";
+import NoState from "../others/NoState";
 
 const AllShort = () => {
     const { Auth,hasPermission } = useContext(AuthContext)
