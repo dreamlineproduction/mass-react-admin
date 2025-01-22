@@ -25,19 +25,19 @@ const TopFifty = () => {
 
 
     const columns = useMemo(() => [
-        { 
-            accessorKey: "id", 
-            header: "Ranking", 
-            enableSorting: false, 
-            cell:({row}) =>{
-                return (row.index+1)
+        {
+            accessorKey: "id",
+            header: "Ranking",
+            enableSorting: false,
+            cell: ({ row }) => {
+                return (row.index + 1)
             }
         },
         {
             accessorKey: "image",
             header: "Image",
             enableSorting: false,
-            cell: ({ row }) => {               
+            cell: ({ row }) => {
                 if (row.original.image) {
                     return (
                         <img
@@ -66,7 +66,7 @@ const TopFifty = () => {
         {
             accessorKey: "name",
             header: "Full Name",
-            enableSorting:false,
+            enableSorting: false,
             cell: ({ row }) => {
                 return (<Link to={`/users/edit-user/${row.original.id}?hideForm=true`}>
                     {row.original.name}
@@ -90,7 +90,7 @@ const TopFifty = () => {
             },
         },
         { accessorKey: "phone", header: "Phone", enableSorting: false },
-        
+
         {
             accessorKey: "state_str",
             header: "State",
@@ -112,7 +112,7 @@ const TopFifty = () => {
                         View More
                     </button>)
             }
-        },        
+        },
         {
             accessorKey: "status",
             header: "Status",
@@ -354,16 +354,18 @@ const TopFifty = () => {
                 <div className="col-12">
                     <div className="card">
 
-<div className="card-body">
+                        <div className="card-body">
 
 
-                        <div className="d-flex justify-between-end align-items-center gap-3">
+                            <div className="d-flex justify-between-end align-items-center gap-3">
 
-<div>
-    <h4>Total users by product scanned </h4>
-</div>
-                            <div className="d-flex gap-2 ">
-                                
+                                <div>
+                                    <h4>Total users by  
+                                        {selectedValue === 1 ? ' product scanned' : ' total xp'}    
+                                    </h4>
+                                </div>
+                                <div className="d-flex gap-2 ">
+
                                     <select
                                         className="form-select"
                                         defaultValue={selectedValue}
@@ -379,12 +381,12 @@ const TopFifty = () => {
                                     >
                                         <BiCloudDownload /> Export as Excel
                                     </button>
-                                
 
-                              
+
+
+                                </div>
+
                             </div>
-
-                        </div>
 
                         </div>
 

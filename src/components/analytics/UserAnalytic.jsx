@@ -545,7 +545,12 @@ const UserAnalytic = () => {
                                     </select>
                                 </div>
                                 <div className="col-md-3">
-                                    <button type="button" onClick={filterData} className="btn btn-primary large-btn w-100">Show Report</button>
+                                    {(formData.role_id > 0 && formData.year > 0) ?
+                                        <button type="button" onClick={filterData} className="btn btn-primary large-btn w-100">Show Report</button>
+                                        :
+                                        <button type="button" disabled className="btn btn-primary large-btn w-100 disabled">Show Report</button>
+                                    }
+                                    
                                 </div>
                             </div>
                         </div>

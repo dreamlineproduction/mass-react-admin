@@ -321,8 +321,8 @@ const ProductAnalytic = () => {
                                     <select 
                                         defaultValue={formData.product_id}
                                         onChange={handleChange}
-                                        name="product"
-                                        id="product"
+                                        name="product_id"
+                                        id="product_id"
                                         className="form-select custom-input" >
                                         <option value={''} disabled>Select product</option>
                                         {products && products.length > 0 &&
@@ -362,7 +362,21 @@ const ProductAnalytic = () => {
                                     </select>
                                 </div>
                                 <div className="col-md-3">
-                                    <button type="button" onClick={filterData} className="btn btn-primary large-btn w-100">Show Report</button>
+                                    {(formData.product_id > 0) ?
+                                        <button type="button" 
+                                        onClick={filterData} 
+                                        className="btn btn-primary large-btn w-100">
+                                            Show Report
+                                        </button>
+                                    :
+                                    <button 
+                                        type="button" 
+                                        disabled
+                                        className="btn btn-primary large-btn w-100 disabled">
+                                        Show Report
+                                        </button>
+                                    }
+                                   
                                 </div>
                             </div>
                         </div>
