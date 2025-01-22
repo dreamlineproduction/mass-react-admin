@@ -8,8 +8,9 @@ import Loading from '../others/Loading';
 import { useNavigate } from 'react-router-dom';
 const IndiaMap = ({stateInfo,accessToken}) => {
     console.log(stateInfo)
+
+
     const modalRef = useRef(null);
-    const navigate =  useNavigate()
 
     const [isLoading,setIsLoading] = useState(false);
     
@@ -111,7 +112,7 @@ const IndiaMap = ({stateInfo,accessToken}) => {
 
     useEffect(() => {
         fetchIndiaMap()
-        
+
         const svgElement = document.querySelector('.india-map svg');
         if (svgElement && Object.keys(stateInfo).length > 0) {
             svgElement.querySelectorAll('path').forEach((path) => {
