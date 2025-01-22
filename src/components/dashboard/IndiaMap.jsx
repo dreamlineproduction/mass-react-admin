@@ -125,7 +125,7 @@ const IndiaMap = ({stateInfo,accessToken}) => {
                 path.addEventListener('click', (e) => handleState(e));
             });
         }
-    }, [stateInfo]);
+    }, [stateInfo,svgContent]);
 
     useEffect(() => {
         // Fetch and set the SVG content
