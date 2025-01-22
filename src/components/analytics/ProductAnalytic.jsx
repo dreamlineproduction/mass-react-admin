@@ -412,12 +412,14 @@ const ProductAnalytic = () => {
                                         </div>
                                     }
 
-                                    {/* {!loading.mapLoading && mapData &&
+                                    {!loading.mapLoading && mapData &&
                                         <IndiaMap
                                             stateInfo={mapData}
                                             accessToken={accessToken}
+                                            type="product"
+                                            formData={formData}
                                         />
-                                    } */}
+                                    }
                                 </div>
                             </div>
                         </div>

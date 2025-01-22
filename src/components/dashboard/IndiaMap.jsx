@@ -1,12 +1,11 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useRef } from 'react';
 import './IndiaMap.scss';
-import BsModal from '../others/BsModal';
-import { actionFetchData } from '../../actions/actions';
+import {  actionPostData } from '../../actions/actions';
 import { API_URL } from '../../config';
 import Loading from '../others/Loading';
-import { useNavigate } from 'react-router-dom';
-const IndiaMap = ({stateInfo,accessToken}) => {
+
+const IndiaMap = ({stateInfo,accessToken,type = 'dashboard',formData = {}}) => {
     console.log(stateInfo)
 
 
@@ -65,26 +64,61 @@ const IndiaMap = ({stateInfo,accessToken}) => {
             return
         }
 
-        const modal = new bootstrap.Modal(modalRef.current, {
-            backdrop: false, // Disable the backdrop
-        });
+        const modal = new bootstrap.Modal(modalRef.current);
         modal.show();
 
 
         let districtMap = '';
-
+       
+        if(stateId === 'INAS') {
+            districtMap = '/images/districts/assam.svg';
+        }
+        if(stateId === 'INBR') {
+            districtMap = '/images/districts/bihar.svg';
+        }
+        if(stateId === 'INCH') {
+            districtMap = '/images/districts/ch.svg';
+        }
+        if(stateId === 'INJH') {
+            districtMap = '/images/districts/jh.svg';
+        }
+        if(stateId === 'INOD') {
+            districtMap = '/images/districts/odisha.svg';
+        }
+        if(stateId === 'INTR') {
+            districtMap = '/images/districts/tr.svg';
+        }
         if(stateId === 'INUP'){
             districtMap = '/images/districts/uttar-pradesh.svg';
         }
-
         if(stateId === 'INWB') {
             districtMap = '/images/districts/west_bengal.svg';
         }
 
+
+
         if(districtMap !== '')
-        {            
+        {   
+            // Default API URL
+            let apiUrl = `${API_URL}/dashboard/state-map-data`;
+
+            let postData = {
+                state: stateId
+            }
+            if(Object.keys(formData).length > 0){
+                postData = {...postData,...formData}   
+            }
+
+            if(type === 'product'){
+                apiUrl = `${API_URL}/product/state-map-data`;
+                
+            }         
+            if(type === 'user'){
+                apiUrl = `${API_URL}/user/state-map-data`;
+            }
+
             //--Fetch Data
-            let response = await actionFetchData(`${API_URL}/dashboard/state-map-data/${stateId}`, accessToken);
+            let response = await actionPostData(apiUrl, accessToken,postData);
             response = await response.json();
 
             if(response.status === 200){
