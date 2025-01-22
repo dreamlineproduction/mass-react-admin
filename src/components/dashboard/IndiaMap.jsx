@@ -115,6 +115,8 @@ const IndiaMap = ({stateInfo,accessToken}) => {
 
         const svgElement = document.querySelector('.india-map svg');
         if (svgElement && Object.keys(stateInfo).length > 0) {
+            console.log('svgElement',svgElement);
+            
             svgElement.querySelectorAll('path').forEach((path) => {
                 path.addEventListener('mouseover', (e) => handleMouseOver(e));
                 path.addEventListener('mouseout', () => setHoveredState(null));
