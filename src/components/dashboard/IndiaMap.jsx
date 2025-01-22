@@ -110,6 +110,8 @@ const IndiaMap = ({stateInfo,accessToken}) => {
     }
 
     useEffect(() => {
+        fetchIndiaMap()
+        
         const svgElement = document.querySelector('.india-map svg');
         if (svgElement && Object.keys(stateInfo).length > 0) {
             svgElement.querySelectorAll('path').forEach((path) => {
@@ -122,7 +124,6 @@ const IndiaMap = ({stateInfo,accessToken}) => {
 
     useEffect(() => {
         // Fetch and set the SVG content
-        fetchIndiaMap()
 
         const stateSvgElement = document.querySelector('.state-body svg');
         if (stateSvgElement && Object.keys(districtInfo).length > 0) {
@@ -141,12 +142,8 @@ const IndiaMap = ({stateInfo,accessToken}) => {
                     }
                     
 
-                    if(districtName !== ''){
-                        // navigate(`/users/city-users?state=${selectedState}&district=${districtName}`,{
-                        //     target:"_blank"
-                        // })
+                    if(districtName !== ''){                    
                         window.open(`/users/city-users?state=${selectedState}&district=${districtName}`, '_blank');
-
                     }
                 })
             });
