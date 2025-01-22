@@ -153,7 +153,7 @@ const IndiaMap = ({stateInfo,accessToken}) => {
                 })
             });
         }  
-    }, [districtInfo]);
+    }, [districtInfo,stateSvgContent]);
 
 
    
