@@ -88,10 +88,11 @@ const ProductAnalytic = () => {
 
     const hasValueGreaterThanZero = charData.series[0].data.some(value => value > 0);
 
-    const [loading, setLoading] = useState({
-        isLoading: true,
-        mapLoading: false
-    });
+ 
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [mapLoading, setMapLoading] = useState(false);
+
     const [formData, setFormData] = useState({
         product_id: '',
         size_id: '',
@@ -114,7 +115,7 @@ const ProductAnalytic = () => {
     const fetchProductSize = async (productId = 0) => {        
 
         if(productId > 0){           
-            setLoading({...loading,isLoading:true});
+            setIsLoading(true);
             let response = await actionFetchData(`${API_URL}/products/${productId}`, accessToken);
             response = await response.json();
             if (response.status) {
@@ -124,7 +125,7 @@ const ProductAnalytic = () => {
                     product_id:productId,
                 }));
             }
-            setLoading({...loading,isLoading:false});
+            setIsLoading(false);
         }
         return
     }
@@ -178,7 +179,7 @@ const ProductAnalytic = () => {
 
     // Fetch data
     const fetchProduct = async () => {    
-        setLoading({...loading,isLoading:true});
+        setIsLoading(true);
 
         const params = {
             page: 1,
@@ -190,17 +191,17 @@ const ProductAnalytic = () => {
         if (response.status) {
             setProduct(response.data.data || []);
         }
-        setLoading({...loading,isLoading:false});
+        setIsLoading(false);
     }
 
     const fetchState = async () => {
-        setLoading({...loading,isLoading:true});
+        setIsLoading(true);
         const response = await actionFetchState()
         let data = await response.json();
         if (data.status === 200) {
             setState(data.data)
         }    
-        setLoading({...loading,isLoading:false});    
+       setIsLoading(false);
     }
 
     const fetchDistrict = async (stateName = '') => {
@@ -208,13 +209,13 @@ const ProductAnalytic = () => {
             return;
         }
 
-        setLoading({...loading,isLoading:true});
+        setIsLoading(true);
         const response = await actionFetchData(`${API_URL}/district/${stateName}`)
         let data = await response.json();
         if (data.status === 200) {
             setDistrict(data.data)
         }    
-        setLoading({...loading,isLoading:false});    
+       setIsLoading(false);
     }
 
     const fetchCity = async (stateName = '', district = '') => {
@@ -222,13 +223,13 @@ const ProductAnalytic = () => {
             return
         }
 
-        setLoading({...loading,isLoading:true});
+        setIsLoading(true);
         const response = await actionFetchData(`${API_URL}/cities/${stateName}/${district}`)
         let data = await response.json();
         if (data.status === 200) {
             setCity(data.data)
         }    
-        setLoading({...loading,isLoading:false});    
+       setIsLoading(false);
     }
 
     const fetchArea = async (stateName = '', district = '',cityName = '') => {
@@ -236,13 +237,13 @@ const ProductAnalytic = () => {
             return
         }
 
-        setLoading({...loading,isLoading:true});
+        setIsLoading(true);
         const response = await actionFetchData(`${API_URL}/areas/${stateName}/${district}/${cityName}`)
         let data = await response.json();
         if (data.status === 200) {
             setArea(data.data)
         }    
-        setLoading({...loading,isLoading:false});    
+       setIsLoading(false);
     }
 
     // Filter data
@@ -255,7 +256,7 @@ const ProductAnalytic = () => {
             chatText = `${selectedProduct.name} ${selectedSize.size_custom+selectedSize.size_in} - ${formData.year}`;       
         }       
 
-        setLoading({...loading,isLoading:true});
+        setIsLoading(true);
         let response = await actionPostData(`${API_URL}/products/chart-data`,accessToken,formData);
         response = await response.json();
         
@@ -269,11 +270,11 @@ const ProductAnalytic = () => {
             setDescription(chatText)
             setTableData(response.data || []);
         }
-        setLoading({...loading,isLoading:false});        
+       setIsLoading(false);    
     }
 
     const filterMapData = async () => {
-        setLoading({...loading,mapLoading:true});
+       //setMapLoading(true);
 
         let response = await actionPostData(`${API_URL}/products/map-data`,accessToken,formData);
         response = await response.json();
@@ -281,7 +282,7 @@ const ProductAnalytic = () => {
         if(response.status === 200){
             setMapData(response.data || null);
         }
-        setLoading({...loading,mapLoading:false});
+        //setMapLoading(false);
     }
 
     useEffect(()=>{
@@ -311,7 +312,7 @@ const ProductAnalytic = () => {
             />
 
             <div className="row">
-                {loading.isLoading && <div className="cover-body"></div>}
+                {isLoading && <div className="cover-body"></div>}
 
                 <div className="col-12">
                     <div className="card">
@@ -406,13 +407,13 @@ const ProductAnalytic = () => {
                             <div className="row">
                                 <div className="col-md-12">
                                    
-                                    {loading.mapLoading &&
+                                    {mapLoading &&
                                         <div className="d-flex justify-content-center align-items-center">
                                             <Loading />
                                         </div>
                                     }
 
-                                    {!loading.mapLoading && mapData &&
+                                    {!mapLoading && mapData &&
                                         <IndiaMap
                                             stateInfo={mapData}
                                             accessToken={accessToken}
@@ -504,7 +505,7 @@ const ProductAnalytic = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {loading.isLoading && <Loading />}
+                                {isLoading && <Loading />}
                                 
                                 {tableData && tableData.length > 0 ?
                                 <div className="col-md-12">

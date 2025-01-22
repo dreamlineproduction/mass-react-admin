@@ -1,18 +1,20 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useRef } from 'react';
 import './IndiaMap.scss';
-import {  actionPostData } from '../../actions/actions';
+import { actionPostData } from '../../actions/actions';
 import { API_URL } from '../../config';
 import Loading from '../others/Loading';
 
-const IndiaMap = ({stateInfo,accessToken,type = 'dashboard',formData = {}}) => {
-    console.log(stateInfo)
+const IndiaMap = ({ stateInfo, accessToken, type = 'dashboard', formData = {} }) => {
+    //console.log(stateInfo)
 
 
-    const modalRef = useRef(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
-    const [isLoading,setIsLoading] = useState(false);
-    
+    const [isLoading, setIsLoading] = useState(false);
+
     const [hoveredState, setHoveredState] = useState(null);
     const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
     const [svgContent, setSvgContent] = useState('');
@@ -33,10 +35,10 @@ const IndiaMap = ({stateInfo,accessToken,type = 'dashboard',formData = {}}) => {
 
     const fetchIndiaMap = () => {
         fetch('/images/india.svg')
-        .then(response => response.text())
-        .then(svg => {
-            setSvgContent(svg);                
-        });
+            .then(response => response.text())
+            .then(svg => {
+                setSvgContent(svg);
+            });
     }
 
     const handleMouseOver = (e) => {
@@ -47,96 +49,92 @@ const IndiaMap = ({stateInfo,accessToken,type = 'dashboard',formData = {}}) => {
         }
     };
 
-   
+
     const handleState = async (e) => {
         setIsLoading(true)
         let stateName = '';
 
-        const stateId = e.target.id;        
+        const stateId = e.target.id;
 
-        if(stateInfo[stateId]) {
-            stateName = stateInfo[stateId].replace(/\s*\(\d+\)$/, ""); 
+        if (stateInfo[stateId]) {
+            stateName = stateInfo[stateId].replace(/\s*\(\d+\)$/, "");
             setSelectedState(stateName);
         }
-        
-        if(stateName === ''){
+
+        if (stateName === '') {
             console.error('Invalid State Name');
             return
         }
 
-        const modal = new bootstrap.Modal(modalRef.current);
-        modal.show();
-
 
         let districtMap = '';
-       
-        if(stateId === 'INAS') {
+
+        if (stateId === 'INAS') {
             districtMap = '/images/districts/assam.svg';
         }
-        if(stateId === 'INBR') {
+        if (stateId === 'INBR') {
             districtMap = '/images/districts/bihar.svg';
         }
-        if(stateId === 'INCH') {
+        if (stateId === 'INCH') {
             districtMap = '/images/districts/ch.svg';
         }
-        if(stateId === 'INJH') {
+        if (stateId === 'INJH') {
             districtMap = '/images/districts/jh.svg';
         }
-        if(stateId === 'INOD') {
+        if (stateId === 'INOD') {
             districtMap = '/images/districts/odisha.svg';
         }
-        if(stateId === 'INTR') {
+        if (stateId === 'INTR') {
             districtMap = '/images/districts/tr.svg';
         }
-        if(stateId === 'INUP'){
+        if (stateId === 'INUP') {
             districtMap = '/images/districts/uttar-pradesh.svg';
         }
-        if(stateId === 'INWB') {
+        if (stateId === 'INWB') {
             districtMap = '/images/districts/west_bengal.svg';
         }
 
+        setIsModalOpen(true);
 
-
-        if(districtMap !== '')
-        {   
+        if (districtMap !== '') {
             // Default API URL
             let apiUrl = `${API_URL}/dashboard/state-map-data`;
 
             let postData = {
                 state: stateId
             }
-            if(Object.keys(formData).length > 0){
-                postData = {...postData,...formData}   
+            if (Object.keys(formData).length > 0) {
+                postData = { ...postData, ...formData }
             }
 
-            if(type === 'product'){
-                apiUrl = `${API_URL}/product/state-map-data`;
-                
-            }         
-            if(type === 'user'){
-                apiUrl = `${API_URL}/user/state-map-data`;
+            if (type === 'product') {
+                apiUrl = `${API_URL}/products/state-map-data`;
+
+            }
+            if (type === 'user') {
+                apiUrl = `${API_URL}/users/state-map-data`;
             }
 
             //--Fetch Data
-            let response = await actionPostData(apiUrl, accessToken,postData);
+            let response = await actionPostData(apiUrl, accessToken, postData);
             response = await response.json();
 
-            if(response.status === 200){
-                setDistrictInfo(response.data)                
+            if (response.status === 200) {
+                setDistrictInfo(response.data)
                 fetch(districtMap)
-                .then(responseII => responseII.text())
-                .then(svg => {
-                    setStateSvgContent(svg);
-                    setIsLoading(false)                       
-                });             
-            }            
+                    .then(responseII => responseII.text())
+                    .then(svg => {
+                        setStateSvgContent(svg);
+                        setIsLoading(false)
+                    });
+            }
         }
-        
+
     }
 
-    const handleDistrictMouseOver = (e) => {     
-        const districtId = e.target.id;        
-        if(districtInfo[districtId]){
+    const handleDistrictMouseOver = (e) => {
+        const districtId = e.target.id;
+        if (districtInfo[districtId]) {
             setHoveredDistrict(districtInfo[districtId]);
             //pathElement.style.stroke = 'red';
             //e.target.style.fill = 'red';
@@ -148,18 +146,15 @@ const IndiaMap = ({stateInfo,accessToken,type = 'dashboard',formData = {}}) => {
         fetchIndiaMap()
 
         const svgElement = document.querySelector('.india-map svg');
-        console.log('1svgElement',svgElement);
 
         if (svgElement && Object.keys(stateInfo).length > 0) {
-            console.log('2svgElement',svgElement);
-
             svgElement.querySelectorAll('path').forEach((path) => {
                 path.addEventListener('mouseover', (e) => handleMouseOver(e));
                 path.addEventListener('mouseout', () => setHoveredState(null));
                 path.addEventListener('click', (e) => handleState(e));
             });
         }
-    }, [stateInfo,svgContent]);
+    }, [stateInfo, svgContent]);
 
     useEffect(() => {
         // Fetch and set the SVG content
@@ -173,25 +168,25 @@ const IndiaMap = ({stateInfo,accessToken,type = 'dashboard',formData = {}}) => {
                     //e.target.style.fill = '';
                 });
 
-                path.addEventListener('click',(e) => {
+                path.addEventListener('click', (e) => {
                     let districtName = ''
-                    const districtId = e.target.id 
-                    if(districtInfo[districtId]){
-                        districtName  = districtInfo[districtId].replace(/\s*\(\d+\)$/, "");
+                    const districtId = e.target.id
+                    if (districtInfo[districtId]) {
+                        districtName = districtInfo[districtId].replace(/\s*\(\d+\)$/, "");
                     }
-                    
 
-                    if(districtName !== ''){                    
+
+                    if (districtName !== '' && type === 'dashboard') {
                         window.open(`/users/city-users?state=${selectedState}&district=${districtName}`, '_blank');
                     }
                 })
             });
-        }  
-    }, [districtInfo,stateSvgContent]);
+        }
+    }, [districtInfo, stateSvgContent]);
 
 
-   
-    
+
+
     return (
         <>
             <div className="india-map-container">
@@ -212,42 +207,47 @@ const IndiaMap = ({stateInfo,accessToken,type = 'dashboard',formData = {}}) => {
                 )}
             </div>
 
-             {/* Modals */}
-             <div className="modal fade" id="exampleModal" tabIndex="-1" 
-             aria-labelledby="exampleModalLabel" aria-hidden="true" ref={modalRef}>
-                <div className="modal-dialog modal-xl">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">{selectedState}</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            {isLoading &&
-                                <Loading />
-                            }
-                            <div className='card'>
-
-                                <div className="card-body m-auto">
-                                <div
-                                    className="state-body w-100 h-75"
-                                    dangerouslySetInnerHTML={{ __html: stateSvgContent }}
-                                />
-                                {hoveredDistrict && (
-                                    <div
-                                        className="tooltip"
-                                        style={{ top: `${tooltipPosDistrict.y}px`, left: `${tooltipPosDistrict.x}px` }}
-                                    >
-                                        {hoveredDistrict}
-                                    </div>
-                                )}
-</div>
-
-
+            {/* Modals */}
+            {isModalOpen && (
+                <div  className="modal show d-block" tabIndex="-1"
+                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-xl">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLabel">{selectedState}</h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    aria-label="Close"
+                                    onClick={closeModal}
+                                ></button>
                             </div>
-                        </div>                       
+                            <div className="modal-body">
+                                {isLoading &&
+                                    <Loading />
+                                }
+                                <div className='card'>
+
+                                    <div className="card-body m-auto">
+                                        <div
+                                            className="state-body w-100 h-75"
+                                            dangerouslySetInnerHTML={{ __html: stateSvgContent }}
+                                        />
+                                        {hoveredDistrict && (
+                                            <div
+                                                className="tooltip"
+                                                style={{ top: `${tooltipPosDistrict.y}px`, left: `${tooltipPosDistrict.x}px` }}
+                                            >
+                                                {hoveredDistrict}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </>
     );
 };
