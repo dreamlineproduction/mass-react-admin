@@ -7,6 +7,7 @@ import { API_URL } from '../../config';
 import Loading from '../others/Loading';
 import { useNavigate } from 'react-router-dom';
 const IndiaMap = ({stateInfo,accessToken}) => {
+    console.log(stateInfo)
     const modalRef = useRef(null);
     const navigate =  useNavigate()
 
@@ -34,17 +35,7 @@ const IndiaMap = ({stateInfo,accessToken}) => {
         fetch('/images/india.svg')
         .then(response => response.text())
         .then(svg => {
-            setSvgContent(svg);
-                setTimeout(() => {
-                    const svgElement = document.querySelector('.india-map svg');
-                    if (svgElement) {
-                        svgElement.querySelectorAll('path').forEach((path) => {
-                            path.addEventListener('mouseover', (e) => handleMouseOver(e));
-                            path.addEventListener('mouseout', () => setHoveredState(null));
-                            path.addEventListener('click', (e) => handleState(e));
-                        });
-                    }
-                }, 100); 
+            setSvgContent(svg);                
         });
     }
 
@@ -119,10 +110,20 @@ const IndiaMap = ({stateInfo,accessToken}) => {
     }
 
     useEffect(() => {
+        const svgElement = document.querySelector('.india-map svg');
+        if (svgElement && Object.keys(stateInfo).length > 0) {
+            svgElement.querySelectorAll('path').forEach((path) => {
+                path.addEventListener('mouseover', (e) => handleMouseOver(e));
+                path.addEventListener('mouseout', () => setHoveredState(null));
+                path.addEventListener('click', (e) => handleState(e));
+            });
+        }
+    }, [stateInfo]);
+
+    useEffect(() => {
         // Fetch and set the SVG content
         fetchIndiaMap()
 
-        
         const stateSvgElement = document.querySelector('.state-body svg');
         if (stateSvgElement && Object.keys(districtInfo).length > 0) {
             stateSvgElement.querySelectorAll('path').forEach((path) => {

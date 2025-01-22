@@ -502,7 +502,7 @@ const Dashboard = () => {
                                     </div>
                                 }
 
-                                {!mapLoading &&
+                                {!mapLoading && mapData && 
                                     <IndiaMap
                                         stateInfo={mapData}
                                         accessToken={accessToken}

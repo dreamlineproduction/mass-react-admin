@@ -8,6 +8,7 @@ import { getInitYears } from '../../config';
 import NoState from '../others/NoState';
 import Loading from '../others/Loading';
 import { getYear } from 'date-fns';
+import IndiaMap from '../dashboard/IndiaMap';
 
 const ProductAnalytic = () => {
     const { Auth,hasPermission } = useContext(AuthContext)
@@ -87,8 +88,10 @@ const ProductAnalytic = () => {
 
     const hasValueGreaterThanZero = charData.series[0].data.some(value => value > 0);
 
-    const [isLoading, setLoading] = useState(true);
-
+    const [loading, setLoading] = useState({
+        isLoading: true,
+        mapLoading: false
+    });
     const [formData, setFormData] = useState({
         product_id: '',
         size_id: '',
@@ -105,11 +108,13 @@ const ProductAnalytic = () => {
     const [sizes,setSize]  = useState([]);
 
     const [tableData,setTableData]  = useState([]);
-    
+    const [mapData, setMapData] = useState(null);
+
+
     const fetchProductSize = async (productId = 0) => {        
 
         if(productId > 0){           
-            setLoading(true);
+            setLoading({...loading,isLoading:true});
             let response = await actionFetchData(`${API_URL}/products/${productId}`, accessToken);
             response = await response.json();
             if (response.status) {
@@ -119,7 +124,7 @@ const ProductAnalytic = () => {
                     product_id:productId,
                 }));
             }
-            setLoading(false);
+            setLoading({...loading,isLoading:false});
         }
         return
     }
@@ -173,7 +178,7 @@ const ProductAnalytic = () => {
 
     // Fetch data
     const fetchProduct = async () => {    
-        setLoading(true);
+        setLoading({...loading,isLoading:true});
 
         const params = {
             page: 1,
@@ -185,17 +190,17 @@ const ProductAnalytic = () => {
         if (response.status) {
             setProduct(response.data.data || []);
         }
-        setLoading(false)
+        setLoading({...loading,isLoading:false});
     }
 
     const fetchState = async () => {
-        setLoading(true)
+        setLoading({...loading,isLoading:true});
         const response = await actionFetchState()
         let data = await response.json();
         if (data.status === 200) {
             setState(data.data)
         }    
-        setLoading(false)    
+        setLoading({...loading,isLoading:false});    
     }
 
     const fetchDistrict = async (stateName = '') => {
@@ -203,13 +208,13 @@ const ProductAnalytic = () => {
             return;
         }
 
-        setLoading(true)
+        setLoading({...loading,isLoading:true});
         const response = await actionFetchData(`${API_URL}/district/${stateName}`)
         let data = await response.json();
         if (data.status === 200) {
             setDistrict(data.data)
         }    
-        setLoading(false)    
+        setLoading({...loading,isLoading:false});    
     }
 
     const fetchCity = async (stateName = '', district = '') => {
@@ -217,13 +222,13 @@ const ProductAnalytic = () => {
             return
         }
 
-        setLoading(true)
+        setLoading({...loading,isLoading:true});
         const response = await actionFetchData(`${API_URL}/cities/${stateName}/${district}`)
         let data = await response.json();
         if (data.status === 200) {
             setCity(data.data)
         }    
-        setLoading(false)    
+        setLoading({...loading,isLoading:false});    
     }
 
     const fetchArea = async (stateName = '', district = '',cityName = '') => {
@@ -231,13 +236,13 @@ const ProductAnalytic = () => {
             return
         }
 
-        setLoading(true)
+        setLoading({...loading,isLoading:true});
         const response = await actionFetchData(`${API_URL}/areas/${stateName}/${district}/${cityName}`)
         let data = await response.json();
         if (data.status === 200) {
             setArea(data.data)
         }    
-        setLoading(false)    
+        setLoading({...loading,isLoading:false});    
     }
 
     // Filter data
@@ -250,7 +255,7 @@ const ProductAnalytic = () => {
             chatText = `${selectedProduct.name} ${selectedSize.size_custom+selectedSize.size_in} - ${formData.year}`;       
         }       
 
-        setLoading(true)
+        setLoading({...loading,isLoading:true});
         let response = await actionPostData(`${API_URL}/products/chart-data`,accessToken,formData);
         response = await response.json();
         
@@ -264,13 +269,25 @@ const ProductAnalytic = () => {
             setDescription(chatText)
             setTableData(response.data || []);
         }
-        setLoading(false)        
+        setLoading({...loading,isLoading:false});        
     }
 
-    
+    const filterMapData = async () => {
+        setLoading({...loading,mapLoading:true});
+
+        let response = await actionPostData(`${API_URL}/products/map-data`,accessToken,formData);
+        response = await response.json();
+
+        if(response.status === 200){
+            setMapData(response.data || null);
+        }
+        setLoading({...loading,mapLoading:false});
+    }
+
     useEffect(()=>{
         if(formData.product_id > 0 && formData.year){
             filterData()
+            filterMapData()
         }
     },[formData])
 
@@ -294,7 +311,7 @@ const ProductAnalytic = () => {
             />
 
             <div className="row">
-                {isLoading && <div className="cover-body"></div>}
+                {loading.isLoading && <div className="cover-body"></div>}
 
                 <div className="col-12">
                     <div className="card">
@@ -316,26 +333,29 @@ const ProductAnalytic = () => {
                                     </select>
                                 </div>
                                 <div className="col-md-3">
-                                    <select 
-                                        defaultValue={formData.size_id}
+                                    <select
+                                        defaultValue=""
                                         onChange={handleChange}
                                         name="size_id"
                                         id="size_id"
-                                        className="form-select custom-input" >
-                                        <option value={''} selected>Select product size</option>
-                                        {sizes && sizes.length > 0 &&
-                                            sizes.map(item =>(<option key={item.id} value={item.id}> {item.size_custom} {item.size_in}</option>))
-                                        }
+                                        className="form-select custom-input"
+                                    >
+                                        <option value="">Select product size</option>
+                                        {sizes?.map(item => (
+                                            <option key={item.id} value={item.id}>
+                                                {item.size_custom} {item.size_in}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="col-md-3">
                                     <select 
-                                        defaultValue={formData.year}
+                                        defaultValue=""
                                         onChange={handleChange}
                                         name="year"
                                         id="year"
                                         className="form-select custom-input">
-                                        <option value={''} selected disabled>Select year</option>
+                                        <option value="" disabled>Select year</option>
                                         {years && years.length > 0 &&
                                             years.map((item,index) =>(<option key={index} value={item}> {item}</option>))
                                         }
@@ -348,7 +368,7 @@ const ProductAnalytic = () => {
                         </div>
                     </div>
                 </div>
-
+                
                 {hasValueGreaterThanZero &&                    
                 <>
                 <div className="col-md-6">
@@ -371,7 +391,19 @@ const ProductAnalytic = () => {
                         <div className="card-body">
                             <div className="row">
                                 <div className="col-md-12">
-                                    Location Heat Map
+                                   
+                                    {loading.mapLoading &&
+                                        <div className="d-flex justify-content-center align-items-center">
+                                            <Loading />
+                                        </div>
+                                    }
+
+                                    {!loading.mapLoading && mapData &&
+                                        <IndiaMap
+                                            stateInfo={mapData}
+                                            accessToken={accessToken}
+                                        />
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -397,7 +429,7 @@ const ProductAnalytic = () => {
                                                     id='state_name' 
                                                     className="form-select" 
                                                     onChange={handleChange}>
-                                                    <option selected value={''}>Select State</option>
+                                                    <option value={''}>Select State</option>
                                                     {states.map(item => {
                                                         return(
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -413,7 +445,7 @@ const ProductAnalytic = () => {
                                                     id='district_name' 
                                                     className="form-select" 
                                                     onChange={handleChange}>
-                                                    <option selected value={''}>Select District</option>
+                                                    <option value={''}>Select District</option>
                                                     {districts.map(item => {
                                                         return(
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -429,7 +461,7 @@ const ProductAnalytic = () => {
                                                     id='city_name' 
                                                     className="form-select" 
                                                     onChange={handleChange}>
-                                                    <option selected value={''}>Select City</option>                                                    
+                                                    <option value={''}>Select City</option>                                                    
                                                     {cities.map(item => {
                                                         return(
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -445,7 +477,7 @@ const ProductAnalytic = () => {
                                                     id='area_name' 
                                                     className="form-select" 
                                                     onChange={handleChange}>
-                                                    <option selected value={''}>Select Area</option>                                                    
+                                                    <option value={''}>Select Area</option>                                                    
                                                     {areas.map(item => {
                                                         return(
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -456,7 +488,7 @@ const ProductAnalytic = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {isLoading && <Loading />}
+                                {loading.isLoading && <Loading />}
                                 
                                 {tableData && tableData.length > 0 ?
                                 <div className="col-md-12">
