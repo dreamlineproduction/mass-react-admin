@@ -91,7 +91,7 @@ const ProductAnalytic = () => {
  
 
     const [isLoading, setIsLoading] = useState(false);
-    const [mapLoading, setMapLoading] = useState(false);
+    const [tableLoading, setTableLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         product_id: '',
@@ -268,29 +268,44 @@ const ProductAnalytic = () => {
                 }],                
             })
             setDescription(chatText)
-            setTableData(response.data || []);
         }
        setIsLoading(false);    
     }
 
+    // Filter map data
     const filterMapData = async () => {
-       //setMapLoading(true);
-
         let response = await actionPostData(`${API_URL}/products/map-data`,accessToken,formData);
         response = await response.json();
 
         if(response.status === 200){
             setMapData(response.data || null);
         }
-        //setMapLoading(false);
+    }
+
+    // Filter table data
+    const filterTableData = async () => {
+        setTableLoading(true);
+        let response = await actionPostData(`${API_URL}/products/table-data`,accessToken,formData);
+        response = await response.json();
+        if(response.status === 200){
+            setTableData(response.data || []);
+        }
+        setTableLoading(false);
     }
 
     useEffect(()=>{
         if(formData.product_id > 0 && formData.year){
+            filterTableData()          
+        }
+    },[formData])
+
+    useEffect(() => {
+        if(formData.product_id > 0 && formData.year){
             filterData()
             filterMapData()
         }
-    },[formData])
+    }, [formData.product_id, formData.year,formData.size_id]);   
+
 
     useEffect(() => {
         // if(!hasPermission(configPermission.VIEW_PRODUCT)){
@@ -405,15 +420,8 @@ const ProductAnalytic = () => {
                     <div className="card">
                         <div className="card-body">
                             <div className="row">
-                                <div className="col-md-12">
-                                   
-                                    {mapLoading &&
-                                        <div className="d-flex justify-content-center align-items-center">
-                                            <Loading />
-                                        </div>
-                                    }
-
-                                    {!mapLoading && mapData &&
+                                <div className="col-md-12">                                
+                                    {mapData &&
                                         <IndiaMap
                                             stateInfo={mapData}
                                             accessToken={accessToken}
@@ -505,9 +513,17 @@ const ProductAnalytic = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {isLoading && <Loading />}
-                                
-                                {tableData && tableData.length > 0 ?
+
+                                <div className='col-md-12 position-relative'>
+                                    {tableLoading &&
+                                        <Loading />
+                                    }
+                                    {!tableLoading && tableData.length === 0 &&
+                                        <NoState />
+                                    }
+                                </div>
+
+                                {tableData.length > 0 &&
                                 <div className="col-md-12">
                                     <table className="table table-bordered">
                                         <thead>
@@ -533,9 +549,7 @@ const ProductAnalytic = () => {
                                             })}                                                                                        
                                         </tbody>
                                     </table>
-                                </div>
-                                :
-                                <NoState />
+                                </div>                                
                                 }
 
                             </div>
