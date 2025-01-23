@@ -14,6 +14,8 @@ import UserInfomationModal from '../users/UserInfomationModal';
 import { BiCloudDownload } from 'react-icons/bi';
 import Loading from '../others/Loading';
 import { getYear } from 'date-fns';
+import { use } from 'react';
+import IndiaMap from '../dashboard/IndiaMap';
 
 const UserAnalytic = () => {
     const { Auth, hasPermission } = useContext(AuthContext)
@@ -210,6 +212,7 @@ const UserAnalytic = () => {
     });
 
     const [isLoading, setLoading] = useState(true);
+    const [isTableLoading, setTableLoading] = useState(true);
 
     const [description, setDescription] = useState('')
     const [roles, setRole] = useState([]);
@@ -231,12 +234,22 @@ const UserAnalytic = () => {
     const [pageSize, setPageSize] = useState(20);
     const [tableData, setTableData] = useState([]);
 
+    const [mapData, setMapData] = useState(null);
+    
+
     const handleChange = async (e) => {
         const { name, value } = e.target;
         setFormData((prevState) => ({
             ...prevState,
             [name]: value,
         }));
+
+        if(name === 'role_id'){
+            setFormData((prevState) => ({
+                ...prevState,
+                source:""
+            }));
+        }
 
         if(name === 'state_name'){  
             setFormData((prevState) => ({
@@ -393,23 +406,21 @@ const UserAnalytic = () => {
                     data: response.chartData
                 }],
             })
-            filterTableData(postData);
             setDescription(chatText)
 
         }
         setLoading(false)
     }
 
-    const filterTableData = async () => {
-
-        
+    // filter table data
+    const filterTableData = async () => {        
         const params = {
             ...formData,
             page: pageIndex + 1,
             perPage: pageSize,
         };
 
-        setLoading(true)
+        setTableLoading(true)
         let tableResponse = await actionPostData(`${API_URL}/users/table-data`, accessToken, params);
         tableResponse = await tableResponse.json();
 
@@ -419,9 +430,18 @@ const UserAnalytic = () => {
             setFilterUserCount(tableResponse.data.total);
 
         }
-        setLoading(false)
+        setTableLoading(false)
     }
 
+    const filterMapData = async () => {     
+
+        let response = await actionPostData(`${API_URL}/users/map-data`, accessToken, formData)
+        response = await response.json();
+        if (response.status === 200) {
+            setMapData(response.data || null);
+        }
+
+    }
 
     const table = useReactTable({
         data: tableData,
@@ -469,7 +489,10 @@ const UserAnalytic = () => {
         exportToExcel(data,fileName);
     };
 
-    useEffect(() => {       
+    useEffect(() => { 
+        // if(!hasPermission(configPermission.VIEW_PRODUCT)){
+        //     navigate('/403')
+        // }      
         fetchRole()
         fetchSource()
         fetchState();
@@ -478,12 +501,15 @@ const UserAnalytic = () => {
     }, []);
 
     useEffect(() => {
-         // if(!hasPermission(configPermission.VIEW_PRODUCT)){
-        //     navigate('/403')
-        // }
-
         if (formData.role_id > 0 && formData.year > 0) {
             filterData()
+            filterMapData()
+        }
+    }, [formData.role_id, formData.year, formData.source]);
+
+    useEffect(() => {
+        if (formData.role_id > 0 && formData.year > 0) {
+            filterTableData();
         }
     }, [pageIndex, pageSize, sorting,formData]);
 
@@ -508,7 +534,7 @@ const UserAnalytic = () => {
                                         id='role_id'
                                         onChange={handleChange}
                                         className="form-select custom-input">
-                                        <option selected disabled>Select user type</option>
+                                        <option value="" disabled>Select user type</option>
                                         {roles && roles.length > 0 &&
                                             roles.map(item => {
                                                 return (<option key={item.id} value={item.id}>{item.name}</option>)
@@ -523,7 +549,7 @@ const UserAnalytic = () => {
                                         id='source'
                                         onChange={handleChange}
                                         className="form-select custom-input">
-                                        <option selected>Select source</option>
+                                        <option value="" >Select source</option>
                                         {sources && sources.length > 0 &&
                                             sources.map(item => {
                                                 return (<option key={item.id} value={item.name}>{item.name}</option>)
@@ -538,7 +564,7 @@ const UserAnalytic = () => {
                                         id="year"
                                         onChange={handleChange}
                                         className="form-select custom-input">
-                                        <option value={''} selected disabled>Select year</option>
+                                        <option value="" disabled>Select year</option>
                                         {years && years.length > 0 &&
                                             years.map((item, index) => (<option key={index} value={item}> {item}</option>))
                                         }
@@ -579,7 +605,14 @@ const UserAnalytic = () => {
                                 <div className="card-body">
                                     <div className="row">
                                         <div className="col-md-12">
-                                            Location Heat Map
+                                            {mapData &&
+                                                <IndiaMap
+                                                    stateInfo={mapData}
+                                                    accessToken={accessToken}
+                                                    type="user"
+                                                    formData={formData}
+                                                />
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -615,7 +648,7 @@ const UserAnalytic = () => {
                                                     id='state_name'
                                                     className="form-select"
                                                     onChange={handleChange}>
-                                                    <option selected value={''}>Select State</option>
+                                                    <option  value="">Select State</option>
                                                     {states.map(item => {
                                                         return (
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -632,7 +665,7 @@ const UserAnalytic = () => {
                                                     id='district_name'
                                                     className="form-select"
                                                     onChange={handleChange}>
-                                                    <option selected value={''}>Select District</option>
+                                                    <option value="">Select District</option>
                                                     {districts.map(item => {
                                                         return (
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -648,7 +681,7 @@ const UserAnalytic = () => {
                                                     id='city_name'
                                                     className="form-select"
                                                     onChange={handleChange}>
-                                                    <option selected value={''}>Select City</option>
+                                                    <option value="">Select City</option>
                                                     {cities.map(item => {
                                                         return (
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -664,7 +697,7 @@ const UserAnalytic = () => {
                                                     id='area_name'
                                                     className="form-select"
                                                     onChange={handleChange}>
-                                                    <option selected value={''}>Select Area</option>
+                                                    <option value="">Select Area</option>
                                                     {areas.map(item => {
                                                         return (
                                                             <option key={item.id} value={item.name}>{item.name}</option>
@@ -681,7 +714,7 @@ const UserAnalytic = () => {
                                                     onChange={handleChange}
                                                     defaultValue="" 
                                                     className="form-select">
-                                                    <option selected value="">Short by age group</option>
+                                                    <option value="">Short by age group</option>
                                                     <option value="10-19">10-19</option>
                                                     <option value="20-25">20-25</option>
                                                     <option value="25-30">25-30</option>
