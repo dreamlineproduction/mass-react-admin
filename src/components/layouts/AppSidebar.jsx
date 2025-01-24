@@ -6,7 +6,7 @@ import { IoDiamondOutline, IoGiftOutline, IoSpeedometerOutline } from "react-ico
 import 'simplebar-react/dist/simplebar.min.css';
 import { FiShoppingBag, FiUsers } from 'react-icons/fi';
 import { PiShareFat } from 'react-icons/pi';
-import { MdOutlineAccountBalance } from 'react-icons/md';
+import { MdOutlineAccountBalance, MdOutlineAnnouncement } from 'react-icons/md';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { LuClipboardList, LuUserCog } from 'react-icons/lu';
 import { CiLock } from 'react-icons/ci';
@@ -169,6 +169,22 @@ const AppSidebar = () => {
                                     <NavLink className="sidebar-link" to="shorts/new-shorts">Add New Shorts
                                     </NavLink>
                                 </li>                               
+                            </ul>
+                        </li>
+                        )}
+
+                        {hasPermission(configPermission.VIEW_ANNOUNCEMENT) && (
+                        <li className='sidebar-item'>
+                            <a data-bs-target="#announcement" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
+                                <MdOutlineAnnouncement  style={{height:"20px",width:"30px"}} />
+                                <span className="align-middle">Announcements</span>
+                            </a>
+
+                            <ul id="announcement" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                <li className="sidebar-item">
+                                    <NavLink className="sidebar-link" to="announcements/all-announcement">All Announcement
+                                    </NavLink>
+                                </li>                                                              
                             </ul>
                         </li>
                         )}

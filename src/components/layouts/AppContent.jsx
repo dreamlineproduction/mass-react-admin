@@ -45,6 +45,8 @@ import AllArea from '../areas/AllArea';
 import NewArea from '../areas/NewArea';
 import EditArea from '../areas/EditArea';
 import EditShort from '../shorts/EditShort';
+import AllAnnouncement from '../announcement/AllAnnouncement';
+import NewAnnouncement from '../announcement/NewAnnouncement';
 
 const AppContent = () => {
 
@@ -89,9 +91,13 @@ const AppContent = () => {
         { path: '/shorts/all-shorts', element: <AllShort  /> },
         { path: '/shorts/new-shorts', element: <NewShort /> },
         { path: '/shorts/edit-shorts/:id', element: <EditShort /> },
-        {path: '/areas/all-area', element: <AllArea />},
-        {path: '/areas/new-area', element: <NewArea />},
-        {path: '/areas/edit-area/:id', element: <EditArea />},
+        { path: '/areas/all-area', element: <AllArea />},
+        { path: '/areas/new-area', element: <NewArea />},
+        { path: '/areas/edit-area/:id', element: <EditArea />},
+        { path: '/announcements/all-announcement', element: <AllAnnouncement />},
+        { path: '/announcements/new-announcement', element: <NewAnnouncement />},
+        { path: '/announcements/edit-announcement', element: <NewAnnouncement />},
+
         { path: '/403', element: <Unauthorized /> },
     ];
       

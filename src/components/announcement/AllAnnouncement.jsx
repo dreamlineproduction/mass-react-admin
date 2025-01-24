@@ -11,9 +11,12 @@ import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-const AllArea = () => {
+const AllAnnouncement = () => {
     const { Auth,hasPermission } = useContext(AuthContext);
+    const navigate = useNavigate();
+
     const columns = useMemo(() => [
         { accessorKey: "id", header: "Id" },
         { accessorKey: "state", header: "State" },
@@ -213,7 +216,7 @@ const AllArea = () => {
     };
 
     useEffect(() => {
-        if(!hasPermission(configPermission.VIEW_AREA)){
+        if(!hasPermission(configPermission.VIEW_ANNOUNCEMENT)){
             navigate('/403')
         }
         fetchArea();
@@ -223,56 +226,12 @@ const AllArea = () => {
     return (
         <div>
             <PageTitle
-                title="All Area"
-                buttonLink={hasPermission(configPermission.ADD_AREA) ? '/areas/new-area' : null}
-                buttonLabel={hasPermission(configPermission.ADD_AREA) ? 'Add New Area' : null}
+                title="All Announcement"
+                buttonLink={hasPermission(configPermission.ADD_AREA) ? '/announcements/new-announcement' : null}
+                buttonLabel={hasPermission(configPermission.ADD_AREA) ? 'Add New Announcement' : null}
             />
-
-            <div className="row">
-                <div className="col-12">
-                    <div className="card">
-                        <div className="my-4 d-flex justify-content-end gap-3">
-                            <div className="search-input-outer me-4">
-                                <input
-                                    placeholder="Search..."
-                                    value={globalFilter}
-                                    onChange={(e) => {
-                                        const searchTerm = e.target.value;
-                                        setGlobalFilter(e.target.value)                                      
-                                    }}
-                                    className="form-control"
-                                    type="text"
-                                />
-                            </div>
-                        </div>
-
-                        {isLoading && 
-                            <Loading />
-                        }
-                        {!isLoading && areas.length === 0 && (
-                            <NoState message="No data found." />
-                        )}
-
-                        {areas.length > 0 && (
-                            <DataTable table={table} columns={columns} />
-                        )}
-                    </div>
-                    <div className="pagination">
-                        
-                    </div>
-                    {areas.length > 0 && (
-                        <PaginationDataTable
-                            table={table}
-                            pageCount={pageCount}
-                            pageIndex={pageIndex}
-                            setPageIndex={setPageIndex}
-                        />
-                    )}
-                </div>
-            </div>
-
         </div>
     );
 };
 
-export default AllArea;
+export default AllAnnouncement;

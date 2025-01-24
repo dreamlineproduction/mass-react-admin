@@ -200,6 +200,9 @@
     border-radius: 12px;
     background-color: #f3f4f7;
     background-repeat: no-repeat;
+    &.is-invalid{
+        border-color: red;
+    }
 }
 .video-preview {
     width: 100%;

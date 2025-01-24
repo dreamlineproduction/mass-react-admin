@@ -114,6 +114,10 @@ export const configPermission = {
     'ADD_AREA' : 'Add Area',
     'EDIT_AREA' : 'Edit Area',
     'DELETE_AREA' : 'Delete Area',
+    'VIEW_ANNOUNCEMENT' : 'View Announcement',
+    'ADD_ANNOUNCEMENT' : 'Add Announcement',
+    'EDIT_ANNOUNCEMENT' : 'Edit Announcement',
+    'DELETE_ANNOUNCEMENT' : 'Delete Announcement',    
 }
 
 export const getValueOrDefault = (value, defaultValue = "N/A") => {
