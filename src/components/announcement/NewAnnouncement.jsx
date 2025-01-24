@@ -18,6 +18,7 @@ const NewAnnouncement = () => {
 		video:"",
 		type:"image"
 	});
+	
 	const fileInput = useRef();
 
 	
@@ -109,30 +110,30 @@ const NewAnnouncement = () => {
 		}
 	} = useForm();
 
-	// Create Short
-	const submitHandler = useCallback(async (data) => {
-		if (!getValues('file_id')) {
-			setImageError('Please select video or image file.')
-			return;
-		} else {
-			setImageError('')
-		}
+	// Create Announcement
+	const submitHandler = useCallback(async (data) => {		
 
 		try {
 			const toastId = toast.loading("Please wait...")
-			let response = await actionPostData(`${API_URL}/shorts`, accessToken, data);
+			let response = await actionPostData(`${API_URL}/announcements`, accessToken, data);
 			response = await response.json();
 
-			if (response.status) {
+			if (response.status === 200) {
 				toast.success(response.message, {
 					id: toastId
 				});
 				reset();
-				navigate('/shorts/all-shorts');
-			} else {
-				toast.error('server error', {
-					id: toastId
+				navigate('/announcements/all-announcement');
+			} 
+
+			if(response.status === 422){
+				Object.keys(response.errors).forEach((field) => {
+					setError(field, {
+						type: "server",
+						message: response.errors[field],
+					});
 				});
+			   toast.dismiss(toastId);
 			}
 
 		} catch (error) {
@@ -194,7 +195,6 @@ const NewAnnouncement = () => {
 										rows="2"
 										placeholder="Enter description"
 										maxLength={250}
-										onChange={(e) => setCaption(e.target.value)}
 									></textarea>
 									<p className="invalid-feedback">{errors.description?.message}</p>									
 								</div>

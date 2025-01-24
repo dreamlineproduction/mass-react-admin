@@ -47,6 +47,8 @@ import EditArea from '../areas/EditArea';
 import EditShort from '../shorts/EditShort';
 import AllAnnouncement from '../announcement/AllAnnouncement';
 import NewAnnouncement from '../announcement/NewAnnouncement';
+import EditAnnouncement from '../announcement/EditAnnouncement';
+
 
 const AppContent = () => {
 
@@ -96,7 +98,7 @@ const AppContent = () => {
         { path: '/areas/edit-area/:id', element: <EditArea />},
         { path: '/announcements/all-announcement', element: <AllAnnouncement />},
         { path: '/announcements/new-announcement', element: <NewAnnouncement />},
-        { path: '/announcements/edit-announcement', element: <NewAnnouncement />},
+        { path: '/announcements/edit-announcement/:id', element: <EditAnnouncement />},
 
         { path: '/403', element: <Unauthorized /> },
     ];

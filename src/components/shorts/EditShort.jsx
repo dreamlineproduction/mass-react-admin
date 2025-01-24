@@ -26,6 +26,7 @@ const EditShort = () => {
             isSubmitting
         }
     } = useForm();
+
     // Update Short
     const submitHandler = useCallback(async (data) => {
         try {
@@ -68,7 +69,7 @@ const EditShort = () => {
             navigate('/403')
         }
         fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     return (
         <div>
