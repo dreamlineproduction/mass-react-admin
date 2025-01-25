@@ -1,10 +1,10 @@
 import admin from 'firebase-admin';
-import serviceAccount from '../service-account-key.json';
+// //import serviceAccount from '../service-account-key.json';
 
-// Initialize Firebase Admin SDK
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// // Initialize Firebase Admin SDK
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
 
 
 const Test = () => {
