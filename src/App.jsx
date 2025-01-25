@@ -6,12 +6,14 @@ import DefaultLayout from './components/layouts/DefaultLayout';
 import ProtectRoute from './components/ProtectRoute';
 import ForgotPassword from './components/auth/ForgotPassword';
 import ResetPassword from './components/auth/ResetPassword';
+import Test from './components/Test';
 
 
 function App() {
     return (     
         <BrowserRouter>
             <Routes>
+                <Route exact path="/test" name="Forgot password" element={<Test />} />
                 <Route exact path="/login" name="Login Page" element={<Login />} />
                 <Route exact path="/forgot-password" name="Forgot password" element={<ForgotPassword />} />
                 <Route exact path="/reset-password" name="Reset password" element={<ResetPassword />} />
