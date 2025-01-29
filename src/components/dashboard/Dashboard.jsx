@@ -385,8 +385,8 @@ const Dashboard = () => {
                                             <th scope="col">Last Scanned Product</th>
                                             <th scope="col">Earned XP</th>
                                             <th scope="col">Total XP Balance</th>
-                                            <th scope="col">Referral’s Name</th>
-                                            <th scope="col">Referral’s Total XP Balance</th>
+                                            <th scope="col">Referrer Name</th>
+                                            <th scope="col">Referrer’s Total XP Balance</th>
                                         </tr>
                                     </thead>
                                     <tbody>

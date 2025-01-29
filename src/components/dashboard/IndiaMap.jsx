@@ -230,7 +230,7 @@ const IndiaMap = ({ stateInfo, accessToken, type = 'dashboard', formData = {} })
 
                                     <div className="card-body m-auto">
                                         <div
-                                            className="state-body w-100 h-75"
+                                            className="state-body w-100 h-50"
                                             dangerouslySetInnerHTML={{ __html: stateSvgContent }}
                                         />
                                         {hoveredDistrict && (
