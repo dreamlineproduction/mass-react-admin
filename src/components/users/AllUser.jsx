@@ -129,7 +129,7 @@ const AllUser = () => {
                             onClick={() => {
                                 setSingleUser(row.original)
                             }}>
-                            View More
+                            Quick View
                         </button>)
                 }
             },
