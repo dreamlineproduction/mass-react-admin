@@ -119,7 +119,7 @@ const AllUser = () => {
             },
             {
                 accessorKey: "more",
-                header: "View More",
+                header: "Quick View",
                 cell: ({ row }) => {
                     return (
                         <button
