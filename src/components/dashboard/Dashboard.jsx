@@ -381,10 +381,10 @@ const Dashboard = () => {
                                             <th scope="col">#</th>
                                             <th scope="col">Referee name</th>
                                             <th scope="col">Join Date</th>
-                                            <th scope="col">Contact</th>
+                                            <th scope="col">Contact Number</th>
                                             <th scope="col">Last Scanned Product</th>
                                             <th scope="col">Earned XP</th>
-                                            <th scope="col">Total XP Balance</th>
+                                            <th scope="col">Referee's XP Balance</th>
                                             <th scope="col">Referrer Name</th>
                                             <th scope="col">Referrer’s Total XP Balance</th>
                                         </tr>
