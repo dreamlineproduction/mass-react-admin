@@ -25,7 +25,6 @@ const Dashboard = () => {
     const [stateUsers, setStateUser] = useState([]);
     const [cityUsers, setCityUser] = useState([]);
 
-    
    
 
     // Transaction State
@@ -38,9 +37,7 @@ const Dashboard = () => {
 
     // Qr Codes State
     const [loadingQrCode, setLoadingQrCode] = useState(true);
-    const [qrCodes, setQrCode] = useState([]);
-    const [pageNumberQrCode, setPageNumberQrCode] = useState(1);
-    const [pageCountQrCode, setPageCountQrCode] = useState(0);
+    const [allQrs, setAllQr] = useState([]);
 
     const [manageUi, setManageUi] = useState({
         selectedState: '',
@@ -148,19 +145,7 @@ const Dashboard = () => {
         exportToExcel(data);
     };
 
-    // Fetch data
-    const fetchQrCodes = async () => {
-        setLoadingQrCode(true);
-
-        let response = await actionFetchData(`${API_URL}/qr-codes?page=${pageNumberQrCode}&perPage=${perPage}`, accessToken);
-        response = await response.json();
-        if (response.status) {
-            setQrCode(response.data.data);
-            setPageCountQrCode(response.totalPage);
-        }
-
-        setLoadingQrCode(false);
-    }
+   
 
 
     const handleStateShowModal = async (state) => {
@@ -197,9 +182,20 @@ const Dashboard = () => {
 
         exportToExcel(data);
     }
-   
+    
+     // Fetch data
+     const fetchQrData = async () => {       
+        let response = await actionFetchData( `${API_URL}/qr-codes?page=1&perPage=10`, accessToken);
+        response = await response.json();
+        if (response.status) {
+            setAllQr(response.data.data);
+            setLoadingQrCode(false)
+        }
+    }
+
     useEffect(() => {
         fetchDashboard();
+        fetchQrData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -208,11 +204,7 @@ const Dashboard = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageNumberTransaction, selectedValue])
 
-    useEffect(() => {
-        fetchQrCodes()
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageNumberQrCode])
+   
 
     return (
         <div>
@@ -396,7 +388,7 @@ const Dashboard = () => {
                                                     <tr key={item.id}>
                                                         <td scope="row">{item.id}</td>
                                                         <td>
-                                                            <Link to={`/users/edit-user/${item.referral.id}?hideForm=true`}>
+                                                            <Link to={`/users/transaction/${item.referral.id}`}>
                                                                 {item.referral.name}
                                                             </Link>
                                                            
@@ -408,7 +400,7 @@ const Dashboard = () => {
                                                         <td>{item?.referral?.balance_xp ? item.referral.balance_xp : 0} XP</td>
                                                         <td>
                                                             {item?.referee?.name ?
-                                                                <Link to={`/users/edit-user/${item.referee.id}?hideForm=true`}>
+                                                                <Link to={`/users/transaction/${item.referee.id}`}>
                                                                     {item.referee.name}
                                                                 </Link>
                                                                 :
@@ -439,8 +431,9 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
+          
 
-            {/* Recent Qr Codes Details */}
+            {/* 10 QR and Scan */}
             <div className="mt-4">
                 <PageTitle 
                     title="Recent QR Details" 
@@ -454,32 +447,40 @@ const Dashboard = () => {
                             {loadingQrCode &&
                                 <Loading />
                             }
-                            {!loadingQrCode && qrCodes.length === 0 &&
+                            {!loadingQrCode && allQrs.length === 0 &&
                                 <NoState
 
                                 />
                             }
 
-                            {qrCodes.length > 0 &&
+                            {allQrs.length > 0 &&
                                 <table className="table table-striped table-hover mb-0">
                                     <thead>
                                         <tr>
                                             <th scope="col">ID</th>
                                             <th scope="col">Product Name</th>
-                                            <th scope="col">XP Assigned</th>
+                                            <th scope="col">Package Size</th>
+                                            <th scope="col">XP Required</th>
                                             <th scope="col">Batch Number</th>
+                                            <th scope="col">Total Qr</th>
+                                            <th scope="col">Total Scaned Qr</th>
                                             <th scope="col">Created At</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {
-                                            qrCodes.map(item => {
+                                            allQrs.map(item => {
                                                 return (
                                                     <tr key={`qr-${item.id}`}>
                                                         <td scope="row">{item.id}</td>
                                                         <td>{item.name}</td>
+                                                        <td>
+                                                            {item.size ? item.size.size_custom +' '+item.size.size_in : 'N/A'}
+                                                        </td>
                                                         <td>{item.xp_value}</td>
                                                         <td>{item.batch_number}</td>
+                                                        <td>{item.qr_code_content_count}</td>
+                                                        <td>{item.qr_code_content_scan_count}</td>
                                                         <td>{item.created_at}</td>
                                                     </tr>
                                                 )
@@ -489,19 +490,10 @@ const Dashboard = () => {
                                     </tbody>
                                 </table>
                             }
-                        </div>
-
-                        {qrCodes.length > 0 &&
-                            <div className='d-flex  align-items-start justify-content-end'>
-                                <Pagination
-                                    pageCount={pageCountQrCode}
-                                    handlePageChange={(event) => setPageNumberQrCode(event.selected + 1)}
-                                />
-                            </div>
-                        }
+                        </div>                        
                     </div>
                 </div>
-            </div>
+            </div>      
 
             {/* User Tracking */}
             <div className="mt-4">

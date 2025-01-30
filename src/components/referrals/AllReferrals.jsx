@@ -340,9 +340,9 @@ const AllReferrals = () => {
                                                             }}>                                                        
                                                             <Search />
                                                         </button>
-                                                        <button type="button" className="btn btn-outline-danger px-2 py-2" onClick={() => deleteReferralCode(item.from_id)}>                                                        
+                                                        {/* <button type="button" className="btn btn-outline-danger px-2 py-2" onClick={() => deleteReferralCode(item.from_id)}>                                                        
                                                             <Trash2 />
-                                                        </button>
+                                                        </button> */}
                                                     </td>
                                                 </tr>
                                             )

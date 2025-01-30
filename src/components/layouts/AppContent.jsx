@@ -48,17 +48,19 @@ import EditShort from '../shorts/EditShort';
 import AllAnnouncement from '../announcement/AllAnnouncement';
 import NewAnnouncement from '../announcement/NewAnnouncement';
 import EditAnnouncement from '../announcement/EditAnnouncement';
+import Transaction from '../users/Transaction';
 
 
 const AppContent = () => {
 
     const routes = [
-        { path: '/dashboard', element: <Dashboard /> },
+        { path: '/dashboard', element: <Dashboard /> },        
         { path: '/users/all-users', element: <AllUser /> },
         { path: '/users/top-fifty', element: <TopFifty /> },
         { path: '/users/add-user', element: <NewUser /> },
         { path: '/users/edit-user/:id', element: <EditUser /> },
         { path: '/users/city-users', element: <CityUser /> },
+        { path: '/users/transaction/:id', element: <Transaction /> },
         { path: '/products/all-products', element: <AllProduct /> },
         { path: '/products/add-product', element: <NewProduct /> },
         { path: '/products/edit-product/:id', element: <EditProduct /> },
@@ -99,7 +101,7 @@ const AppContent = () => {
         { path: '/announcements/all-announcement', element: <AllAnnouncement />},
         { path: '/announcements/new-announcement', element: <NewAnnouncement />},
         { path: '/announcements/edit-announcement/:id', element: <EditAnnouncement />},
-
+        
         { path: '/403', element: <Unauthorized /> },
     ];
       

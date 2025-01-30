@@ -68,7 +68,7 @@ const TopFifty = () => {
             header: "Full Name",
             enableSorting: false,
             cell: ({ row }) => {
-                return (<Link to={`/users/edit-user/${row.original.id}?hideForm=true`}>
+                return (<Link to={`/users/transaction/${row.original.id}`}>
                     {row.original.name}
                 </Link>)
             }

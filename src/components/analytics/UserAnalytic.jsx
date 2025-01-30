@@ -61,7 +61,7 @@ const UserAnalytic = () => {
                 header: "Full Name",
                 enableSorting: false,
                 cell: ({ row }) => {
-                    return (<Link to={`/users/edit-user/${row.original.id}?hideForm=true`}>
+                    return (<Link to={`/users/transaction/${row.original.id}`}>
                         {row.original.name}
                     </Link>)
                 }
@@ -501,14 +501,14 @@ const UserAnalytic = () => {
     }, []);
 
     useEffect(() => {
-        if (formData.role_id > 0 && formData.year > 0) {
+        if ((formData.role_id > 0 || formData.source) && formData.year > 0) {
             filterData()
             filterMapData()
         }
     }, [formData.role_id, formData.year, formData.source]);
 
     useEffect(() => {
-        if (formData.role_id > 0 && formData.year > 0) {
+        if ((formData.role_id > 0 || formData.source) && formData.year > 0) {
             filterTableData();
         }
     }, [pageIndex, pageSize, sorting,formData]);
@@ -571,7 +571,7 @@ const UserAnalytic = () => {
                                     </select>
                                 </div>
                                 <div className="col-md-3">
-                                    {(formData.role_id > 0 && formData.year > 0) ?
+                                    {((formData.role_id > 0 || formData.source) && formData.year > 0) ?
                                         <button type="button" onClick={filterData} className="btn btn-primary large-btn w-100">Show Report</button>
                                         :
                                         <button type="button" disabled className="btn btn-primary large-btn w-100 disabled">Show Report</button>

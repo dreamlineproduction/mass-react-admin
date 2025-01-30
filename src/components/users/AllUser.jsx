@@ -76,7 +76,7 @@ const AllUser = () => {
                 accessorKey: "name",
                 header: "Full Name",
                 cell: ({ row }) => {
-                    return (<Link to={`/users/edit-user/${row.original.id}?hideForm=true`}>
+                    return (<Link to={`/users/transaction/${row.original.id}`}>
                         {row.original.name}
                     </Link>)
                 }
@@ -444,6 +444,22 @@ const AllUser = () => {
         getCoreRowModel: getCoreRowModel(),
     });
 
+    const resetFilter = () => {
+       
+        setDate([
+            {
+                startDate: new Date(),
+                endDate: new Date(),
+                key: 'selection',
+                startFilter: false
+            }
+        ])
+        setGlobalFilter('')
+        setSelectedValue("");
+    }
+
+   
+
     useEffect(() => {
         fetchRoleCountUser();
         fetchTop()
@@ -465,7 +481,7 @@ const AllUser = () => {
                 title="All Users"               
             />
 
-            {isLoading && <Loading />}
+
 
             <div className="row">
                 <TopCard   
@@ -505,7 +521,7 @@ const AllUser = () => {
                                 {userTopTen.map(item => 
                                     <tr key={item.id}>
                                         <td>
-                                            <Link to={`/users/edit-user/${item.id}`}>{item.name}</Link>
+                                            <Link to={`/users/transaction/${item.id}`}>{item.name}</Link>
                                         </td>
                                         <td className="text-end">{getValueOrDefault(item.total_xp,'0')}XP</td>
                                     </tr>
@@ -549,14 +565,15 @@ const AllUser = () => {
             <div className="row">
                 <div className="col-12">
                     <div className="card">
+                        {isLoading && <Loading />}
                         <div className="my-4 d-flex justify-content-end gap-3">
                             <div>
                                 <select
                                     className="form-select"
-                                    defaultValue={selectedValue}
+                                    value={selectedValue} 
                                     onChange={(e) => setSelectedValue(e.target.value)}
                                 >
-                                    <option disabled value={""}>
+                                    <option  value="">
                                         Select Date
                                     </option>
                                     <option value="7_days">7 Days</option>
@@ -616,7 +633,7 @@ const AllUser = () => {
                             <div className=" me-3">
                                 <button
                                     className="btn btn-primary"
-                                    onClick={() => window.location.reload()}
+                                    onClick={resetFilter}
                                 >
                                     Reset Filters
                                 </button>

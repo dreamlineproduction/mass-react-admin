@@ -28,6 +28,7 @@ const AllQrs = () => {
         { header: 'XP Required', accessorKey: 'xp_value' },
         { header: 'Batch Number', accessorKey: 'batch_number' },
         { header: 'Total Qr', accessorKey: 'qr_code_content_count',enableSorting: false  },
+        { header: 'Total Scaned Qr', accessorKey: 'qr_code_content_scan_count',enableSorting: false  },
         { header: 'Created At', accessorKey: 'created_at',enableSorting: false },
         { header: 'Actions', 
             accessorKey: 'actions',

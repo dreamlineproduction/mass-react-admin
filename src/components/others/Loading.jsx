@@ -4,7 +4,8 @@ const Loading = () => (
   <div
     className="mx-auto py-5 position-absolute d-flex justify-content-center align-items-center w-100 h-100"
     style={{
-      minHeight: "100%",
+      minHeight: "550px",
+      height:"100%",
       zIndex: 9,
       backgroundColor: "rgba(255, 255, 255, 0.8)",
       top: 0,

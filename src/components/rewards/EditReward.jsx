@@ -2,11 +2,12 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import LoadingButton from "../others/LoadingButton";
 import AuthContext from "../../context/auth";
 import { useNavigate, useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import PageTitle from "../others/PageTitle";
 import { API_URL, configPermission, createSlug } from "../../config";
 import toast from "react-hot-toast";
 import { actionFetchData, actionImageUpload, actionPostData } from "../../actions/actions";
+import ReactQuill from "react-quill";
 
 
 const EditReward = () => {
@@ -26,6 +27,7 @@ const EditReward = () => {
         register,
         handleSubmit,
         reset,
+        control,
         formState: {
             errors,
             isSubmitting
@@ -161,21 +163,29 @@ const EditReward = () => {
                                 </div>
                                 <div className="mb-4">
                                     <label className="form-label">Reward Description</label>
-                                        <textarea 
-                                            {...register("description", {
-                                                required: "Please enter description",
-                                            })}
-                                            className={`form-control custom-input ${errors.description && `is-invalid`}`}
-                                            placeholder="Reward description"
-                                            rows={8} 
-                                            style={{ resize:"none"}} 
-                                            id="description"
-                                            name="description"
-                                        >
-
-                                        </textarea>
-                                        <p className="invalid-feedback d-block">{errors.description?.message}</p>
+                                    <Controller
+                                        name="description"
+                                        control={control}
+                                        defaultValue=""
+                                        rules={{ required: "Description is required" }}
+                                        render={({ field,fieldState  }) => (
+                                            <div>
+                                                <ReactQuill
+                                                    theme="snow"
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    onBlur={field.onBlur}
+                                                    style={{ height: '350px', marginBottom: "45px" }}
+                                                    modules={{
+                                                        toolbar: [['bold', 'italic'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]]
+                                                    }}
+                                                />
+                                                <p className="invalid-feedback d-block">{fieldState?.error?.message}</p>
+                                            </div>
+                                        )}
+                                    />                                        
                                 </div>
+
 
                                
                                 <div className="mb-4">
