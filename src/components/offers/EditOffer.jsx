@@ -67,6 +67,10 @@ const EditOffer = () => {
       
     // Update Offer
     const submitHandler = useCallback(async (data) => {   
+        if(data.is_home === false){
+            data.is_home = null;
+        }
+        
         const slug = slugRef.current.value;      
         let postObject = {...data,image:imageId,slug}
         const toastId = toast.loading("Please wait...")
@@ -203,8 +207,22 @@ const EditOffer = () => {
                                             accept="image/*"
                                             onChange={onSelectFile}
                                         />
-                                    </div>  
-                                   
+                                    </div>                                     
+                                </div>
+                                <div className="mb-4">
+                                    <label className="form-label">Show In Home</label>
+                                    <div class="form-check form-switch">
+                                        <input 
+                                            {...register("is_home", {
+                                                required: false,
+                                            })}
+                                            class="form-check-input" 
+                                            type="checkbox" 
+                                            role="switch" 
+                                            id="" 
+                                            value={1}
+                                        />
+                                    </div>
                                 </div>
 
 

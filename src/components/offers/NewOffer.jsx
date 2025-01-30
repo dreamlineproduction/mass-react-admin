@@ -72,11 +72,16 @@ const NewOffer = () => {
 
     // Create Offer
     const submitHandler = useCallback(async (data) => {
+        if(data.is_home === false){
+            data.is_home = null;
+        }
+
         const slug = slugRef.current.value;
         if (imageId === null) {
             setImageError('Please select image.')
             return;
         }
+        
         let postObject = { ...data, image: imageId, slug }
         const toastId = toast.loading("Please wait...")
 
@@ -203,6 +208,21 @@ const NewOffer = () => {
                                     }
                                 </div>
 
+                                <div className="mb-4">
+                                    <label className="form-label">Show In Home</label>
+                                    <div class="form-check form-switch">
+                                        <input 
+                                            {...register("is_home", {
+                                                required: false,
+                                            })}
+                                            class="form-check-input" 
+                                            type="checkbox" 
+                                            role="switch" 
+                                            id="" 
+                                            value={1}
+                                        />
+                                    </div>
+                                </div>
 
 
                                 {isSubmitting ?

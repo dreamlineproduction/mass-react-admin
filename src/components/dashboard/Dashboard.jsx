@@ -395,13 +395,28 @@ const Dashboard = () => {
                                                 return (
                                                     <tr key={item.id}>
                                                         <td scope="row">{item.id}</td>
-                                                        <td>{item.referral.name}</td>
+                                                        <td>
+                                                            <Link to={`/users/edit-user/${item.referral.id}?hideForm=true`}>
+                                                                {item.referral.name}
+                                                            </Link>
+                                                           
+                                                        </td>
                                                         <td>{item.referral.created_at}</td>
                                                         <td>{item.referral.phone}</td>
                                                         <td>{item?.reward?.title ? item.reward.short_title : 'N/A'}</td>
                                                         <td>{item?.referral?.total_xp ? item.referral.total_xp : 0} XP</td>
                                                         <td>{item?.referral?.balance_xp ? item.referral.balance_xp : 0} XP</td>
-                                                        <td>{item?.referee?.name ? item.referee.name : 'N/A'}</td>
+                                                        <td>
+                                                            {item?.referee?.name ?
+                                                                <Link to={`/users/edit-user/${item.referee.id}?hideForm=true`}>
+                                                                    {item.referee.name}
+                                                                </Link>
+                                                                :
+                                                                    'N/A'
+                                                            }
+                                                            
+
+                                                        </td>
                                                         <td>{item?.referee?.balance_xp ? item.referee.balance_xp : 0} XP</td>
                                                     </tr>
                                                 )
