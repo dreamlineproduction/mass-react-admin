@@ -321,7 +321,7 @@ const AllReferrals = () => {
                                                 <tr key={item.id}>
                                                     <td>{item.from_id}</td>
                                                     <td>
-                                                        <Link to={`/users/edit-user/${item.from_id}`}>
+                                                        <Link to={`/users/transaction/${item.from_id}`}>
                                                             {item.name}
                                                         </Link>
                                                     </td>
