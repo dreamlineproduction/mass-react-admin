@@ -90,10 +90,19 @@ const AllTransaction = (props) => {
                                                     {item.size_id > 0 ? item.size_id+item.size_in :'N/A' }
                                                 </td>
                                                 <td>
-                                                    {item.unique_id ? item.unique_id : 'N/A' }
+                                                    {item.unique_id ? 
+                                                        <Link to={`qr-manager/qr-details/${item.product_id}/${item.batch_number}`}>
+                                                            {item.unique_id}
+                                                        </Link>
+                                                    : 'N/A' }
                                                 </td>
                                                 <td>
-                                                    {item.batch_number ? item.batch_number : 'N/A' }
+                                                    {item.batch_number ?                                                         
+                                                        <Link to={`qr-manager/qr-details/${item.product_id}/${item.batch_number}`}>
+                                                            {item.batch_number }
+                                                        </Link>
+                                                        : 'N/A' 
+                                                    }
                                                 </td>
                                                 <td>{item.updated_at}</td>
                                                 <td>
