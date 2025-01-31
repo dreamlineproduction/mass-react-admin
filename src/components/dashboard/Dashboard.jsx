@@ -395,7 +395,7 @@ const Dashboard = () => {
                                                         </td>
                                                         <td>{item.referral.created_at}</td>
                                                         <td>{item.referral.phone}</td>
-                                                        <td>{item?.reward?.title ? item.reward.short_title : 'N/A'}</td>
+                                                        <td>{item?.lastScan?.product?.name ? item.lastScan.product?.name : 'N/A'}</td>
                                                         <td>{item?.referral?.total_xp ? item.referral.total_xp : 0} XP</td>
                                                         <td>{item?.referral?.balance_xp ? item.referral.balance_xp : 0} XP</td>
                                                         <td>
