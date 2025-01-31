@@ -187,8 +187,7 @@ const AllReferrals = () => {
                                     <th scope="col">Total XP Earned</th>
                                     <th scope="col">Contact</th>
                                     <th scope="col">Last Scanned Product</th>
-                                    <th scope="col">Referee&apos;s Earned XP</th>
-                                    <th scope="col">Referral&apos;s Total XP (20%)</th>
+                                    <th scope="col">Referrer&apos;s Total XP (20%)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -201,7 +200,6 @@ const AllReferrals = () => {
                                             <td>{item?.referral?.total_xp ? item.referral.total_xp  : 0} XP</td>
                                             <td>{item.referral.phone || 'N/A'}</td>
                                             <td>{item?.lastScan?.product?.name ? item.lastScan.product.short_name :  'N/A'}</td>
-                                            <td>{item?.lastScan?.xp ? item.lastScan.xp :  '0'} XP</td>
                                             <td>{item?.commission?.xp ? item.commission.xp:  0} XP</td>
                                         </tr>
                                     )
