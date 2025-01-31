@@ -92,14 +92,14 @@ const AllTransaction = (props) => {
                                                 </td>
                                                 <td>
                                                     {item.unique_id ? 
-                                                        <Link to={`qr-manager/qr-details/${item.product_id}/${item.batch_number}`}>
+                                                        <Link  className="btn" to={`/qr-manager/qr-details/${item.product_id}/${item.batch_number}`}>
                                                             {item.unique_id}
                                                         </Link>
                                                     : 'N/A' }
                                                 </td>
                                                 <td>
                                                     {item.batch_number ?                                                         
-                                                        <Link to={`qr-manager/qr-details/${item.product_id}/${item.batch_number}`}>
+                                                        <Link className="btn" to={`/qr-manager/qr-details/${item.product_id}/${item.batch_number}`}>
                                                             {item.batch_number }
                                                         </Link>
                                                         : 'N/A' 
