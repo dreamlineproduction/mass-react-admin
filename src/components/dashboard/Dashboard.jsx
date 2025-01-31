@@ -390,8 +390,7 @@ const Dashboard = () => {
                                                         <td>
                                                             <Link to={`/users/transaction/${item.referral.id}`}>
                                                                 {item.referral.name}
-                                                            </Link>
-                                                           
+                                                            </Link>                                                           
                                                         </td>
                                                         <td>{item.referral.created_at}</td>
                                                         <td>{item.referral.phone}</td>
