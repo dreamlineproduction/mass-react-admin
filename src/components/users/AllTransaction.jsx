@@ -56,7 +56,10 @@ const AllTransaction = (props) => {
                                     <tr>
                                         <th>Type</th>
                                         <th>Product Name</th>
-                                        <th>Date & Time</th>
+                                        <th>Size</th>
+                                        <th>Unique Code</th>
+                                        <th>Batch Number</th>
+                                        <th>Date</th>
                                         <th>Activity</th>
                                     </tr>
                                 </thead>
@@ -74,12 +77,23 @@ const AllTransaction = (props) => {
                                                 </td>
                                                 <td>
                                                     {(item.type === 'qrcode' || item.type === 'commission') &&
-                                                        item.product.short_name
-                                                    }
-                                                    {(item.type === 'refund' || item.type ===  'redeem') && 
-                                                        item.reward.short_title
+                                                       
+                                                        item.name
                                                     }
 
+                                                    {(item.type === 'refund' || item.type ===  'redeem') && 
+                                                        item.title
+                                                    }
+
+                                                </td>
+                                                <td>
+                                                    {item.size_id > 0 ? item.size_id+item.size_in :'N/A' }
+                                                </td>
+                                                <td>
+                                                    {item.unique_id ? item.unique_id : 'N/A' }
+                                                </td>
+                                                <td>
+                                                    {item.batch_number ? item.batch_number : 'N/A' }
                                                 </td>
                                                 <td>{item.updated_at}</td>
                                                 <td>
