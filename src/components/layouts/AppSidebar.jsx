@@ -6,7 +6,7 @@ import { IoDiamondOutline, IoGiftOutline, IoSpeedometerOutline } from "react-ico
 import 'simplebar-react/dist/simplebar.min.css';
 import { FiShoppingBag, FiUsers } from 'react-icons/fi';
 import { PiShareFat } from 'react-icons/pi';
-import { MdOutlineAccountBalance, MdOutlineAnnouncement } from 'react-icons/md';
+import { MdOutlineAccountBalance, MdOutlineAnnouncement, MdFlagCircle } from 'react-icons/md';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { LuClipboardList, LuUserCog } from 'react-icons/lu';
 import { CiLock } from 'react-icons/ci';
@@ -282,7 +282,19 @@ const AppSidebar = () => {
                             Others
                         </li>
                         )}
-                        
+                         <li className='sidebar-item'>
+                            <a data-bs-target="#notification" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
+                                <MdFlagCircle  style={{height:"20px",width:"30px"}} />
+                                <span className="align-middle">Reports</span>
+                            </a>
+
+                            <ul id="notification" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                <li className="sidebar-item">
+                                    <NavLink className="sidebar-link" to="reports/all-reports">All Reports
+                                    </NavLink>
+                                </li>                               
+                            </ul>
+                        </li>
                         <li className='sidebar-item'>
                             <a data-bs-target="#notification" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
                                 <IoMdNotificationsOutline  style={{height:"20px",width:"30px"}} />

@@ -27,7 +27,7 @@ const AllOrder = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     return (
-        <div className={props.className}>
+        <div className={props.className} id="allOrders">
             <PageTitle title="All Order" />
 
             <div className="row">
