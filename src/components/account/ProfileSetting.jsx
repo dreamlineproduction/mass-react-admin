@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";     
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { API_URL } from "../../config";
+import { API_URL, removeCountryCode } from "../../config";
 import { actionFetchData, actionImageUpload, actionPostData } from "../../actions/actions";
 import PageTitle from "../others/PageTitle";
 import LoadingButton from "../others/LoadingButton";
@@ -21,7 +21,8 @@ const ProfileSetting = () => {
     const {
         register,
         handleSubmit,
-        reset,
+        setValue,
+        getValues,
         formState: {
             errors,
             isSubmitting
@@ -32,10 +33,7 @@ const ProfileSetting = () => {
         fileInput.current.click();
     }
 
-    // const removeImage = (e) => {
-    //     e.stopPropagation();
-    //     setImage('')
-    // }
+ 
 
     const onSelectFile = async (event) => {
         const toastId = toast.loading("Please wait...")
@@ -67,11 +65,14 @@ const ProfileSetting = () => {
         response = await response.json();
 
         if (response.status) {
-            reset({
-                fullName: response.data.name,
-                ...response.data
-            });
-            setUser(response.data)
+            setValue('user_id',response.data.id)
+            setValue('first_name',response.data.first_name)
+            setValue('last_name',response.data.last_name)
+            setValue('name',response.data.name)
+            setValue('email',response.data.email)
+            setValue('phone',removeCountryCode(response.data.phone))
+            
+           // setUser(response.data)
             setImage(response.data.image_url)
             setLoading(false);
         }
@@ -80,10 +81,10 @@ const ProfileSetting = () => {
     // Update Offer
     const submitHandler = useCallback(async (data) => {
         const toastId = toast.loading("Please wait...")
-        let postObject = { ...data, imageId, fullName: data.name }
+        let postObject = { ...data, imageId}
 
         try {
-            let response = await actionPostData(`${API_URL}/users/${user.id}`, accessToken, postObject, 'PUT');
+            let response = await actionPostData(`${API_URL}/users/${getValues('user_id')}`, accessToken, postObject, 'PUT');
             response = await response.json();
 
             if (response.status) {

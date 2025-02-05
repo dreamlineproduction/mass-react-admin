@@ -49,6 +49,7 @@ import AllAnnouncement from '../announcement/AllAnnouncement';
 import NewAnnouncement from '../announcement/NewAnnouncement';
 import EditAnnouncement from '../announcement/EditAnnouncement';
 import Transaction from '../users/Transaction';
+import ReviewProduct from '../products/ReviewProduct';
 
 
 const AppContent = () => {
@@ -62,6 +63,7 @@ const AppContent = () => {
         { path: '/users/city-users', element: <CityUser /> },
         { path: '/users/transaction/:id', element: <Transaction /> },
         { path: '/products/all-products', element: <AllProduct /> },
+        { path: '/products/review-products', element: <ReviewProduct /> },
         { path: '/products/add-product', element: <NewProduct /> },
         { path: '/products/edit-product/:id', element: <EditProduct /> },
         { path: '/rewards/all-rewards', element: <AllReward /> },

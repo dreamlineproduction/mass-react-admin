@@ -23,8 +23,18 @@ const CityUser = () => {
 
      const columns = useMemo(() => [
         { accessorKey: "id", header: "#" },
-        { accessorKey: "name", header: "Name" },
+        { 
+            accessorKey: "name", 
+            header: "Name",
+            cell:({row}) => {
+
+                return <Link to={`/users/transaction/${row.original.id}`}>{row.original.name}</Link>
+            }
+
+         },
         { accessorKey: "area_name", header: "Area Name" },
+        { accessorKey: "city", header: "City" },
+        { accessorKey: "state_str", header: "State" },
         { accessorKey: "phone", header: "Contact Number", enableSorting: false },
         { accessorKey: "created_at", header: "Install Date", enableSorting: false },
         { accessorKey: "last_login", header: "Last Active", enableSorting: false },

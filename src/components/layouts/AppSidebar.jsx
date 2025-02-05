@@ -189,6 +189,8 @@ const AppSidebar = () => {
                         </li>
                         )}
 
+                    
+
 
                         {(hasPermission(configPermission.VIEW_PRODUCT) || hasPermission(configPermission.VIEW_PRODUCT_ANALYTIC)) && (
                         <li className="sidebar-header">
@@ -206,7 +208,13 @@ const AppSidebar = () => {
                             <ul id="products" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                                 <li className="sidebar-item">
                                     <NavLink className="sidebar-link" to="/products/all-products">All Product</NavLink>
-                                </li>                               
+                                </li>    
+                                {hasPermission(configPermission.VIEW_PRODUCT_REVIEW) && 
+                                    <li className="sidebar-item">
+                                        <NavLink className="sidebar-link" to="/products/all-reviews">Product Reviews</NavLink>
+                                    </li>
+                                }
+                                                              
                             </ul>
                         </li>
                         )}

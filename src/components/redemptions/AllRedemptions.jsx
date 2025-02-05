@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import AuthContext from "../../context/auth";
 import { useForm } from "react-hook-form";
 import { API_URL } from "../../config";
@@ -11,6 +11,9 @@ import Pagination from "../others/Pagination";
 import BsModal from "../others/BsModal";
 import LoadingButton from "../others/LoadingButton";
 import PageTitle from "../others/PageTitle";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import DataTable from "../others/DataTable";
+import PaginationDataTable from "../others/PaginationDataTable";
 
 
 const AllRedemptions = () => {
@@ -28,6 +31,179 @@ const AllRedemptions = () => {
 			isSubmitting
 		}
 	} = useForm();
+
+	const columns = useMemo(() => [
+		{ accessorKey: "id", header: "ID" },
+        { 
+			accessorKey: "title", 
+			header: "Item Title" ,
+			enableSorting: false,
+			cell:({row}) => {
+				const item = row.original;
+				return item.reward.title
+			} 
+		},
+        { accessorKey: "xp_value", header: "XP Deducted" },      
+        { 
+			accessorKey: "name", 
+			header: "User Name",
+			enableSorting: false,
+			cell:({row}) => {
+				const item = row.original;
+				return item?.user?.name ? item.user.name : 'N/A'
+			} 
+		},      
+        { 
+			accessorKey: "created_at", 
+			header: "Requested On", 
+			enableSorting: false,
+			cell:({row}) => {
+				const item = row.original;
+
+				return item?.order?.order_date ? item.order.order_date : 'N/A'
+			} 
+		},
+        {
+            accessorKey: "status",
+            header: "Status",
+            enableSorting: false,
+            cell: ({ row }) => {
+				const item = row.original;
+
+				if(item?.order?.status === 1){
+					return <span className="d-inline-flex px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">Pending</span>
+				}
+
+				if(item?.order?.status === 2) {
+					return <span className="d-inline-flex px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">In transit</span>
+				}
+
+				if(item?.order?.status === 3) {
+					return <span className="d-inline-flex px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">Delivered</span>
+				}
+				if(item?.order?.status === 4) {
+					return <span className="d-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">Declined</span>
+				}
+            },
+        },
+		{ 
+			accessorKey: "updated_on", 
+			header: "Updated On", 
+			enableSorting: false,
+			cell:({row}) => {
+				const item = row.original;
+				return item?.order?.updated_at ? item.order.updated_at : 'N/A'
+			} 
+		},
+        {
+            accessorKey: "action",
+            header: "Action",
+            enableSorting: false,
+            cell: ({ row }) => {
+				const item = row.original;
+                return (
+                    <div className="dropdown">
+                        {item.order.status === 1 &&
+							<div className="dropdown">
+								<button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+									More Options
+								</button>
+								<ul className="dropdown-menu">
+									<li>
+										<button
+											type="button"
+											data-bs-toggle="modal" 
+											data-bs-target="#dispatchModal"
+											onClick={() => {
+												setSingleOrder(item)
+												reset()
+												
+											}
+											}
+											className="dropdown-item">
+											Dispatched
+										</button>
+										<button
+											onClick={() => changeStatus(item.id, item.order_id)}
+											type="button"
+											className="dropdown-item">
+											Delivered
+										</button>
+										<button
+											data-bs-toggle="modal" 
+											data-bs-target="#declineReasonModal"
+											style={{ color: "#e55353", }}
+											type="button"
+											onClick={() => {
+												reset2()
+												setSingleOrder(item)																		
+											}
+											}
+											className="dropdown-item">
+											Declined
+										</button>
+									</li>
+									
+								</ul>
+							</div>															
+						}
+
+						{item.order.status === 2 &&
+							<div className="dropdown">
+								<button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+									More Options
+								</button>
+								<ul className="dropdown-menu">
+									<li>
+									<button
+										onClick={() => changeStatus(item.id, item.order_id)}
+										type="button"
+										className="dropdown-item">
+										Delivered
+									</button>
+									<button
+										data-bs-toggle="modal" 
+										data-bs-target="#viewTrackingModal"
+										onClick={() =>  setSingleOrder(item) }
+										type="button"
+										className="dropdown-item">
+										View Tracking
+									</button>
+									</li>
+									
+								</ul>
+							</div>															
+						}
+
+						{item.order.status === 4 &&
+							<div className="dropdown">
+							<button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+								More Options
+							</button>
+							<ul className="dropdown-menu">
+								<li>
+									<button		
+										data-bs-toggle="modal" 
+										data-bs-target="#viewDeclineReasonModal"
+										onClick={() => setSingleOrder(item)}
+										type="button"
+										className="dropdown-item">
+										View Decline Reason
+									</button>
+								</li>															
+							</ul>
+						</div>
+							
+						}
+						{item.order.status === 3 &&
+							<button className="btn btn-secondary disabled" disabled>More Options</button>
+						}
+                    </div>
+                );
+            },
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    ],[]);
 
 	const {
 		register: registerForm2,
@@ -52,19 +228,40 @@ const AllRedemptions = () => {
 		order_id: 0,
 	})
 
-	const [pageNumber, setPageNumber] = useState(1);
 	const [pageCount, setPageCount] = useState(0);
-	const [isLoading, setLoading] = useState(true);
+    const [isLoading, setLoading] = useState(true);
+
+	const [globalFilter, setGlobalFilter] = useState('');
+    const [sorting, setSorting] = useState([]);
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+
+	
 
 	// Fetch data
 	const fetchOrder = async () => {
 		try {
-			setLoading(true); // Loading on
-			let response = await actionFetchData(`${API_URL}/orders?page=${pageNumber}&perPage=${perPage}`, accessToken);
+			setLoading(true);
+
+			const params = {
+				page: pageIndex + 1,
+				perPage: pageSize,
+			};
+		
+			if (sorting.length > 0) {
+				params.sort = sorting[0].id;
+				params.order = sorting[0].desc ? "desc" : "asc";
+			}
+		
+			if (globalFilter !== "") {
+				params.search = globalFilter.trim();
+			}
+
+			let response = await actionFetchData(`${API_URL}/orders?${new URLSearchParams(params)}`, accessToken);
 			response = await response.json();
 			if (response.status) {
 				setOrder(response.data.data);
-				setPageCount(response.totalPage);
+				 setPageCount(response.totalPage);
 			}
 			setLoading(false);
 		} catch (error) {
@@ -147,11 +344,29 @@ const AllRedemptions = () => {
 	})
 
 
+	 const table = useReactTable({
+		data: orders,
+		columns,
+		pageCount,
+		globalFilter,
+		state: {
+			sorting,
+			pagination: { pageIndex, pageSize },
+		},
+		onSortingChange: setSorting,
+		onPaginationChange: ({ pageIndex, pageSize }) => {
+			setPageIndex(pageIndex);
+			setPageSize(pageSize);
+		},
+		manualSorting: true,
+		manualPagination: true,
+		getCoreRowModel: getCoreRowModel(),
+	});
+
 	useEffect(() => {
 		fetchOrder();
-	}, [pageNumber])
+	}, [pageIndex, pageSize, sorting, globalFilter]);
 
-	//console.log(singleOrder.order);
 	return (
 		<div>
 			<PageTitle title="All Redemptions" />
@@ -168,165 +383,165 @@ const AllRedemptions = () => {
 					}
 
 					{orders.length > 0 &&
-						<table className="table table-striped table-hover mb-0">
-							<thead>
-								<tr>
-									<th> ID</th>
-									<th>Item Name</th>
-									<th>XP Deducted</th>
-									<th>User Name</th>
-									<th>Requested On</th>
-									<th>Status</th>
-									<th>Updated On</th>
-									<th>Change Status</th>
-								</tr>
-							</thead>
-							<tbody>
-							{
-								orders.map((item) => {
-									return (
-										<tr key={item.id}>													
-											<td>{item.order_id}</td>
-											<td>
-												{item.reward.title}
-											</td>
-											<td>{item.xp_value || 0}XP</td>
-											<td>{item?.user?.name ? item.user.name : 'N/A'}</td>
-											<td>{item?.order?.order_date ? item.order.order_date : 'N/A'}</td>
-											<td>
-												{item?.order?.status === 1 &&
-													<span className="d-inline-flex px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">Pending</span>
-												}
-												{item?.order?.status === 2 &&
-													<span className="d-inline-flex px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">In transit</span>
-												}
-												{item?.order?.status === 3 &&
-													<span className="d-inline-flex px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">Delivered</span>
-												}
-												{item?.order?.status === 4 &&
-													<span className="d-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">Declined</span>
-												}
+						// <table className="table table-striped table-hover mb-0">
+						// 	<thead>
+						// 		<tr>
+						// 			<th> ID</th>
+						// 			<th>Item Name</th>
+						// 			<th>XP Deducted</th>
+						// 			<th>User Name</th>
+						// 			<th>Requested On</th>
+						// 			<th>Status</th>
+						// 			<th>Updated On</th>
+						// 			<th>Change Status</th>
+						// 		</tr>
+						// 	</thead>
+						// 	<tbody>
+						// 	{
+						// 		orders.map((item) => {
+						// 			return (
+						// 				<tr key={item.id}>													
+						// 					<td>{item.order_id}</td>
+						// 					<td>
+						// 						{item.reward.title}
+						// 					</td>
+						// 					<td>{item.xp_value || 0}XP</td>
+						// 					<td>{item?.user?.name ? item.user.name : 'N/A'}</td>
+						// 					<td>{item?.order?.order_date ? item.order.order_date : 'N/A'}</td>
+						// 					<td>
+						// 						{item?.order?.status === 1 &&
+						// 							<span className="d-inline-flex px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">Pending</span>
+						// 						}
+						// 						{item?.order?.status === 2 &&
+						// 							<span className="d-inline-flex px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">In transit</span>
+						// 						}
+						// 						{item?.order?.status === 3 &&
+						// 							<span className="d-inline-flex px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">Delivered</span>
+						// 						}
+						// 						{item?.order?.status === 4 &&
+						// 							<span className="d-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">Declined</span>
+						// 						}
 
-											</td>
-											<td>
-												{item?.order?.updated_at ? item.order.updated_at : 'N/A'}
-												{
-													item.order.status
-												}
-											</td>
-											<td>
-												{item.order.status === 1 &&
-													<div className="dropdown">
-														<button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-															More Options
-														</button>
-														<ul className="dropdown-menu">
-															<li>
-																<button
-																	type="button"
-																	data-bs-toggle="modal" 
-																	data-bs-target="#dispatchModal"
-																	onClick={() => {
-																		setSingleOrder(item)
-																		reset()
+						// 					</td>
+						// 					<td>
+						// 						{item?.order?.updated_at ? item.order.updated_at : 'N/A'}												
+						// 					</td>
+						// 					<td>
+						// 						{item.order.status === 1 &&
+						// 							<div className="dropdown">
+						// 								<button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+						// 									More Options
+						// 								</button>
+						// 								<ul className="dropdown-menu">
+						// 									<li>
+						// 										<button
+						// 											type="button"
+						// 											data-bs-toggle="modal" 
+						// 											data-bs-target="#dispatchModal"
+						// 											onClick={() => {
+						// 												setSingleOrder(item)
+						// 												reset()
 																		
-																	}
-																	}
-																	className="dropdown-item">
-																	Dispatched
-																</button>
-																<button
-																	onClick={() => changeStatus(item.id, item.order_id)}
-																	type="button"
-																	className="dropdown-item">
-																	Delivered
-																</button>
-																<button
-																	data-bs-toggle="modal" 
-																	data-bs-target="#declineReasonModal"
-																	style={{ color: "#e55353", }}
-																	type="button"
-																	onClick={() => {
-																		reset2()
-																		setSingleOrder(item)																		
-																	}
-																	}
-																	className="dropdown-item">
-																	Declined
-																</button>
-															</li>
+						// 											}
+						// 											}
+						// 											className="dropdown-item">
+						// 											Dispatched
+						// 										</button>
+						// 										<button
+						// 											onClick={() => changeStatus(item.id, item.order_id)}
+						// 											type="button"
+						// 											className="dropdown-item">
+						// 											Delivered
+						// 										</button>
+						// 										<button
+						// 											data-bs-toggle="modal" 
+						// 											data-bs-target="#declineReasonModal"
+						// 											style={{ color: "#e55353", }}
+						// 											type="button"
+						// 											onClick={() => {
+						// 												reset2()
+						// 												setSingleOrder(item)																		
+						// 											}
+						// 											}
+						// 											className="dropdown-item">
+						// 											Declined
+						// 										</button>
+						// 									</li>
 															
-														</ul>
-													</div>															
-												}
+						// 								</ul>
+						// 							</div>															
+						// 						}
 
-												{item.order.status === 2 &&
-													<div className="dropdown">
-														<button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-															More Options
-														</button>
-														<ul className="dropdown-menu">
-															<li>
-															<button
-																onClick={() => changeStatus(item.id, item.order_id)}
-																type="button"
-																className="dropdown-item">
-																Delivered
-															</button>
-															<button
-																data-bs-toggle="modal" 
-																data-bs-target="#viewTrackingModal"
-																onClick={() =>  setSingleOrder(item) }
-																type="button"
-																className="dropdown-item">
-																View Tracking
-															</button>
-															</li>
+						// 						{item.order.status === 2 &&
+						// 							<div className="dropdown">
+						// 								<button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+						// 									More Options
+						// 								</button>
+						// 								<ul className="dropdown-menu">
+						// 									<li>
+						// 									<button
+						// 										onClick={() => changeStatus(item.id, item.order_id)}
+						// 										type="button"
+						// 										className="dropdown-item">
+						// 										Delivered
+						// 									</button>
+						// 									<button
+						// 										data-bs-toggle="modal" 
+						// 										data-bs-target="#viewTrackingModal"
+						// 										onClick={() =>  setSingleOrder(item) }
+						// 										type="button"
+						// 										className="dropdown-item">
+						// 										View Tracking
+						// 									</button>
+						// 									</li>
 															
-														</ul>
-													</div>															
-												}
+						// 								</ul>
+						// 							</div>															
+						// 						}
 
-												{item.order.status === 4 &&
-													<div className="dropdown">
-													<button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-														More Options
-													</button>
-													<ul className="dropdown-menu">
-														<li>
-															<button		
-																data-bs-toggle="modal" 
-																data-bs-target="#viewDeclineReasonModal"
-																onClick={() => setSingleOrder(item)}
-																type="button"
-																className="dropdown-item">
-																View Decline Reason
-															</button>
-														</li>															
-													</ul>
-												</div>
+						// 						{item.order.status === 4 &&
+						// 							<div className="dropdown">
+						// 							<button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+						// 								More Options
+						// 							</button>
+						// 							<ul className="dropdown-menu">
+						// 								<li>
+						// 									<button		
+						// 										data-bs-toggle="modal" 
+						// 										data-bs-target="#viewDeclineReasonModal"
+						// 										onClick={() => setSingleOrder(item)}
+						// 										type="button"
+						// 										className="dropdown-item">
+						// 										View Decline Reason
+						// 									</button>
+						// 								</li>															
+						// 							</ul>
+						// 						</div>
 													
-												}
-												{item.order.status === 3 &&
-													<button className="btn btn-secondary disabled" disabled>More Options</button>
-												}
-											</td>
-										</tr>
-									)
-								})
+						// 						}
+						// 						{item.order.status === 3 &&
+						// 							<button className="btn btn-secondary disabled" disabled>More Options</button>
+						// 						}
+						// 					</td>
+						// 				</tr>
+						// 			)
+						// 		})
 
-							}
-						</tbody>
-						</table>
+						// 	}
+						// </tbody>
+						// </table>
+						<DataTable table={table} columns={columns} />
 					}
 				</div>
 
 				{orders.length > 0 &&
 					<div className='d-flex  align-items-start justify-content-end'>
-						<Pagination
-							pageCount={pageCount}
-							handlePageChange={(event) => setPageNumber(event.selected + 1)}
-						/>
+						<PaginationDataTable
+                            table={table}
+                            pageCount={pageCount}
+                            pageIndex={pageIndex}
+                            setPageIndex={setPageIndex}
+                        />
 					</div>
 				}
 			</div>
@@ -401,6 +616,7 @@ const AllRedemptions = () => {
 				title={singleOrder?.reward?.short_title}
 				size="md"
 			>
+				{singleOrder?.order?.tracking_url}
 					<div className="mb-3">
 						<label htmlFor="tracking_partner" className="form-label">Tracking Number</label>
 						<input 

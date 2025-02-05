@@ -118,6 +118,7 @@ export const configPermission = {
     'ADD_ANNOUNCEMENT' : 'Add Announcement',
     'EDIT_ANNOUNCEMENT' : 'Edit Announcement',
     'DELETE_ANNOUNCEMENT' : 'Delete Announcement',    
+    'VIEW_PRODUCT_REVIEW':'View Product Review'
 }
 
 export const getValueOrDefault = (value, defaultValue = "N/A") => {
