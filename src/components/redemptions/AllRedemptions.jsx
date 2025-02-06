@@ -3,6 +3,7 @@ import AuthContext from "../../context/auth";
 import { useForm } from "react-hook-form";
 import { API_URL } from "../../config";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { actionFetchData, actionPostData } from "../../actions/actions";
 import Loading from "../others/Loading";
@@ -40,19 +41,30 @@ const AllRedemptions = () => {
 			enableSorting: false,
 			cell:({row}) => {
 				const item = row.original;
-				return item.reward.title
+				return (
+				<Link to={`/rewards/edit-reward/${item.reward.id}`}>
+													{item.reward.title}
+												</Link>
+												) 
 			} 
 		},
         { accessorKey: "xp_value", header: "XP Deducted" },      
-        { 
-			accessorKey: "name", 
+		{
+			accessorKey: "name",
 			header: "User Name",
 			enableSorting: false,
-			cell:({row}) => {
-				const item = row.original;
-				return item?.user?.name ? item.user.name : 'N/A'
-			} 
-		},      
+			cell: ({ row }) => {
+			  const item = row.original;
+		  
+			  return item?.user?.id ? (
+				<Link to={`/users/transaction/${item.user.id}`} className="text-blue-500 hover:underline">
+				  {item.user.name}
+				</Link>
+			  ) : (
+				"N/A"
+			  );
+			},
+		  },     
         { 
 			accessorKey: "created_at", 
 			header: "Requested On", 
