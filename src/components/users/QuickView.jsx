@@ -231,17 +231,17 @@ return (
                                             </tr>
                                             <tr>
                                                 <th scope="row">Referred By </th>
-                                                <td>49MASS31 <a href="#">(Ayan Mukhopadhyay)</a></td>
+                                                <td>asdasda <a href="#">(dadkjadskdas)</a></td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">Employee Code </th>
-                                                <td> <a href="#">{user?.employee_code || "N/A"}
-                                                        ({user?.employee_name || "N/A"})</a></td>
+                                                <td> {user?.employee_code || "N/A"}
+                                                        {user?.employee_name}</td>
                                             </tr>
 
                                             <tr>
                                                 <th scope="row">Source</th>
-                                                <td>{user?.source}</td>
+                                                <td>{user?.source || 'N/A'}</td>
                                             </tr>
 
 
@@ -255,15 +255,15 @@ return (
                                             </tr>
                                             <tr>
                                                 <th scope="row">Total XP</th>
-                                                <td>{user?.total_xp}</td>
+                                                <td>{user?.total_xp || '0XP'}</td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">Current XP Balance</th>
-                                                <td>{user?.balance_xp}</td>
+                                                <td>{user?.balance_xp || '0XP'}</td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">Total Redeemed</th>
-                                                <td>{user?.order_count}</td>
+                                                <td>{user?.order_count || '0'}</td>
                                             </tr>
                                         </tbody>
                                     </table>

@@ -42,7 +42,7 @@ const Transaction = () => {
             {isLoading && <div className="cover-body"></div>}
             
             <div className="mb-3 d-flex align-items-center justify-content-between">
-                <h1 className="h3 d-inline align-middle">{`User details of ${user?.name}`}</h1>
+                <h1 className="h3 d-inline align-middle">{`User details of ${user?.name || ''}`}</h1>
                 <div className="">
                 <Link to={`/users/edit-user/${user?.id}`} className="btn btn-primary btn-lg me-2">
                     Edit User

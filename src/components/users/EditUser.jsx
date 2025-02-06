@@ -172,10 +172,7 @@ const EditUser = () => {
                                     <input
                                         {...register("first_name", {
                                             required: "Please enter full name",
-                                            minLength: {
-                                                value: 6,
-                                                message: "Full Name must be at least 6 characters long!"
-                                            }
+                                            
                                         })}
                                         className={`form-control custom-input ${errors.first_name && `is-invalid`}`}
                                         type="text"
@@ -192,10 +189,7 @@ const EditUser = () => {
                                     <input
                                         {...register("last_name", {
                                             required: "Please enter last name",
-                                            minLength: {
-                                                value: 3,
-                                                message: "Last Name must be at least 3 characters long!"
-                                            }
+                                          
                                         })}
                                         className={`form-control custom-input ${errors.last_name && `is-invalid`}`}
                                         type="text"
@@ -333,7 +327,7 @@ const EditUser = () => {
 
                                         <option value="">Select Source</option>
                                         {source.map((item, i) =>
-                                            <option selected={item.name === user?.source} key={i} value={item.id}>{item.name}</option>
+                                            <option selected={item.name === user?.source} key={i} value={item.name}>{item.name}</option>
                                         )}
 
                                     </select>

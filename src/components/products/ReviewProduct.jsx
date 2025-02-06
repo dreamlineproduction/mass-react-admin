@@ -1,6 +1,6 @@
 import React, { useContext, useMemo,useState,useEffect } from 'react';
 import { API_URL, configPermission } from "../../config";
-
+import { Link } from "react-router-dom";
 import PageTitle from '../others/PageTitle';
 import DataTable from "../others/DataTable";
 import PaginationDataTable from "../others/PaginationDataTable";
@@ -35,9 +35,23 @@ const ReviewProduct = () => {
         {
             accessorKey: "product_name",
             header: "Product Name",
-            enableSorting: false,            
+            enableSorting: false,   
+            cell: ({ row }) => {
+                                return (<Link to={`/products/edit-product/${row.original.product_id}`}>
+                                    {row.original.product_name}
+                                </Link>)
+                            }         
         },
-        { accessorKey: "name", header: "User Name" },
+        { accessorKey: "name", header: "User Name" ,
+            cell: ({ row }) => {
+                return (<Link to={`/users/transaction/${row.original.user_id}`}>
+                    {row.original.name}
+                </Link>)
+            }   
+        },
+        { accessorKey: "rating", header: "Rating", enableSorting: false, cell:({row}) => {
+            return row.original.rating + '/5' 
+        }  },
         { accessorKey: "review", header: "Review" },
         { accessorKey: "created_at", header: "Review Date" },
        
