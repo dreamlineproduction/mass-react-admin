@@ -211,7 +211,7 @@ const AppSidebar = () => {
                                 </li>    
                                 {hasPermission(configPermission.VIEW_PRODUCT_REVIEW) && 
                                     <li className="sidebar-item">
-                                        <NavLink className="sidebar-link" to="/products/all-reviews">Product Reviews</NavLink>
+                                        <NavLink className="sidebar-link" to="/products/review-products">Product Reviews</NavLink>
                                     </li>
                                 }
                                                               
