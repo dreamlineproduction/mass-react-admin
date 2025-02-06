@@ -39,7 +39,7 @@ const AllTransaction = (props) => {
 
             <div className="row">
                 <div className="col-12">
-                    <div className="card">
+                    <div className="card position-relative">
                        
                         
                         {isLoading &&

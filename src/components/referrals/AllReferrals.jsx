@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Loading from "../others/Loading";
 import NoState from "../others/NoState";
 import LoadingButton from "../others/LoadingButton";
@@ -9,13 +9,18 @@ import AuthContext from "../../context/auth";
 import { API_URL } from "../../config";
 import Swal from "sweetalert2";
 import Pagination from "../others/Pagination";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, Trash2 } from "react-feather";
 import BsModal from "../others/BsModal";
 const AllReferrals = () => {
     const { Auth } = useContext(AuthContext);
+    const navigate = useNavigate();
+    
     const perPage = 20;
     const accessToken = Auth('accessToken');
+
+    const referralDetailModal = useRef(null);
+    const referralCommissionModal = useRef(null);
 
     //const [setting, setSetting] = useState(null);
 
@@ -128,9 +133,7 @@ const AllReferrals = () => {
                 toast.success(response.message, {
                     id: toastId
                 });
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+                referralCommissionModal.current.click();
             } else {
                 toast.error('server error', {
                     id: toastId
@@ -155,6 +158,7 @@ const AllReferrals = () => {
             <BsModal 
                 modalId="referralDetail"
                 title="Referral Details"
+                modalRef={referralDetailModal}
             >
                
                 <div className="referraluserbody">
@@ -195,11 +199,41 @@ const AllReferrals = () => {
                                     return (
                                         <tr key={`referrals-${item.id}`}>
                                             <th scope="row">{item.referral.id || 'N/A'}</th>
-                                            <td>{item.referral.name || 'N/A'}</td>
+                                            <td>
+                                                {item.referral.name ?
+                                                    <div 
+                                                        style={{cursor:"pointer",color:"#3a7fd8"}} 
+                                                        onClick={() => {
+                                                            referralDetailModal.current.click();
+                                                            navigate(`/users/transaction/${item.referral.id}`)
+                                                        }}>
+                                                        {item.referral.name}
+                                                    </div>
+                                                    :
+                                                    'N/A'
+                                                }
+                                                
+                                            </td>
                                             <td>{item.referral.created_at || 'N/A'}</td>
                                             <td>{item?.referral?.total_xp ? item.referral.total_xp  : 0} XP</td>
                                             <td>{item.referral.phone || 'N/A'}</td>
-                                            <td>{item?.lastScan?.product?.name ? item.lastScan.product.short_name :  'N/A'}</td>
+                                            <td>
+                                                {
+
+                                                }
+                                                {item?.lastScan?.product?.name ? 
+                                                    <div 
+                                                        style={{cursor:"pointer",color:"#3a7fd8"}} 
+                                                        onClick={()=> {
+                                                            referralDetailModal.current.click();
+                                                            navigate(`/products/edit-product/${item.lastScan.product.id}`)
+                                                        }}>
+                                                        {item.lastScan.product.short_name}
+                                                    </div>
+                                                    :  
+                                                    'N/A'
+                                                }
+                                            </td>
                                             <td>{item?.commission?.xp ? item.commission.xp:  0} XP</td>
                                         </tr>
                                     )
@@ -220,6 +254,7 @@ const AllReferrals = () => {
                 modalId="commissionModal"
                 title="Add Referral Commission"
                 size="md"
+                modalRef={referralCommissionModal}
                 showCloseBtn={false}
             >
                 <form onSubmit={handleSubmit(submitHandler)}>

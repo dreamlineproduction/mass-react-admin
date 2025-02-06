@@ -12,7 +12,8 @@ const BsModal = ({
         <div 
         className="modal fade" 
         id={modalId} 
-        data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" 
+        data-bs-backdrop="static" 
+        data-bs-keyboard="false" tabIndex="-1" 
         aria-labelledby={`${modalId}Label`} 
         aria-hidden="true">
                 <div className={`modal-dialog modal-${size} modal-dialog-centered`}>
