@@ -124,6 +124,8 @@ fetchUser();
 // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
 
+console.log(user);
+
 return (
 <div>
     {isLoading && <div className="cover-body"></div>}
@@ -146,13 +148,16 @@ return (
                                             </tr>
                                             <tr>
                                                 <th scope="row">Date of Registration</th>
-                                                <td>15/12/2024</td>
+                                                <td>{user?.created_at}</td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">User Type</th>
-                                                <td><span
+                                                <td>
+                                                    
+                                                    <span
                                                         className="d-inline-flex px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">{user?.role?.name
-                                                        || "N/A"} </span></td>
+                                                        || "N/A"} </span>
+                                                            </td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">Name</th>
@@ -242,7 +247,11 @@ return (
 
                                             <tr>
                                                 <th scope="row">Total Product Scanned</th>
-                                                <td><a href="#allOrders">12</a></td>
+                                                <td>
+                                                    <a href="#allOrders">
+                                                    {user?.scan_product_count}
+                                                    </a>
+                                                    </td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">Total XP</th>
@@ -250,11 +259,11 @@ return (
                                             </tr>
                                             <tr>
                                                 <th scope="row">Current XP Balance</th>
-                                                <td></td>
+                                                <td>{user?.balance_xp}</td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">Total Redeemed</th>
-                                                <td>{user?.redeem_xp}</td>
+                                                <td>{user?.order_count}</td>
                                             </tr>
                                         </tbody>
                                     </table>

@@ -29,7 +29,7 @@ const AllOffers = () => {
         { header: 'Title', accessorKey: 'title' },
         { header: 'In Homepage', accessorKey: 'is_home', enableSorting: false, cell: ({ row }) => {
             return row.original.is_home ? 
-                <span className="d-inline-flex px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">Yes</span> : 
+                <span className="d-inline-flex px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">Yes</span> : 
                 <span className="d-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">No</span>;
         } },
         { header: 'Crated At', accessorKey: 'created_at',enableSorting: false, },

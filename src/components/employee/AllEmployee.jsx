@@ -80,7 +80,7 @@ const AllEmployee = () => {
                 accessorKey: "role",
                 cell: ({ row }) => {
                     return (
-                        <span className="badge bg-primary">{row.original.role.name}</span>
+                        <span className="d-inline-flex px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">{row.original.role.name}</span>
                     );
                 },
             },
@@ -368,7 +368,7 @@ const AllEmployee = () => {
             <PageTitle
                 title="All Employees"
                 buttonLink={hasPermission(configPermission.ADD_EMPLOYEE) ? '/employees/add-employee' : null}
-                buttonLabel={hasPermission(configPermission.ADD_EMPLOYEE) ? 'Add New Employee' : null}
+                buttonLabel={hasPermission(configPermission.ADD_EMPLOYEE) ? '+ Add New Employee' : null}
             />
             <div className="row">
                 <div className="col-12">
