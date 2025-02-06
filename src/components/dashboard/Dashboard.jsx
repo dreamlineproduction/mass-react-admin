@@ -367,6 +367,7 @@ const Dashboard = () => {
                             }
 
                             {transactions.length > 0 &&
+                            <div className="table-responsive">
                                 <table className="table table-striped table-hover mb-0">
                                     <thead>
                                         <tr>
@@ -416,6 +417,7 @@ const Dashboard = () => {
                                         }
                                     </tbody>
                                 </table>
+                                </div>
                             }
                         </div>
 
@@ -453,6 +455,7 @@ const Dashboard = () => {
                             }
 
                             {allQrs.length > 0 &&
+                                <div className="table-responsive">
                                 <table className="table table-striped table-hover mb-0">
                                     <thead>
                                         <tr>
@@ -488,6 +491,7 @@ const Dashboard = () => {
                                         }
                                     </tbody>
                                 </table>
+</div>
                             }
                         </div>                        
                     </div>

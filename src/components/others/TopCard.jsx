@@ -10,7 +10,7 @@ const TopCard = ({title = 'Card Title',
     children
 }) => {
     return (
-        <div className="col-12 col-md-3 col-xxl-3 d-flex">
+        <div className="col-12 col-md-6 col-xl-4 col-xxl-3 d-flex">
         <div className="card w-100">
             <div className="card-header d-flex justify-content-between align-items-center">
                 <div>
