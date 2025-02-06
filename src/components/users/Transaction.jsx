@@ -4,8 +4,10 @@ import { API_URL, configPermission } from "../../config";
 import PageTitle from "../others/PageTitle";
 import AllOrder from "./AllOrder";
 import AllTransaction from "./AllTransaction";
+import QuickView from "./QuickView";
 import AuthContext from "../../context/auth";
 import { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Transaction = () => {
 
@@ -35,14 +37,26 @@ const Transaction = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-
     return (
         <div>
             {isLoading && <div className="cover-body"></div>}
-            <PageTitle
-                title={user?.name}
-                buttonLink="/users/all-users"
-                buttonLabel="Back to List"
+            
+            <div className="mb-3 d-flex align-items-center justify-content-between">
+                <h1 className="h3 d-inline align-middle">{`User details of ${user?.name}`}</h1>
+                <div className="">
+                <Link to={`/users/edit-user/${user?.id}`} className="btn btn-primary btn-lg me-2">
+                    Edit User
+                    </Link>
+                    <a className="btn btn-success btn-lg" href="/users/all-users">Back to List</a>
+                   
+                    </div>
+                </div>
+             {/* Quick View */}
+             <QuickView
+                user={user}
+                className="mt-4"
+                params={params}
+                accessToken={accessToken}
             />
             {/* All Transaction */}
             <AllTransaction

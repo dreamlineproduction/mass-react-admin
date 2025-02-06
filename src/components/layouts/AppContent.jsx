@@ -50,6 +50,7 @@ import NewAnnouncement from '../announcement/NewAnnouncement';
 import EditAnnouncement from '../announcement/EditAnnouncement';
 import Transaction from '../users/Transaction';
 import ReviewProduct from '../products/ReviewProduct';
+import AllReports from '../reports/AllReports';
 
 
 const AppContent = () => {
@@ -103,7 +104,7 @@ const AppContent = () => {
         { path: '/announcements/all-announcement', element: <AllAnnouncement />},
         { path: '/announcements/new-announcement', element: <NewAnnouncement />},
         { path: '/announcements/edit-announcement/:id', element: <EditAnnouncement />},
-        
+        { path: '/reports/all-reports', element: <AllReports /> },
         { path: '/403', element: <Unauthorized /> },
     ];
       

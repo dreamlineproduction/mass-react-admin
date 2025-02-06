@@ -220,12 +220,12 @@ const NewOffer = () => {
 
                                 <div className="mb-4">
                                     <label className="form-label">Show In Home</label>
-                                    <div class="form-check form-switch">
+                                    <div className="form-check form-switch">
                                         <input 
                                             {...register("is_home", {
                                                 required: false,
                                             })}
-                                            class="form-check-input" 
+                                            className="form-check-input" 
                                             type="checkbox" 
                                             role="switch" 
                                             id="" 
