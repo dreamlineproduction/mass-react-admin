@@ -126,14 +126,7 @@ const NewNotification = () => {
                     </div>
                 </div>
 
-                <div className="col-12 col-xl-4">
-                    <h3>Previous Notifications</h3>
-                    <ul>
-                        {notifications.map((n) => (
-                            <li key={n.id}>{n.title} - {n.body}</li>
-                        ))}
-                    </ul>
-                </div>
+            
             </div>
         </div>
     );
