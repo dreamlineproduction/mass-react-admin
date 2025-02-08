@@ -303,7 +303,7 @@ const AppSidebar = () => {
 
                             <ul id="notification" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                                 <li className="sidebar-item">
-                                    <NavLink className="sidebar-link" to="notification/all-notifications">Notification
+                                    <NavLink className="sidebar-link" to="notification/all-notifications">All Notification
                                     </NavLink>
                                 </li>                               
                             </ul>
