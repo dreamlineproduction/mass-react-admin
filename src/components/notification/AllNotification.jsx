@@ -70,9 +70,9 @@ const AllNotification = () => {
                     return (
                         <div className="dropdown">
                             <button
-                                className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_EMPLOYEE) && !hasPermission(configPermission.DELETE_EMPLOYEE)) ? 'disabled' : ''}`}
+                                className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.DELETE_NOTIFICATION)) ? 'disabled' : ''}`}
                                 type="button"
-                                disabled={(!hasPermission(configPermission.EDIT_EMPLOYEE) && !hasPermission(configPermission.DELETE_EMPLOYEE))}
+                                disabled={(!hasPermission(configPermission.DELETE_EMPLOYEE))}
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false"
                             >
@@ -80,7 +80,7 @@ const AllNotification = () => {
                             </button>
                             {(hasPermission(configPermission.EDIT_EMPLOYEE) || hasPermission(configPermission.DELETE_EMPLOYEE)) &&
                                 <ul className="dropdown-menu">
-                                    {hasPermission(configPermission.DELETE_EMPLOYEE) && (row.original.role_id !== 1) &&
+                                    {hasPermission(configPermission.DELETE_EMPLOYEE) &&
                                         <li>
                                             <button
                                                 type="button"

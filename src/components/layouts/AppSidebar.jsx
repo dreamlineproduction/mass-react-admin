@@ -295,6 +295,7 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        {hasPermission(configPermission.VIEW_PAGE) && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#notification" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
                                 <IoMdNotificationsOutline  style={{height:"20px",width:"30px"}} />
@@ -308,6 +309,7 @@ const AppSidebar = () => {
                                 </li>                               
                             </ul>
                         </li>
+                        )}
 
                         {hasPermission(configPermission.VIEW_PAGE) && (
                         <li className='sidebar-item'>
