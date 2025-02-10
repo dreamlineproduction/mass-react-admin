@@ -1,128 +1,252 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import PageTitle from "../others/PageTitle";
-import { API_URL } from "../../config";
+import { API_URL,configPermission  } from "../../config";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import AuthContext from "../../context/auth";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { actionDeleteData, actionFetchData } from "../../actions/actions";
+import DataTable from "../others/DataTable";
+import NoState from "../others/NoState";
+import Loading from "../others/Loading";
+import Status from "../others/Status";
+import { useNavigate } from "react-router-dom";
+import PaginationDataTable from "../others/PaginationDataTable";
 
 const AllNotification = () => {
+    const { Auth,hasPermission } = useContext(AuthContext);
+    const accessToken = Auth("accessToken");
+     const navigate = useNavigate();
+
+    const columns = useMemo(
+        () => [
+            {
+                header: "ID",
+                accessorKey: "id",
+            },            
+            {
+                header: "Title",
+                accessorKey: "title",
+            },
+            {
+                header: "Description",
+                accessorKey: "body",
+                enableSorting:false
+            },
+            {
+                header: "Notification Name",
+                accessorKey: "label",
+                enableSorting:false,
+                cell: ({ row }) => (row.original.label ? row.original.label : "N/A"),
+            },
+            {
+                header: "Created At",
+                accessorKey: "created_at",
+                cell: ({ row }) => {
+                    return (
+                        <span className="d-inline-flex px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
+                            {row.original.created_at}
+                        </span>
+                    );
+                },
+            },            
+            {
+                accessorKey: "status",
+                header: "Status",
+                enableSorting: false,
+                cell: ({ row }) => {
+                    if (row.original.status === 1) {
+                        return (<span className="d-inline-flex px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">Sent</span>)
+                    } else {
+                        return (<span className="d-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">Failed</span>)
+                    }
+                },
+            },
+            {
+                accessorKey: "action",
+                header: "Action",
+                enableSorting: false,
+                cell: ({ row }) => {
+                    return (
+                        <div className="dropdown">
+                            <button
+                                className={`btn btn-secondary dropdown-toggle ${(!hasPermission(configPermission.EDIT_EMPLOYEE) && !hasPermission(configPermission.DELETE_EMPLOYEE)) ? 'disabled' : ''}`}
+                                type="button"
+                                disabled={(!hasPermission(configPermission.EDIT_EMPLOYEE) && !hasPermission(configPermission.DELETE_EMPLOYEE))}
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                More Options
+                            </button>
+                            {(hasPermission(configPermission.EDIT_EMPLOYEE) || hasPermission(configPermission.DELETE_EMPLOYEE)) &&
+                                <ul className="dropdown-menu">
+                                    {hasPermission(configPermission.DELETE_EMPLOYEE) && (row.original.role_id !== 1) &&
+                                        <li>
+                                            <button
+                                                type="button"
+                                                className="dropdown-item"
+                                                onClick={() => deleteEmployee(row.original.id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    );
+                },
+            },
+        ],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
+
     const [notifications, setNotifications] = useState([]);
 
-    useEffect(() => {
-        fetchNotifications();
-    }, []);
+    const [pageCount, setPageCount] = useState(0);
+    const [isLoading, setLoading] = useState(true);
+
+    const [sorting, setSorting] = useState([]);
+    const [globalFilter, setGlobalFilter] = useState("");
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+
 
     const fetchNotifications = async () => {
-        try {
-            const response = await fetch(`${API_URL}/notifications`);
-            const data = await response.json();
-            if (data.status) {
-                setNotifications(data.notifications);
-            }
-        } catch (error) {
-            toast.error("Failed to load notifications.");
+        setLoading(true);
+        const params = {
+            page: pageIndex + 1,
+            perPage: pageSize,
+        };
+
+        if (sorting.length > 0) {
+            params.sort = sorting[0].id;
+            params.order = sorting[0].desc ? "desc" : "asc";
         }
+
+        if (globalFilter !== "") {
+            params.search = globalFilter.trim();
+        }
+
+        let response = await actionFetchData(`${API_URL}/notifications?${new URLSearchParams(params)}`,accessToken);
+        response = await response.json();
+
+        if (response.status === 200) {
+            setNotifications(response.data.data || []);
+            setPageCount(response.totalPage || 0);
+        }
+        setLoading(false);        
     };
 
-    const handleDelete = async (id) => {
+    //--Delete api call
+    const actionDelete = async (id) => {
+        const toastId = toast.loading("Please wait...");
+        setLoading(true)
+        try {
+            let response = await actionDeleteData(
+                `${API_URL}/notifications/${id}`,
+                accessToken
+            );
+            response = await response.json();
+            if (response.status) {
+                setNotifications(notifications.filter((item) => item.id !== id)); 
+
+                toast.success(response.message, {
+                    id: toastId,
+                });
+            }
+        } catch (error) {
+            toast.error(error);
+        }
+        setLoading(false)
+    };
+
+    // -- Delete employee
+    const deleteEmployee = (id) => {
         Swal.fire({
             title: "Are you sure?",
             text: "This notification will be permanently deleted!",
             icon: "warning",
             showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
             confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "Cancel",
-        }).then(async (result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
-                try {
-                    const response = await fetch(`${API_URL}/notifications/${id}`, {
-                        method: "DELETE",
-                    });
-
-                    const result = await response.json();
-                    if (response.ok) {
-                        toast.success("Notification deleted successfully!");
-                        setNotifications(notifications.filter((n) => n.id !== id)); // Remove from UI
-                    } else {
-                        toast.error(result.message || "Failed to delete notification.");
-                    }
-                } catch (error) {
-                    toast.error("An error occurred while deleting the notification.");
-                }
+                actionDelete(id);
             }
         });
     };
+   
 
+     const table = useReactTable({
+        data: notifications,
+        columns,
+        pageCount,
+        globalFilter,
+        state: {
+            sorting,
+            pagination: { pageIndex, pageSize },
+        },
+        onSortingChange: setSorting,
+        onPaginationChange: ({ pageIndex, pageSize }) => {
+            setPageIndex(pageIndex);
+            setPageSize(pageSize);
+        },
+        manualSorting: true,
+        manualPagination: true,
+        getCoreRowModel: getCoreRowModel(),
+    });
+    
+    useEffect(() => {
+        if (!hasPermission(configPermission.VIEW_NOTIFICATION)) {
+            navigate('/403')
+        }
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const day = date.getDate();
-        const month = date.toLocaleString("en-US", { month: "short" });
-        const year = date.getFullYear();
-        const time = date.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true });
-    
-        // Add suffix (st, nd, rd, th) for day
-        const getDayWithSuffix = (day) => {
-            if (day > 3 && day < 21) return `${day}th`;
-            const suffixes = ["st", "nd", "rd"];
-            return `${day}${suffixes[(day % 10) - 1] || "th"}`;
-        };
-    
-        return `${getDayWithSuffix(day)} ${month} ${year} at ${time}`;
-    };
+        fetchNotifications();
+    }, [pageIndex, pageSize, sorting, globalFilter]);
+
     return (
         <div>
             <PageTitle
                 title="All Notifications"
-                buttonLink="/notification/new-notification"
-                buttonLabel="+ Create New Notification"
+                buttonLink={hasPermission(configPermission.ADD_NOTIFICATION) ? '/notification/new-notification' : null}
+                buttonLabel={hasPermission(configPermission.ADD_NOTIFICATION) ? '+ Create New Notification' : null}
             />
             <div className="row">
                 <div className="col-12">
                     <div className="card">
-<div className="card-body">
-                        <table className="table table-striped table-hover table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Title</th>
-                                    <th>Description</th>
-                                    <th>Notification Name</th>
-                                    <th>Created At</th>
-                                    <th>Status</th>
-                                    <th>Action</th> 
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {notifications.length > 0 ? (
-                                    notifications.map((n) => (
-                                        <tr key={n.id}>
-                                            <td>{n.id}</td>
-                                            <td>{n.title}</td>
-                                            <td>{n.body}</td>
-                                            <td>{n.notification_name || "N/A"}</td>
-                                            <td>{formatDate(n.created_at)}</td>
-                                            <td>
-                                                <span className={`badge ${n.status === 1 ? 'd-inline-flex px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2' : 'd-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2'}`}>
-                                                    {n.status === 1 ? "Sent" : "Failed"}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <button
-                                                    className="btn btn-danger"
-                                                    onClick={() => handleDelete(n.id)}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="7" className="text-center">No notifications found</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>    
+                        <div className="card-body">
+                        <div className="my-4 d-flex justify-content-end gap-3">
+                            <div className="search-input-outer me-4">
+                                <input
+                                    placeholder="Search..."
+                                    value={globalFilter}
+                                    onChange={(e) => setGlobalFilter(e.target.value)}
+                                    className="form-control"
+                                    type="text"
+                                />
+                            </div>
+                            </div>
+                            {isLoading && <Loading />}
+
+                            {!isLoading && notifications.length === 0 && (
+                                <NoState  />
+                            )}
+
+                            {notifications.length > 0 && (
+                                <DataTable table={table} columns={columns} />
+                            )}
+
+                            {notifications.length > 0 && (
+                                <PaginationDataTable
+                                    table={table}
+                                    pageCount={pageCount}
+                                    pageIndex={pageIndex}
+                                    setPageIndex={setPageIndex}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>

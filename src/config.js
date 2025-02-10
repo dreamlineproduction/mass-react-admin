@@ -104,7 +104,7 @@ export const configPermission = {
     // 'DELETE_REFERRAL': 'Delete Referral',
     'VIEW_NOTIFICATION': 'View Notification',
     'ADD_NOTIFICATION': 'Add Notification',
-    'EDIT_NOTIFICATION': 'Edit Notification',
+    //'EDIT_NOTIFICATION': 'Edit Notification',
     'DELETE_NOTIFICATION': 'Delete Notification', 
     'VIEW_SHORT': 'View Short',
     'ADD_SHORT': 'Add Short',

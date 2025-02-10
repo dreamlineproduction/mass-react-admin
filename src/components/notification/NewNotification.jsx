@@ -3,80 +3,72 @@ import PageTitle from "../others/PageTitle";
 import AuthContext from "../../context/auth";
 import toast from "react-hot-toast";
 import { API_URL } from "../../config";
+import { actionFetchData, actionPostData } from "../../actions/actions";
+import { useForm } from "react-hook-form";
+import LoadingButton from "../others/LoadingButton";
+import { useNavigate } from "react-router-dom";
 
 const MAX_BODY_LENGTH = 250; // Limit for Notification Description
 
 const NewNotification = () => {
     const { Auth } = useContext(AuthContext);
-    const [title, setTitle] = useState("");
+    const accessToken = Auth("accessToken");
+    const navigate = useNavigate();
+
     const [body, setBody] = useState("");
-    const [notificationName, setNotificationName] = useState("");
     const [tokens, setTokens] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [notifications, setNotifications] = useState([]);
+    const [isLoading, setLoading] = useState(true);    
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors,isSubmitting },
+        getValues,
+        setError,
+    } = useForm();
+
+    const fetchTokens = async () => {
+        setLoading(true);
+        let response = await actionFetchData(`${API_URL}/get-user-tokens`,accessToken);
+        response = await response.json();
+        if (response.status === 200 && response.tokens.length > 0) {
+            setTokens(response.tokens);
+        }
+        setLoading(false);
+    };
+
+    const submitHandler = async (data) => {
+        const toastId = toast.loading("Please wait...")
+       
+        let postData = {...data,tokens};
+        try {
+             let response = await actionPostData(`${API_URL}/send-notification`, accessToken, postData);
+             response = await response.json();
+     
+             if (response.status === 200) {
+                 toast.success(response.message, {
+                     id: toastId
+                 });                
+                 navigate('/notification/all-notifications');
+             } 
+     
+             if(response.status === 422){
+                 Object.keys(response.errors).forEach((field) => {
+                     setError(field, {
+                         type: "server",
+                         message: response.errors[field],
+                     });
+                 });
+                toast.dismiss(toastId);
+             }
+         } catch (error) {
+             toast.error(error)
+         }
+    };
 
     useEffect(() => {
-        const fetchTokens = async () => {
-            try {
-                const response = await fetch(`${API_URL}/get-user-tokens`);
-                const data = await response.json();
-                if (data.status && data.tokens.length > 0) {
-                    setTokens(data.tokens);
-                }
-            } catch (error) {
-                toast.error("Failed to load user tokens.");
-            }
-        };
-
-        const fetchNotifications = async () => {
-            try {
-                const response = await fetch(`${API_URL}/notifications`);
-                const data = await response.json();
-                if (data.status) {
-                    setNotifications(data.notifications);
-                }
-            } catch (error) {
-                toast.error("Failed to load notifications.");
-            }
-        };
-
         fetchTokens();
-        fetchNotifications();
     }, []);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!title || !body || tokens.length === 0) {
-            toast.error("Title, Body, and User Tokens are required.");
-            return;
-        }
-
-        setLoading(true);
-
-        try {
-            const response = await fetch(`${API_URL}/send-notification`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ title, body, tokens, notification_name: notificationName || null }),
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                toast.success("Notification sent successfully!");
-                setTitle("");
-                setBody("");
-                setNotificationName("");
-            } else {
-                toast.error(result.errors ? JSON.stringify(result.errors) : "Failed to send notification.");
-            }
-        } catch (error) {
-            toast.error("An error occurred while sending the notification.");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     return (
         <div>
@@ -89,38 +81,68 @@ const NewNotification = () => {
                             <strong>Create New Notification</strong>
                         </div>
                         <div className="card-body">
-                            <form onSubmit={handleSubmit}>
+                            {isLoading && <div className="cover-body"></div>}
+                            <form onSubmit={handleSubmit(submitHandler)} method="post">
                                 <div className="mb-3">
                                     <label className="form-label">Notification Title</label>
-                                    <input type="text" className="form-control" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                                    <input 
+                                        {...register("title", {
+                                            required: "Please enter title",                                            
+                                        })}
+                                        name="title"
+                                        id="title"
+                                        type="text" 
+                                        className={`form-control custom-input ${errors.title && `is-invalid`}` } 
+                                    />
+                                    <p className="invalid-feedback">{errors?.title?.message}</p>
                                 </div>
 
                                 <div className="mb-3">
                                     <label className="form-label">Notification Description</label>
                                     <textarea
+                                        {...register("body", {
+                                            required: "Please enter description",                                            
+                                        })}
                                         rows="4"
-                                        className="form-control"
-                                        value={body}
+                                        name="body"
+                                        id="body"
+                                        className={`form-control ${errors.title && `is-invalid`}` } 
                                         onChange={(e) => {
                                             if (e.target.value.length <= MAX_BODY_LENGTH) {
                                                 setBody(e.target.value);
                                             }
                                         }}
-                                        required
                                     />
-                                    <small className="text-muted">
+                                   
+                                    <p className="invalid-feedback mb-0">{errors?.body?.message}</p>
+                                    <small className="text-muted text-end d-block w-100">
                                         {body.length}/{MAX_BODY_LENGTH} characters
                                     </small>
+                                    
                                 </div>
 
                                 <div className="mb-3">
                                     <label className="form-label">Notification Name (Label)</label>
-                                    <input type="text" className="form-control" value={notificationName} onChange={(e) => setNotificationName(e.target.value)} />
+                                    <input 
+                                        {...register("label", {
+                                            required: false,                                            
+                                        })}
+                                        name="label"
+                                        id="label"
+                                        type="text" 
+                                        className={`form-control custom-input ${errors.label && `is-invalid`}` } 
+                                    />
+                                    <p className="invalid-feedback">{errors?.label?.message}</p>
                                 </div>
 
-                                <button type="submit" className="btn btn-primary mt-3" disabled={loading}>
-                                    {loading ? "Sending..." : "Send Notification"}
-                                </button>
+                                {isSubmitting ?
+                                    <LoadingButton />
+                                    :
+                                    <button type="submit" className="btn  btn-primary large-btn">
+                                        Send Notification
+                                    </button>
+                                }
+                               
                             </form>
                         </div>
                     </div>

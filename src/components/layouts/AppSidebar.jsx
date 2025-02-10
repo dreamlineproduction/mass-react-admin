@@ -283,12 +283,12 @@ const AppSidebar = () => {
                         </li>
                         )}
                          <li className='sidebar-item'>
-                            <a data-bs-target="#notification" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
+                            <a data-bs-target="#reports" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                                                
                                 <MdFlagCircle  style={{height:"20px",width:"30px"}} />
                                 <span className="align-middle">Reports</span>
                             </a>
 
-                            <ul id="notification" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                            <ul id="reports" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                                 <li className="sidebar-item">
                                     <NavLink className="sidebar-link" to="reports/all-reports">All Reports
                                     </NavLink>
