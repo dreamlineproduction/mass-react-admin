@@ -16,6 +16,7 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.7",
     "crypto-js": "^4.2.0",
+    "d3": "^7.9.0",
     "date-fns": "^4.1.0",
     "feather-icons": "^4.29.2",
     "file-saver": "^2.0.5",
