@@ -4,9 +4,15 @@ import './IndiaMap.scss';
 import { actionPostData } from '../../actions/actions';
 import { API_URL } from '../../config';
 import Loading from '../others/Loading';
+import * as d3 from "d3";
+import MapSvg from './MapSvg';
 
 const IndiaMap = ({ stateInfo, accessToken, type = 'dashboard', formData = {} }) => {
-    //console.log(stateInfo)
+    const colorScale = d3
+        .scaleLinear()
+        .domain([Math.min(...Object.values(stateInfo)), Math.max(...Object.values(stateInfo))])
+        .range(["#939393", "#4A936C"]);
+
 
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,45 +32,31 @@ const IndiaMap = ({ stateInfo, accessToken, type = 'dashboard', formData = {} })
     const [tooltipPosDistrict, setTooltipPosDistrict] = useState({ x: 0, y: 0 });
     const [stateSvgContent, setStateSvgContent] = useState('');
 
-    // const stateInfo = {
-    //     INAP: "Andhra Pradesh: Famous for Tirupati",
-    //     INAR: "Arunachal Pradesh: Land of the Rising Sun",
-    //     INAS: "Assam: Known for Tea Gardens",
-    //     INBR: "Bihar: Historical State with Bodh Gaya",
-    // };
-
-    const fetchIndiaMap = () => {
-        fetch('/images/india.svg')
-            .then(response => response.text())
-            .then(svg => {
-                setSvgContent(svg);
-            });
-    }
+ 
 
     const handleMouseOver = (e) => {
-        const stateId = e.target.id;
-        if (stateInfo[stateId]) {
-            setHoveredState(stateInfo[stateId]);
-            setTooltipPos({ x: e.clientX + 10, y: e.clientY - 20 });
+        let price = ' ';
+        if (stateInfo[e.target.id]) {
+            price = `${e.target.getAttribute("name")} ${stateInfo[e.target.id]}`;
+        } else {
+            price = `${e.target.getAttribute("name")}`;
         }
+
+        setHoveredState(price);
+        setTooltipPos({ x: e.clientX + 10, y: e.clientY - 20 });
     };
 
+    const handleMouseOut = (e) => {
+        setHoveredState(null)
+        setTooltipPos({ x: 0, y: 0 });
+    }
 
     const handleState = async (e) => {
         setIsLoading(true)
-        let stateName = '';
 
         const stateId = e.target.id;
 
-        if (stateInfo[stateId]) {
-            stateName = stateInfo[stateId].replace(/\s*\(\d+\)$/, "");
-            setSelectedState(stateName);
-        }
-
-        if (stateName === '') {
-            console.error('Invalid State Name');
-            return
-        }
+        setSelectedState(e.target.getAttribute("name"));
 
 
         let districtMap = '';
@@ -142,19 +134,7 @@ const IndiaMap = ({ stateInfo, accessToken, type = 'dashboard', formData = {} })
         }
     }
 
-    useEffect(() => {
-        fetchIndiaMap()
-
-        const svgElement = document.querySelector('.india-map svg');
-
-        if (svgElement && Object.keys(stateInfo).length > 0) {
-            svgElement.querySelectorAll('path').forEach((path) => {
-                path.addEventListener('mouseover', (e) => handleMouseOver(e));
-                path.addEventListener('mouseout', () => setHoveredState(null));
-                path.addEventListener('click', (e) => handleState(e));
-            });
-        }
-    }, [stateInfo, svgContent]);
+  
 
     useEffect(() => {
         // Fetch and set the SVG content
@@ -191,11 +171,15 @@ const IndiaMap = ({ stateInfo, accessToken, type = 'dashboard', formData = {} })
         <>
             <div className="india-map-container">
                 {/* Insert the SVG into the DOM */}
-                <div
-                    className="india-map"
-                    dangerouslySetInnerHTML={{ __html: svgContent }}
-                />
-
+                <div className="india-map">
+                    <MapSvg
+                        colorScale={colorScale}
+                        stateInfo={stateInfo}
+                        handleMouseOut={handleMouseOut}
+                        handleMouseOver={handleMouseOver}
+                        handleState={handleState}
+                    />
+                </div>
                 {/* Tooltip to display the hovered state info */}
                 {hoveredState && (
                     <div
@@ -209,7 +193,7 @@ const IndiaMap = ({ stateInfo, accessToken, type = 'dashboard', formData = {} })
 
             {/* Modals */}
             {isModalOpen && (
-                <div  className="modal show d-block" tabIndex="-1"
+                <div className="modal show d-block" tabIndex="-1"
                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div className="modal-dialog modal-xl">
                         <div className="modal-content">

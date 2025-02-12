@@ -48,7 +48,9 @@ const Dashboard = () => {
     const [mapLoading, setMapLoading] = useState(true);
     const [mapData, setMapData] = useState(null);
 
+    //const mostvar = mapData.INJH
 
+    //console.log(mostvar);
     
   
     const fetchDashboard = async () => {
@@ -184,7 +186,7 @@ const Dashboard = () => {
     }
     
      // Fetch data
-     const fetchQrData = async () => {       
+    const fetchQrData = async () => {       
         let response = await actionFetchData( `${API_URL}/qr-codes?page=1&perPage=10`, accessToken);
         response = await response.json();
         if (response.status) {
