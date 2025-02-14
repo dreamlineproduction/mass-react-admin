@@ -51,7 +51,11 @@ const AppSidebar = () => {
                                 </li> 
                                 <li className="sidebar-item">
                                     <NavLink className="sidebar-link" to="/users/top-fifty">Top 50</NavLink>
-                                </li>                                
+                                </li>  
+
+                                <li className="sidebar-item">
+                                    <NavLink className="sidebar-link" to="/users/deleted-users">Deleted User</NavLink>
+                                </li>                               
                             </ul>
                             
                         </li>
@@ -189,8 +193,6 @@ const AppSidebar = () => {
                         </li>
                         )}
 
-                    
-
 
                         {(hasPermission(configPermission.VIEW_PRODUCT) || hasPermission(configPermission.VIEW_PRODUCT_ANALYTIC)) && (
                         <li className="sidebar-header">
@@ -212,6 +214,11 @@ const AppSidebar = () => {
                                 {hasPermission(configPermission.VIEW_PRODUCT_REVIEW) && 
                                     <li className="sidebar-item">
                                         <NavLink className="sidebar-link" to="/products/review-products">Product Reviews</NavLink>
+                                    </li>
+                                }
+                                {hasPermission(configPermission.VIEW_PRODUCT_REPORT) && 
+                                    <li className="sidebar-item">
+                                        <NavLink className="sidebar-link" to="/products/report-products">Product Reports</NavLink>
                                     </li>
                                 }
                                                               

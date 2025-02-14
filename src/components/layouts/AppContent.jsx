@@ -52,6 +52,8 @@ import Transaction from '../users/Transaction';
 import ReviewProduct from '../products/ReviewProduct';
 import AllReports from '../reports/AllReports';
 import Test from '../Test';
+import ReportProduct from '../products/ReportProduct';
+import DeletedUser from '../users/DeletedUser';
 
 
 const AppContent = () => {
@@ -59,13 +61,16 @@ const AppContent = () => {
     const routes = [
         { path: '/dashboard', element: <Dashboard /> },        
         { path: '/users/all-users', element: <AllUser /> },
+        { path: '/users/deleted-users', element: <DeletedUser /> },
         { path: '/users/top-fifty', element: <TopFifty /> },
         { path: '/users/add-user', element: <NewUser /> },
+        
         { path: '/users/edit-user/:id', element: <EditUser /> },
         { path: '/users/city-users', element: <CityUser /> },
         { path: '/users/transaction/:id', element: <Transaction /> },
         { path: '/products/all-products', element: <AllProduct /> },
         { path: '/products/review-products', element: <ReviewProduct /> },
+        { path: '/products/report-products', element: <ReportProduct /> },        
         { path: '/products/add-product', element: <NewProduct /> },
         { path: '/products/edit-product/:id', element: <EditProduct /> },
         { path: '/rewards/all-rewards', element: <AllReward /> },
