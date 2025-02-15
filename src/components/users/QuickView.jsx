@@ -226,7 +226,7 @@ return (
                                             </tr>
                                             <tr>
                                                 <th scope="row">Number of Referral</th>
-                                                <td><a href="#">125</a></td>
+                                                <td><a href="#">{user?.referral_count}</a></td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">Referred By </th>
