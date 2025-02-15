@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import AuthContext from "../../context/auth";
 import { useForm } from "react-hook-form";
@@ -134,7 +134,6 @@ return (
         <div className="col-12 col-xl-12">
             <div className="card">
                 <div className="card-body">
-                    <form onSubmit={handleSubmit(submitHandler)} method="post">
                         <div className="row">
                             {/* Personal Information Table */}
                             <div className="col-12 col-xl-6 col-lg-6">
@@ -169,7 +168,8 @@ return (
                                                     day: "numeric",
                                                     month: "long",
                                                     year: "numeric"
-                                                    }) : "N/A"}</td>
+                                                    }) : "N/A"}
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">Age</th>
@@ -230,7 +230,10 @@ return (
                                             </tr>
                                             <tr>
                                                 <th scope="row">Referred By </th>
-                                                <td>asdasda <a href="#">(dadkjadskdas)</a></td>
+                                                <td>
+                                                    {user?.to_referral_code} 
+                                                    <Link to={`/users/transaction/${user?.to_referral_id}`}>({user?.to_referral_name} )</Link>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <th scope="row">Employee Code </th>
@@ -269,16 +272,9 @@ return (
                                 </div>
                             </div>
                         </div>
-
-
-
-
-                    </form>
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
 );

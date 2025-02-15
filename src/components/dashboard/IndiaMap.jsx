@@ -11,8 +11,7 @@ const IndiaMap = ({ stateInfo, accessToken, type = 'dashboard', formData = {} })
     const colorScale = d3
         .scaleLinear()
         .domain([Math.min(...Object.values(stateInfo)), Math.max(...Object.values(stateInfo))])
-        .range(["#939393", "#4A936C"]);
-
+        .range(["#9AD1B5", "#178C50"]); // Lightest to darkest green
 
 
     const [isModalOpen, setIsModalOpen] = useState(false);
