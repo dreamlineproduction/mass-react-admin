@@ -28,18 +28,18 @@ const Transaction = () => {
             setLoading(false)            
         }
     }
-     useEffect(() => {
+    useEffect(() => {
         if (!hasPermission(configPermission.VIEW_USER)) {
             navigate('/403')
         }
         //fetchState()
         fetchUser();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [params.id])
 
     return (
-        <div>
-            {isLoading && <div className="cover-body"></div>}
+        <div className="position-relative">
+            {isLoading && <div className="cover-body">red</div>}
             
             <div className="mb-3 d-flex align-items-center justify-content-between">
                 <h1 className="h3 d-inline align-middle">{`User details of ${user?.name || ''}`}</h1>
@@ -50,14 +50,13 @@ const Transaction = () => {
                     <a className="btn btn-success btn-lg" href="/users/all-users">Back to List</a>
                    
                     </div>
-                </div>
+            </div>
+
              {/* Quick View */}
-             <QuickView
+            <QuickView
                 user={user}
-                className="mt-4"
-                params={params}
-                accessToken={accessToken}
             />
+            
             {/* All Transaction */}
             <AllTransaction
                 user={user}
