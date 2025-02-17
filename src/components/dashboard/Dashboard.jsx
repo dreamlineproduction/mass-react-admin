@@ -46,18 +46,7 @@ const Dashboard = () => {
     });
 
     const [mapLoading, setMapLoading] = useState(true);
-    const [mapData, setMapData] = useState(
-        {
-            "INAS": 100,
-            "INBR": 5200,
-            "INCH": 578787,
-            "INJH": 2255,
-            "INOD": 122,
-            "INTR": 0,
-            "INUP": 2548,
-            "INWB": 1111
-        }
-    );
+    const [mapData, setMapData] = useState();
 
     //const mostvar = mapData.INJH
 
@@ -112,7 +101,7 @@ const Dashboard = () => {
         const responseV = await resultV.json();
 
         if (responseV.status) {
-            // setMapData(responseV.data);
+            setMapData(responseV.data);
             setMapLoading(false);
         }
     }
