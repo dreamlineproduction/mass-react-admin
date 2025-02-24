@@ -85,7 +85,7 @@ const AllNotification = () => {
                                             <button
                                                 type="button"
                                                 className="dropdown-item"
-                                                onClick={() => deleteEmployee(row.original.id)}
+                                                onClick={() => deleteNotification(row.original.id)}
                                             >
                                                 Delete
                                             </button>
@@ -150,7 +150,7 @@ const AllNotification = () => {
             );
             response = await response.json();
             if (response.status) {
-                setNotifications(notifications.filter((item) => item.id !== id)); 
+                setNotifications(prevData => prevData.filter(row => row.id !== id));
 
                 toast.success(response.message, {
                     id: toastId,
@@ -162,8 +162,8 @@ const AllNotification = () => {
         setLoading(false)
     };
 
-    // -- Delete employee
-    const deleteEmployee = (id) => {
+    // -- Delete Notification
+    const deleteNotification = (id) => {
         Swal.fire({
             title: "Are you sure?",
             text: "This notification will be permanently deleted!",
