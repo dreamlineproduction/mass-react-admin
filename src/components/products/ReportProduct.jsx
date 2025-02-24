@@ -189,7 +189,8 @@ const ReportProduct = () => {
                 showCloseBtn={false}
             >
                     <div className="mb-3">
-                        <textarea className='form-control' defaultValue={description}></textarea>                                                      
+                        <p>{description}</p>
+                                                                           
                     </div>
 
                  

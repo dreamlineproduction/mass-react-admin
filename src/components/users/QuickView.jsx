@@ -109,7 +109,11 @@ const QuickView = ({user}) => {
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Number of Referral</th>
-                                                    <td>{user?.referral_count}</td>
+                                                    <td>
+                                                    <Link className="ms-1" to={`/referrals/all-referrals`}>
+                                                        {user?.referral_count}
+                                                        </Link>
+                                                        </td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Referred By </th>
