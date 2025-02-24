@@ -23,7 +23,7 @@ const NewNotification = () => {
         register,
         handleSubmit,
         formState: { errors,isSubmitting },
-        getValues,
+        setValue,
         setError,
     } = useForm();
 
@@ -66,6 +66,27 @@ const NewNotification = () => {
          }
     };
 
+    const handlePaste = (e) => {
+        e.preventDefault();
+        const pastedText = e.clipboardData.getData("text");
+        const newText = body + pastedText;
+
+        if (newText.length <= MAX_BODY_LENGTH) {
+            setBody(newText);
+            setValue("body", newText); // Sync with react-hook-form
+        } else {
+            setBody(newText.substring(0, MAX_BODY_LENGTH)); // Truncate if needed
+            setValue("body", newText.substring(0, MAX_BODY_LENGTH));
+        }
+    };
+
+    const handleChange = (e) => {
+        if (e.target.value.length <= MAX_BODY_LENGTH) {
+            setBody(e.target.value);
+            setValue("body", e.target.value); // Sync with react-hook-form
+        }
+    };
+
     useEffect(() => {
         fetchTokens();
     }, []);
@@ -106,12 +127,10 @@ const NewNotification = () => {
                                         rows="4"
                                         name="body"
                                         id="body"
+                                        maxLength={MAX_BODY_LENGTH}
                                         className={`form-control ${errors.title && `is-invalid`}` } 
-                                        onChange={(e) => {
-                                            if (e.target.value.length <= MAX_BODY_LENGTH) {
-                                                setBody(e.target.value);
-                                            }
-                                        }}
+                                        onPaste={handlePaste}
+                                        onChange={handleChange}
                                     />
                                    
                                     <p className="invalid-feedback mb-0">{errors?.body?.message}</p>
