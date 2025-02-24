@@ -34,6 +34,12 @@ const QuickView = ({user}) => {
                                                                 || "N/A"} </span>
                                                     </td>
                                                 </tr>
+                                                 {user?.shop_name &&
+                                                                    <tr>
+                                                                        <th scope="row">Business Name</th>
+                                                                        <td>{user?.shop_name}</td>
+                                                                    </tr>
+                                                }
                                                 <tr>
                                                     <th scope="row">Name</th>
                                                     <td>{user?.name}</td>
