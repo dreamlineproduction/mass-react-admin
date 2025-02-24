@@ -121,7 +121,7 @@ export const configPermission = {
     'VIEW_PRODUCT_REVIEW':'View Product Review',
     'VIEW_PRODUCT_REPORT':'View Product Report',
     'VIEW_USER_DELETE':'View Delete User',
-    
+    'VIEW_TOP_FIFTY':'View Top 50',
 }
 
 export const getValueOrDefault = (value, defaultValue = "N/A") => {

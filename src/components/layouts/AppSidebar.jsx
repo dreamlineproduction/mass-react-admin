@@ -19,7 +19,7 @@ import {configPermission} from '../../config';
 const AppSidebar = () => {
     const { hasPermission } = useContext(AuthContext)
     
-    //console.log(configPermission);
+    //console.log(hasPermission(configPermission.VIEW_USER_DELETE));
     return (
         <nav className='sidebar'>
             <SimpleBar forceVisible="y">
@@ -38,7 +38,9 @@ const AppSidebar = () => {
                             </NavLink>
                         </li>
                         
-                        {hasPermission(configPermission.VIEW_USER) && (
+                        {(hasPermission(configPermission.VIEW_USER) || 
+                            hasPermission(configPermission.VIEW_TOP_FIFTY) || 
+                            hasPermission(configPermission.VIEW_TOP_FIFTY)) && (
                         <li className='sidebar-item'>
                             <a data-bs-target="#users" data-bs-toggle="collapse" className="sidebar-link collapsed" aria-expanded="false">                                
                                 <FiUsers  style={{height:"20px",width:"30px"}} />
@@ -46,16 +48,23 @@ const AppSidebar = () => {
                             </a>
 
                             <ul id="users" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                {hasPermission(configPermission.VIEW_USER) && (
                                 <li className="sidebar-item">
                                     <NavLink className="sidebar-link" to="/users/all-users">All User</NavLink>
                                 </li> 
+                                )}
+
+                                {hasPermission(configPermission.VIEW_TOP_FIFTY) && (
                                 <li className="sidebar-item">
                                     <NavLink className="sidebar-link" to="/users/top-fifty">Top 50</NavLink>
                                 </li>  
+                                )}  
 
+                                {hasPermission(configPermission.VIEW_USER_DELETE) && (
                                 <li className="sidebar-item">
                                     <NavLink className="sidebar-link" to="/users/deleted-users">Deleted User</NavLink>
-                                </li>                               
+                                </li>     
+                                )}                          
                             </ul>
                             
                         </li>
