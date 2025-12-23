@@ -10,6 +10,7 @@ import { API_URL, configPermission } from '../../config';
 import { actionDeleteData, actionFetchData } from '../../actions/actions';
 import DataTable from '../others/DataTable';
 import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 const DeletedUser = () => {
     const { Auth, hasPermission } = useContext(AuthContext);
@@ -92,7 +93,7 @@ const DeletedUser = () => {
                 });
             }
         } catch (error) {
-            toast.error(error);
+            toast.error(error?.message || 'Failed to delete user');
         }
     };
 

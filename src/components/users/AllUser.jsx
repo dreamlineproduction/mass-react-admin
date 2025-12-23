@@ -99,7 +99,7 @@ const AllUser = () => {
                 enableSorting: false,
                 cell: ({ row }) => {
                     return (
-                        <span className="d-inline-flex px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">{row.original.role.name}</span>
+                        <span className="d-inline-flex px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">{row.original.role?.name || 'N/A'}</span>
                     );
                 },
             },
